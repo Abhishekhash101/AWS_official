@@ -1,15 +1,45 @@
+import { motion } from 'framer-motion';
 import InteractiveHeroGrid from './InteractiveHeroGrid';
 
 export default function Hero() {
+  const levitateTransition = (delay) => ({
+    repeat: Infinity,
+    duration: 5,
+    ease: 'easeInOut',
+    delay: delay,
+  });
+
+  const levitateAnimation = {
+    y: [0, -15, 0],
+    scale: [1, 1.05, 1],
+    boxShadow: [
+      '0px 0px 0px 0px rgba(255, 153, 0, 0)',
+      '10px 20px 30px -10px rgba(255, 153, 0, 0.5)',
+      '0px 0px 0px 0px rgba(255, 153, 0, 0)',
+    ],
+  };
+
   return (
     <section
       className="relative min-h-[90vh] flex flex-col pt-12 pb-16 overflow-hidden max-w-7xl mx-auto px-container-padding"
       id="home"
     >
-      {/* Layer 0: The Static Orange Blocks */}
-      <div className="absolute top-0 left-1/4 w-[160px] h-[160px] bg-[#FF9900] z-0 hidden md:block"></div>
-      <div className="absolute top-[160px] left-[12.5%] w-[80px] h-[80px] bg-[#FF9900] z-0 hidden md:block"></div>
-      <div className="absolute top-[160px] right-[20%] w-[80px] h-[80px] bg-[#FF9900] z-0 hidden md:block"></div>
+      {/* Layer 0: The Floating Orange Blocks */}
+      <motion.div
+        animate={levitateAnimation}
+        transition={levitateTransition(0)}
+        className="absolute top-0 left-1/4 w-[160px] h-[160px] bg-[#FF9900] z-0 hidden md:block"
+      ></motion.div>
+      <motion.div
+        animate={levitateAnimation}
+        transition={levitateTransition(1.5)}
+        className="absolute top-[160px] left-[12.5%] w-[80px] h-[80px] bg-[#FF9900] z-0 hidden md:block"
+      ></motion.div>
+      <motion.div
+        animate={levitateAnimation}
+        transition={levitateTransition(3)}
+        className="absolute top-[160px] right-[20%] w-[80px] h-[80px] bg-[#FF9900] z-0 hidden md:block"
+      ></motion.div>
 
       {/* Layer 10: The Interactive Hover Area */}
       <InteractiveHeroGrid />
