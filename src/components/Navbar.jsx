@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const navLinks = [
   { label: 'Home', href: '#home', active: true },
@@ -10,6 +10,33 @@ const navLinks = [
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [displayedText, setDisplayedText] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+  const fullText = 'AWS STUDENT BUILDER @ VIT';
+
+  useEffect(() => {
+    let timeout;
+
+    if (!isDeleting && displayedText === fullText) {
+      // Pause at the end before deleting
+      timeout = setTimeout(() => setIsDeleting(true), 2000);
+    } else if (isDeleting && displayedText === '') {
+      // Pause when empty before typing again
+      timeout = setTimeout(() => setIsDeleting(false), 500);
+    } else {
+      // Typing or Deleting speed
+      const delta = isDeleting ? 50 : 100;
+      timeout = setTimeout(() => {
+        setDisplayedText((prev) =>
+          isDeleting
+            ? fullText.slice(0, prev.length - 1)
+            : fullText.slice(0, prev.length + 1)
+        );
+      }, delta);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [displayedText, isDeleting]);
 
   return (
     <nav className="bg-background/80 backdrop-blur-xl border-b border-white/5 fixed top-0 left-0 w-full z-50 flex justify-between items-center px-container-padding py-4 max-w-full">
@@ -21,7 +48,10 @@ export default function Navbar() {
         >
           cloud
         </span>
-        AWS STUDENT BUILDER @ VIT
+        <span className="min-w-[28ch] block sm:inline-block">
+          {displayedText}
+          <span className="animate-pulse">_</span>
+        </span>
       </div>
 
       {/* Desktop Nav Links */}
