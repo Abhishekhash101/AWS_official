@@ -170,6 +170,15 @@
   animation: attention-shake 5s cubic-bezier(.36,.07,.19,.97) infinite;
 }
 
+@keyframes arrow-swing {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(6px); }
+}
+
+@utility animate-arrow-swing {
+  animation: arrow-swing 0.8s ease-in-out infinite;
+}
+
 /* ═══════════════════════════════════════════════════════════
    BASE RESETS & GLOBAL STYLES
    ═══════════════════════════════════════════════════════════ */
