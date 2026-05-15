@@ -73,7 +73,7 @@ export default function Navbar() {
 
       {/* Desktop CTA */}
       <a
-        className="hidden md:inline-flex bg-primary-container text-background font-headline-md text-label-md px-6 py-2 hover:bg-primary transition-colors items-center gap-2 uppercase tracking-widest"
+        className="hidden md:inline-flex bg-primary-container text-background font-headline-md text-label-md px-6 py-2 hover:bg-primary transition-colors items-center gap-2 uppercase tracking-widest animate-attention"
         href="#join"
       >
         JOIN CLOUD
@@ -109,7 +109,7 @@ export default function Navbar() {
             </a>
           ))}
           <a
-            className="bg-primary-container text-background font-headline-md text-label-md px-6 py-2 hover:bg-primary transition-colors items-center gap-2 uppercase tracking-widest inline-flex mt-2"
+            className="bg-primary-container text-background font-headline-md text-label-md px-6 py-2 hover:bg-primary transition-colors items-center gap-2 uppercase tracking-widest inline-flex mt-2 animate-attention"
             href="#join"
             onClick={() => setMobileOpen(false)}
           >
