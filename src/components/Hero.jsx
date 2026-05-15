@@ -1,16 +1,21 @@
+import InteractiveHeroGrid from './InteractiveHeroGrid';
+
 export default function Hero() {
   return (
     <section
       className="relative min-h-[90vh] flex flex-col pt-12 pb-16 overflow-hidden max-w-7xl mx-auto px-container-padding"
       id="home"
     >
-      {/* Abstract Orange Blocks */}
-      <div className="absolute top-0 left-1/4 w-[160px] h-[160px] orange-block z-0 hidden md:block"></div>
-      <div className="absolute top-[160px] left-[12.5%] w-[80px] h-[80px] orange-block z-0 hidden md:block"></div>
-      <div className="absolute top-[160px] right-[20%] w-[80px] h-[80px] orange-block z-0 hidden md:block"></div>
+      {/* Layer 0: The Static Orange Blocks */}
+      <div className="absolute top-0 left-1/4 w-[160px] h-[160px] bg-[#FF9900] z-0 hidden md:block"></div>
+      <div className="absolute top-[160px] left-[12.5%] w-[80px] h-[80px] bg-[#FF9900] z-0 hidden md:block"></div>
+      <div className="absolute top-[160px] right-[20%] w-[80px] h-[80px] bg-[#FF9900] z-0 hidden md:block"></div>
 
-      {/* Main Content */}
-      <div className="relative z-10 w-full mt-32 md:mt-48 flex flex-col items-start text-left">
+      {/* Layer 10: The Interactive Hover Area */}
+      <InteractiveHeroGrid />
+
+      {/* Layer 20: The Content Wrapper */}
+      <div className="relative z-20 w-full mt-32 md:mt-48 flex flex-col items-start text-left pointer-events-auto">
         {/* Status Badge */}
         <div className="mb-6 inline-flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-1 text-on-surface-variant font-label-sm text-label-sm uppercase tracking-widest">
           <span className="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
