@@ -11,11 +11,11 @@ export default function About() {
         {/* Left Column — Text Content */}
         <div className="flex flex-col">
           <h2 className="font-headline-lg text-[40px] md:text-[56px] text-white mb-6 uppercase tracking-widest leading-tight">
-            AWS Cloud Club <br />at GCES →{' '}
+            AWS STUDENT BUILDER <br />at VIT VELLORE →{' '}
             <br />
-            <span className="text-primary-container">
-              AWS Student Builder Group at GCES
-            </span>
+            {/* <span className="text-primary-container">
+                AWS Student Builder Group at VIT VELLORE
+              </span> */}
           </h2>
           <p className="font-headline-md text-headline-md text-on-surface-variant mb-8 tracking-wider">
             Same Passion, Bigger Goals

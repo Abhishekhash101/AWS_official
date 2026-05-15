@@ -11,7 +11,7 @@ export default function Callout() {
           <h2 className="font-headline-lg text-[32px] uppercase tracking-widest font-bold">
             AWS Student Builder Group
             <br />
-            at GCES
+            at VIT VELLORE
           </h2>
         </div>
         <a

@@ -27,7 +27,7 @@ export default function Hero() {
         {/* Description + CTAs */}
         <div className="flex flex-col md:flex-row gap-8 items-start w-full">
           <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl border-l-2 border-primary-container pl-6 py-2">
-            We are the architects of tomorrow. Formerly AWS Cloud Club @ GCES, now reborn with the same passion and bigger goals. Join a technical elite shaping the cloud infrastructure.
+            We are the architects of tomorrow. Formerly AWS STUDENT BUILDER @ VIT, now reborn with the same passion and bigger goals. Join a technical elite shaping the cloud infrastructure.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 mt-4 md:mt-0 md:ml-auto">
             <a

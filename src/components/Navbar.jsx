@@ -21,7 +21,7 @@ export default function Navbar() {
         >
           cloud
         </span>
-        SBG @ GCES
+        AWS STUDENT BUILDER @ VIT
       </div>
 
       {/* Desktop Nav Links */}

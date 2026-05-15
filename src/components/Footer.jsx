@@ -17,10 +17,10 @@ export default function Footer() {
           >
             cloud
           </span>
-          SBG @ GCES
+          AWS STUDENT BUILDER @ VIT
         </div>
         <p className="font-headline-md text-label-sm text-on-surface-variant uppercase tracking-widest mt-4">
-          © 2024 AWS STUDENT BUILDER GROUP @ GCES. ARCHITECTED FOR THE CLOUD.
+          © 2024 AWS STUDENT BUILDER @ VIT VELLORE. ARCHITECTED FOR THE CLOUD.
         </p>
       </div>
 
