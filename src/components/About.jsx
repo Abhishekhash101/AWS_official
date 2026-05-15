@@ -1,10 +1,29 @@
+import { useEffect, useRef } from 'react';
+import { useInView, motion, useMotionValue, useTransform, animate } from 'framer-motion';
+
 const stats = [
-  { value: '50+', label: 'Members' },
-  { value: '10+', label: 'Events' },
-  { value: '3+', label: 'Projects' },
+  { value: 50, suffix: '+', label: 'Members' },
+  { value: 10, suffix: '+', label: 'Events' },
+  { value: 3, suffix: '+', label: 'Projects' },
 ];
 
+function AnimatedCounter({ targetValue, inView }) {
+  const count = useMotionValue(0);
+  const rounded = useTransform(count, (latest) => Math.round(latest));
+
+  useEffect(() => {
+    if (inView) {
+      animate(count, targetValue, { duration: 2, ease: 'easeOut' });
+    }
+  }, [inView, count, targetValue]);
+
+  return <motion.span>{rounded}</motion.span>;
+}
+
 export default function About() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: '-100px' });
+
   return (
     <section className="py-24 relative bg-background border-b border-white/10" id="about">
       <div className="max-w-7xl mx-auto px-container-padding relative z-10 grid grid-cols-1 md:grid-cols-2 gap-16 items-start">
@@ -25,11 +44,12 @@ export default function About() {
           </p>
 
           {/* Stats Row */}
-          <div className="grid grid-cols-3 gap-8 pt-8 border-t border-white/10 w-full max-w-lg">
+          <div ref={ref} className="grid grid-cols-3 gap-8 pt-8 border-t border-white/10 w-full max-w-lg">
             {stats.map((stat) => (
               <div key={stat.label}>
                 <div className="font-headline-xl text-[48px] text-white mb-2 font-bold">
-                  {stat.value}
+                  <AnimatedCounter targetValue={stat.value} inView={isInView} />
+                  {stat.suffix}
                 </div>
                 <div className="font-headline-md text-label-sm text-primary-container uppercase tracking-widest">
                   {stat.label}
