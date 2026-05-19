@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import hqSvg from '../assets/aws_club_hq.svg';
 import { useInView, motion, useMotionValue, useTransform, animate } from 'framer-motion';
 
 const stats = [
@@ -59,17 +60,13 @@ export default function About() {
           </div>
         </div>
 
-        {/* Right Column — Image Panel */}
-        <div className="relative h-full min-h-[500px] border border-white/10 bg-surface-container-lowest overflow-hidden group p-4 flex flex-col justify-end">
+        {/* Right Column — HQ Illustration */}
+        <div className="relative h-full min-h-[500px] flex items-center justify-center p-4 overflow-hidden group">
           <img
-            alt="Server Infrastructure"
-            className="absolute inset-0 w-full h-full object-cover grayscale opacity-50 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNQOJp-1WvYEucoRa8MSofJqvyUz3cxbCQrOadhn-DJ6WKCEjdj_lG6YCqYi-98FkDRfLUmVdH_d2DJ4PTsY9HjLVBWvUMFpW4A7xR0oak3lKFnvMASCqziXb4Kum6ZQ4eHztm1rvbyuye-aaaGkmRgE0GZ6PUmdz_3WlzSO0AGxch_PxtCcgz17gKTCDXamyRp5QvpN8WFQU7axYUTZRsjhlu-b7OLcUM4rUbwYzuLjJ8lrwpLHom8aCIo8_LHYO3VZTadHV487Gh"
+            src={hqSvg}
+            alt="AWS Club HQ"
+            className="w-full h-full object-contain opacity-80 group-hover:opacity-100 transition-opacity duration-700"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent"></div>
-          <div className="relative z-20 font-headline-md text-label-md text-primary-container tracking-widest uppercase">
-            [INFRASTRUCTURE_VIEW_01]
-          </div>
         </div>
       </div>
     </section>
