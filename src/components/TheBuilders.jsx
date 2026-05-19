@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import awsIcon from '../assets/aws_icon.jpeg';
+import ankitImg from '../assets/Board memb/ankit.png';
 
 const BUILDERS = [
   // Outer Ring (5 members) — indices 0-4
-  { id: 1, initials: 'AS', fullName: 'Ankit Subedi', role: 'CHAIRPERSON', desc: 'Leads the club vision and drives the AWS community forward.', color: '#FF9900', insta: '#', linkedin: '#' },
+  { id: 1, initials: 'AS', fullName: 'Ankit Subedi', role: 'CHAIRPERSON', desc: 'Leads the club vision and drives the AWS community forward.', color: '#FF9900', insta: 'https://www.instagram.com/nepaliguy.np/', linkedin: 'https://www.linkedin.com/in/npankitsubedi/', image: ankitImg },
   { id: 2, initials: 'AS', fullName: 'Aesha Singh', role: 'VICE CHAIRPERSON', desc: 'Orchestrates operations and strategic community growth.', color: '#008296', insta: '#', linkedin: '#' },
   { id: 3, initials: 'VJ', fullName: 'Vidhi Prashant Jain', role: 'SECRETARY', desc: 'Manages documentation, communication, and club coordination.', color: '#E1523D', insta: '#', linkedin: '#' },
   { id: 4, initials: 'TR', fullName: 'Tanishi Raj', role: 'CO-SECRETARY', desc: 'Supports administrative operations and event logistics.', color: '#8A2BE2', insta: '#', linkedin: '#' },
@@ -376,7 +377,11 @@ export default function TheBuilders() {
                 onClick={() => openPopup(builder)}
                 aria-label={`${builder.fullName}, ${builder.role}`}
               >
-                {builder.initials}
+                {builder.image ? (
+                  <img src={builder.image} alt={builder.fullName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : (
+                  builder.initials
+                )}
                 <span className="tb-name-tag">{builder.fullName.split(' ')[0]}</span>
               </div>
             </div>
