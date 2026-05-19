@@ -34,6 +34,50 @@ function WorkshopCard() {
   );
 }
 
+/* ── Special interactive Card 2 ── */
+function CreditsCard() {
+  const [expanded, setExpanded] = useState(false);
+  return (
+    <div className="wj-cr-outer">
+      <div
+        className={`wj-cr-card${expanded ? ' wj-cr-expanded' : ''}`}
+        onClick={() => setExpanded(v => !v)}
+      >
+        {/* Left Ribbon — from exact top-left corner to medal top */}
+        <div className="wj-cr-ribbon wj-cr-ribbon-left">
+          <svg viewBox="0 0 140 240" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0,0 L124,220 L140,240 L14,14 Z" />
+            <path d="M0,0 L124,220 L112,212 L0,7 Z" />
+          </svg>
+        </div>
+
+        {/* Right Ribbon — from exact top-right corner to medal top */}
+        <div className="wj-cr-ribbon wj-cr-ribbon-right">
+          <svg viewBox="0 0 140 240" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M140,0 L16,220 L0,240 L126,14 Z" />
+            <path d="M140,0 L16,220 L28,212 L140,7 Z" />
+          </svg>
+        </div>
+
+        {/* Medal circle with star */}
+        <div className="wj-cr-medal">
+          <svg viewBox="0 0 70 70" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="35" cy="35" r="28" />
+            <circle cx="35" cy="35" r="24" />
+            <polygon points="35,12 38.5,25 52,25 41,33 45,46 35,38 25,46 29,33 18,25 31.5,25" />
+          </svg>
+        </div>
+
+        <span className="wj-cr-number">02</span>
+        <span className="wj-cr-title">AWS Credits & Vouchers</span>
+        <div className="wj-cr-desc">
+          <p>$25 AWS credits for core team. Certification exam vouchers to get you officially certified.</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ── Regular card (cards 2–7) ── */
 function RegularCard({ card }) {
   return (
@@ -170,6 +214,90 @@ export default function WhyJoinUs() {
         .wj-ws-expanded .wj-ws-desc{opacity:1;transform:translateY(0);transition:opacity .4s ease .4s,transform .4s ease .4s}
         .wj-ws-desc p{font-family:'Courier New',monospace;font-size:13px;color:#dbc2ad;line-height:1.6;text-align:center;margin:0}
 
+        /* ══════════════════════════════════════
+           Credits Card 2 — Interactive
+           ══════════════════════════════════════ */
+        .wj-cr-outer{flex-shrink:0}
+        .wj-cr-card{
+          position:relative;width:280px;min-width:280px;height:340px;
+          background:transparent;
+          border:1.5px solid #C8A882;border-radius:14px;
+          overflow:hidden;cursor:pointer;flex-shrink:0;
+          transition:all .65s cubic-bezier(.4,0,.2,1);
+        }
+
+        /* — 02 label (z-index 5, always in front of ribbons) — */
+        .wj-cr-number{
+          position:absolute;top:18px;left:20px;
+          font-family:'Courier New',monospace;font-size:40px;font-weight:900;
+          color:transparent;-webkit-text-stroke:2.5px #fff;
+          z-index:5;
+          transition:all .65s cubic-bezier(.4,0,.2,1);
+        }
+        .wj-cr-card:hover .wj-cr-number{-webkit-text-stroke-color:#FF9900}
+        .wj-cr-expanded .wj-cr-number{opacity:0;pointer-events:none}
+
+        /* — Ribbons (span from top corners to medal, z-index 1) — */
+        .wj-cr-ribbon{
+          position:absolute;top:0;
+          width:50%;height:57%;
+          z-index:1;
+          transition:all .65s cubic-bezier(.4,0,.2,1);
+        }
+        .wj-cr-ribbon svg{display:block;width:100%;height:100%}
+        .wj-cr-ribbon path{
+          fill:none;stroke:#7A5230;stroke-width:3;
+          stroke-linecap:round;stroke-linejoin:round;
+          transition:stroke .3s ease;
+        }
+        .wj-cr-ribbon-left{left:0}
+        .wj-cr-ribbon-right{right:0}
+        .wj-cr-card:hover .wj-cr-ribbon path{stroke:#FF9900}
+        .wj-cr-expanded .wj-cr-ribbon path{stroke:#FF9900}
+        .wj-cr-expanded .wj-cr-ribbon{height:22%}
+
+        /* — Medal circle (at 70% height, moves up on expand) — */
+        .wj-cr-medal{
+          position:absolute;top:68%;left:50%;
+          transform:translate(-50%,-50%);
+          width:90px;z-index:2;
+          transition:all .65s cubic-bezier(.4,0,.2,1);
+        }
+        .wj-cr-medal svg{display:block;width:100%;height:auto}
+        .wj-cr-medal circle,.wj-cr-medal polygon{
+          fill:none;stroke:#7A5230;stroke-width:2;
+          stroke-linecap:round;stroke-linejoin:round;
+          transition:stroke .3s ease;
+        }
+        .wj-cr-card:hover .wj-cr-medal circle,
+        .wj-cr-card:hover .wj-cr-medal polygon{stroke:#FF9900}
+        .wj-cr-card:hover .wj-cr-medal{transform:translate(-50%,-50%) scale(1.05)}
+        .wj-cr-expanded .wj-cr-medal{top:33%;transform:translate(-50%,-50%) scale(0.75)}
+        .wj-cr-expanded .wj-cr-medal circle,
+        .wj-cr-expanded .wj-cr-medal polygon{stroke:#FF9900}
+
+        /* — Title text — */
+        .wj-cr-title{
+          position:absolute;top:calc(100% - 38px);left:50%;transform:translateX(-50%);
+          font-family:'Courier New',monospace;font-size:14px;font-weight:800;
+          text-transform:uppercase;letter-spacing:1.5px;white-space:nowrap;
+          color:transparent;-webkit-text-stroke:1.3px #fff;
+          z-index:3;
+          transition:all .65s cubic-bezier(.4,0,.2,1);
+        }
+        .wj-cr-expanded .wj-cr-title{top:18px;font-size:12px;letter-spacing:2px;-webkit-text-stroke-color:#5A3A1A}
+
+        /* — Description (expand only) — */
+        .wj-cr-desc{
+          position:absolute;bottom:16px;left:0;right:0;
+          padding:0 22px;
+          background:transparent;
+          z-index:4;opacity:0;transform:translateY(10px);
+          transition:opacity .4s ease 0s,transform .4s ease 0s;
+        }
+        .wj-cr-expanded .wj-cr-desc{opacity:1;transform:translateY(0);transition:opacity .4s ease .4s,transform .4s ease .4s}
+        .wj-cr-desc p{font-family:'Courier New',monospace;font-size:13px;color:#dbc2ad;line-height:1.6;text-align:center;margin:0}
+
       `}</style>
 
       <section id="why-join" className="relative py-24 px-container-padding bg-background border-b border-white/10 overflow-hidden">
@@ -197,8 +325,10 @@ export default function WhyJoinUs() {
             <div className="wj-scroll-track flex gap-4 items-start overflow-x-auto cursor-grab pb-1" style={{ scrollBehavior:'smooth', WebkitOverflowScrolling:'touch' }} ref={scrollRef} onMouseDown={onMouseDown}>
               {/* Card 1 — Special interactive workshop card */}
               <WorkshopCard />
-              {/* Cards 2–7 — Regular */}
-              {cards.slice(1).map(card => <RegularCard key={card.num} card={card} />)}
+              {/* Card 2 — Special interactive credits card */}
+              <CreditsCard />
+              {/* Cards 3–7 — Regular */}
+              {cards.slice(2).map(card => <RegularCard key={card.num} card={card} />)}
             </div>
           </div>
         </div>
