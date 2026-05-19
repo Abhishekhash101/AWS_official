@@ -98,8 +98,8 @@ export default function TheBuilders() {
         }
         .tb-label {
           font-family: 'Space Mono', monospace;
-          font-size: 11px;
-          letter-spacing: 3px;
+          font-size: 14px;
+          letter-spacing: 4px;
           text-transform: uppercase;
           color: #FF9900;
           font-weight: 600;
@@ -107,7 +107,7 @@ export default function TheBuilders() {
         }
         .tb-title {
           font-family: 'Space Mono', monospace;
-          font-size: 32px;
+          font-size: 48px;
           font-weight: 700;
           text-transform: uppercase;
           letter-spacing: 0.05em;
@@ -163,6 +163,7 @@ export default function TheBuilders() {
           height: 110px;
           border-radius: 50%;
           z-index: 10;
+          background-color: #0A0C10;
           box-shadow: 0 0 0 6px rgba(255,153,0,0.15), 0 0 0 12px rgba(255,153,0,0.07);
           overflow: hidden;
         }
@@ -171,6 +172,7 @@ export default function TheBuilders() {
           height: 100%;
           object-fit: cover;
           display: block;
+          transform: scale(0.85);
         }
 
         /* — Anchors & Avatars — */
