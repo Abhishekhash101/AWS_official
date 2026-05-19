@@ -150,7 +150,31 @@ function NetworkingCard() {
   );
 }
 
-/* ── Regular card (cards 5–7) ── */
+/* ── Special interactive Card 5 ── */
+function BuildCard() {
+  const [expanded, setExpanded] = useState(false);
+  return (
+    <div className="wj-bd-outer">
+      <div
+        className={`wj-bd-card${expanded ? ' wj-bd-expanded' : ''}`}
+        onClick={() => setExpanded(v => !v)}
+      >
+        <span className="wj-bd-number">05</span>
+        <div className="wj-bd-tools">
+          <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+            <path d="M29.532 25.76l-5.655-5.655 0.754-0.754-0.754-0.754-2.261 2.261-3.771-3.77 4.53-4.532c0.603 0.215 1.234 0.324 1.882 0.324 1.493 0 2.897-0.582 3.954-1.637 1.63-1.631 2.092-4.054 1.178-6.174l-0.311-0.722-2.43 2.43-1.956 0.027 0.026-1.866 2.477-2.477-0.72-0.312c-0.706-0.306-1.457-0.461-2.229-0.461-1.494 0-2.897 0.582-3.952 1.637-1.546 1.545-2.043 3.802-1.311 5.84l-4.529 4.529-6.409-6.408 0.754-0.754-4.145-4.146-2.264 2.261 4.147 4.147 0.753-0.754 6.409 6.408-4.529 4.529c-0.605-0.217-1.239-0.326-1.888-0.326-1.493 0-2.897 0.582-3.953 1.637-1.633 1.632-2.095 4.059-1.176 6.181l0.312 0.72 2.477-2.477 1.865-0.025-0.027 1.956-2.43 2.43 0.722 0.311c0.704 0.303 1.452 0.458 2.221 0.458 1.494 0 2.897-0.581 3.952-1.636 1.544-1.544 2.041-3.799 1.314-5.833l4.532-4.532 3.771 3.769-2.263 2.263 0.754 0.754 0.754-0.754 5.654 5.654c0.503 0.504 1.174 0.781 1.885 0.781s1.381-0.277 1.885-0.781c1.039-1.039 1.039-2.73-0-3.769zM3.899 4.648l0.754-0.753 2.638 2.638-0.754 0.754-2.639-2.639zM11.448 22.456c0.739 1.716 0.364 3.679-0.955 4.999-0.854 0.854-1.989 1.324-3.198 1.324-0.347 0-0.689-0.039-1.021-0.116l1.569-1.569 0.047-3.485-3.394 0.046-1.619 1.619c-0.356-1.51 0.081-3.103 1.208-4.229 0.854-0.854 1.99-1.325 3.199-1.325 0.626 0 1.233 0.125 1.806 0.373l0.333 0.144 10.819-10.819-0.144-0.333c-0.744-1.719-0.37-3.682 0.952-5.004 0.854-0.854 1.99-1.325 3.198-1.325 0.35 0 0.695 0.040 1.030 0.117l-1.618 1.618-0.047 3.394 3.485-0.047 1.57-1.57c0.352 1.507-0.086 3.097-1.209 4.221-0.855 0.854-1.991 1.325-3.2 1.325-0.624 0-1.23-0.125-1.801-0.371l-0.332-0.143-10.821 10.823 0.143 0.332zM28.779 28.775c-0.302 0.302-0.704 0.469-1.131 0.469s-0.829-0.167-1.131-0.469l-5.654-5.654 2.262-2.262 5.655 5.655c0.624 0.624 0.624 1.638 0.001 2.261z" />
+          </svg>
+        </div>
+        <span className="wj-bd-title">Build & Deploy</span>
+        <div className="wj-bd-desc">
+          <p>Work on actual cloud projects. Ship real things. Add AWS-powered work to your resume.</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── Regular card (cards 6–7) ── */
 function RegularCard({ card }) {
   return (
     <div
@@ -499,6 +523,68 @@ export default function WhyJoinUs() {
         .wj-nw-expanded .wj-nw-desc{opacity:1;transform:translateY(0);transition:opacity .4s ease .4s,transform .4s ease .4s}
         .wj-nw-desc p{font-family:'Courier New',monospace;font-size:13px;color:#dbc2ad;line-height:1.6;text-align:center;margin:0}
 
+        /* ══════════════════════════════════════
+           Build Card 5 — Interactive
+           ══════════════════════════════════════ */
+        .wj-bd-outer{flex-shrink:0}
+        .wj-bd-card{
+          position:relative;width:280px;min-width:280px;height:340px;
+          background:transparent;
+          border:1.5px solid #C8A882;border-radius:14px;
+          overflow:hidden;cursor:pointer;flex-shrink:0;
+          transition:all .65s cubic-bezier(.4,0,.2,1);
+        }
+
+        /* — 05 label — */
+        .wj-bd-number{
+          position:absolute;top:18px;left:20px;
+          font-family:'Courier New',monospace;font-size:40px;font-weight:900;
+          color:transparent;-webkit-text-stroke:2.5px #fff;
+          z-index:5;
+          transition:all .65s cubic-bezier(.4,0,.2,1);
+        }
+        .wj-bd-card:hover .wj-bd-number{-webkit-text-stroke-color:#FF9900}
+        .wj-bd-expanded .wj-bd-number{opacity:0;pointer-events:none}
+
+        /* — Tools SVG — */
+        .wj-bd-tools{
+          position:absolute;top:50%;left:50%;
+          transform:translate(-50%, -50%);
+          width:160px;height:160px;z-index:2;
+          transition:all .65s cubic-bezier(.4,0,.2,1);
+        }
+        .wj-bd-tools svg{display:block;width:100%;height:100%}
+        .wj-bd-tools path{
+          fill:#7A5230;
+          transition:fill .3s ease;
+        }
+        .wj-bd-card:hover .wj-bd-tools path{fill:#FF9900}
+        .wj-bd-card:hover .wj-bd-tools{transform:translate(-50%, -50%) scale(1.05)}
+        .wj-bd-expanded .wj-bd-tools{top:36%;transform:translate(-50%, -50%) scale(0.75)}
+        .wj-bd-expanded .wj-bd-tools path{fill:#FF9900}
+
+        /* — Title text — */
+        .wj-bd-title{
+          position:absolute;top:calc(100% - 38px);left:50%;transform:translateX(-50%);
+          font-family:'Courier New',monospace;font-size:14px;font-weight:800;
+          text-transform:uppercase;letter-spacing:1.5px;white-space:nowrap;
+          color:transparent;-webkit-text-stroke:1.3px #fff;
+          z-index:3;
+          transition:all .65s cubic-bezier(.4,0,.2,1);
+        }
+        .wj-bd-expanded .wj-bd-title{top:18px;font-size:12px;letter-spacing:2px;-webkit-text-stroke-color:#5A3A1A}
+
+        /* — Description (expand only) — */
+        .wj-bd-desc{
+          position:absolute;bottom:16px;left:0;right:0;
+          padding:0 22px;
+          background:transparent;
+          z-index:4;opacity:0;transform:translateY(10px);
+          transition:opacity .4s ease 0s,transform .4s ease 0s;
+        }
+        .wj-bd-expanded .wj-bd-desc{opacity:1;transform:translateY(0);transition:opacity .4s ease .4s,transform .4s ease .4s}
+        .wj-bd-desc p{font-family:'Courier New',monospace;font-size:13px;color:#dbc2ad;line-height:1.6;text-align:center;margin:0}
+
       `}</style>
 
       <section id="why-join" className="relative py-24 px-container-padding bg-background border-b border-white/10 overflow-hidden">
@@ -532,8 +618,10 @@ export default function WhyJoinUs() {
               <SpeakerCard />
               {/* Card 4 — Special interactive networking card */}
               <NetworkingCard />
-              {/* Cards 5–7 — Regular */}
-              {cards.slice(4).map(card => <RegularCard key={card.num} card={card} />)}
+              {/* Card 5 — Special interactive build card */}
+              <BuildCard />
+              {/* Cards 6–7 — Regular */}
+              {cards.slice(5).map(card => <RegularCard key={card.num} card={card} />)}
             </div>
           </div>
         </div>
