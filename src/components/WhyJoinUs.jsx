@@ -11,13 +11,12 @@ const cards = [
 ];
 
 /* ── Special interactive Card 1 ── */
-function WorkshopCard() {
-  const [expanded, setExpanded] = useState(false);
+function WorkshopCard({ expanded, onToggle }) {
   return (
     <div className="wj-ws-outer">
       <div
         className={`wj-ws-card${expanded ? ' wj-ws-expanded' : ''}`}
-        onClick={() => setExpanded(v => !v)}
+        onClick={onToggle}
       >
         <span className="wj-ws-number">01</span>
         <div className="wj-ws-cloud">
@@ -35,13 +34,12 @@ function WorkshopCard() {
 }
 
 /* ── Special interactive Card 2 ── */
-function CreditsCard() {
-  const [expanded, setExpanded] = useState(false);
+function CreditsCard({ expanded, onToggle }) {
   return (
     <div className="wj-cr-outer">
       <div
         className={`wj-cr-card${expanded ? ' wj-cr-expanded' : ''}`}
-        onClick={() => setExpanded(v => !v)}
+        onClick={onToggle}
       >
         {/* Left Ribbon — from exact top-left corner to medal top */}
         <div className="wj-cr-ribbon wj-cr-ribbon-left">
@@ -79,13 +77,12 @@ function CreditsCard() {
 }
 
 /* ── Special interactive Card 3 ── */
-function SpeakerCard() {
-  const [expanded, setExpanded] = useState(false);
+function SpeakerCard({ expanded, onToggle }) {
   return (
     <div className="wj-sp-outer">
       <div
         className={`wj-sp-card${expanded ? ' wj-sp-expanded' : ''}`}
-        onClick={() => setExpanded(v => !v)}
+        onClick={onToggle}
       >
         <span className="wj-sp-number">03</span>
         <div className="wj-sp-mic">
@@ -115,13 +112,12 @@ function SpeakerCard() {
 }
 
 /* ── Special interactive Card 4 ── */
-function NetworkingCard() {
-  const [expanded, setExpanded] = useState(false);
+function NetworkingCard({ expanded, onToggle }) {
   return (
     <div className="wj-nw-outer">
       <div
         className={`wj-nw-card${expanded ? ' wj-nw-expanded' : ''}`}
-        onClick={() => setExpanded(v => !v)}
+        onClick={onToggle}
       >
         <span className="wj-nw-number">04</span>
         <div className="wj-nw-handshake">
@@ -151,13 +147,12 @@ function NetworkingCard() {
 }
 
 /* ── Special interactive Card 5 ── */
-function BuildCard() {
-  const [expanded, setExpanded] = useState(false);
+function BuildCard({ expanded, onToggle }) {
   return (
     <div className="wj-bd-outer">
       <div
         className={`wj-bd-card${expanded ? ' wj-bd-expanded' : ''}`}
-        onClick={() => setExpanded(v => !v)}
+        onClick={onToggle}
       >
         <span className="wj-bd-number">05</span>
         <div className="wj-bd-tools">
@@ -175,13 +170,12 @@ function BuildCard() {
 }
 
 /* ── Special interactive Card 6 ── */
-function CertificationCard() {
-  const [expanded, setExpanded] = useState(false);
+function CertificationCard({ expanded, onToggle }) {
   return (
     <div className="wj-ct-outer">
       <div
         className={`wj-ct-card${expanded ? ' wj-ct-expanded' : ''}`}
-        onClick={() => setExpanded(v => !v)}
+        onClick={onToggle}
       >
         <span className="wj-ct-number">06</span>
         <div className="wj-ct-cert">
@@ -204,13 +198,12 @@ function CertificationCard() {
 }
 
 /* ── Special interactive Card 7 ── */
-function CommunityCard() {
-  const [expanded, setExpanded] = useState(false);
+function CommunityCard({ expanded, onToggle }) {
   return (
     <div className="wj-cd-outer">
       <div
         className={`wj-cd-card${expanded ? ' wj-cd-expanded' : ''}`}
-        onClick={() => setExpanded(v => !v)}
+        onClick={onToggle}
       >
         <span className="wj-cd-number">07</span>
         <div className="wj-cd-globe">
@@ -228,6 +221,7 @@ function CommunityCard() {
 }
 
 export default function WhyJoinUs() {
+  const [activeCard, setActiveCard] = useState(null);
   const scrollRef = useRef(null);
   const isDragging = useRef(false);
   const startX = useRef(0);
@@ -772,19 +766,19 @@ export default function WhyJoinUs() {
           <div className="wj-scroll-wrapper">
             <div className="wj-scroll-track flex gap-4 items-start overflow-x-auto cursor-grab pb-1" style={{ scrollBehavior:'smooth', WebkitOverflowScrolling:'touch' }} ref={scrollRef} onMouseDown={onMouseDown}>
               {/* Card 1 — Special interactive workshop card */}
-              <WorkshopCard />
+              <WorkshopCard expanded={activeCard === 1} onToggle={() => setActiveCard(activeCard === 1 ? null : 1)} />
               {/* Card 2 — Special interactive credits card */}
-              <CreditsCard />
+              <CreditsCard expanded={activeCard === 2} onToggle={() => setActiveCard(activeCard === 2 ? null : 2)} />
               {/* Card 3 — Special interactive speaker card */}
-              <SpeakerCard />
+              <SpeakerCard expanded={activeCard === 3} onToggle={() => setActiveCard(activeCard === 3 ? null : 3)} />
               {/* Card 4 — Special interactive networking card */}
-              <NetworkingCard />
+              <NetworkingCard expanded={activeCard === 4} onToggle={() => setActiveCard(activeCard === 4 ? null : 4)} />
               {/* Card 5 — Special interactive build card */}
-              <BuildCard />
+              <BuildCard expanded={activeCard === 5} onToggle={() => setActiveCard(activeCard === 5 ? null : 5)} />
               {/* Card 6 — Special interactive certification card */}
-              <CertificationCard />
+              <CertificationCard expanded={activeCard === 6} onToggle={() => setActiveCard(activeCard === 6 ? null : 6)} />
               {/* Card 7 — Special interactive community card */}
-              <CommunityCard />
+              <CommunityCard expanded={activeCard === 7} onToggle={() => setActiveCard(activeCard === 7 ? null : 7)} />
             </div>
           </div>
         </div>
