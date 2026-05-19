@@ -1,4 +1,4 @@
-const MARQUEE_TEXT = 'AWS ✦ CLOUD COMPUTING ✦ STUDENT BUILDERS ✦ VIT VELLORE ✦ LEARN & DEPLOY ✦ ';
+const MARQUEE_TEXT = 'AWS STUDENT BUILDER GROUP ✦ VIT VELLORE ✦ BUILD , LEARN & DEPLOY ✦ ';
 
 export default function Marquee() {
   return (
