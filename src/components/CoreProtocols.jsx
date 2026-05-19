@@ -31,7 +31,7 @@ export default function CoreProtocols() {
       id="features"
     >
       <div className="w-full">
-        <SectionHeading icon="developer_board" title="Core Protocols" />
+        <SectionHeading icon="developer_board" title="Events" />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {protocols.map((protocol) => (
