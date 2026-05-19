@@ -78,7 +78,43 @@ function CreditsCard() {
   );
 }
 
-/* ── Regular card (cards 2–7) ── */
+/* ── Special interactive Card 3 ── */
+function SpeakerCard() {
+  const [expanded, setExpanded] = useState(false);
+  return (
+    <div className="wj-sp-outer">
+      <div
+        className={`wj-sp-card${expanded ? ' wj-sp-expanded' : ''}`}
+        onClick={() => setExpanded(v => !v)}
+      >
+        <span className="wj-sp-number">03</span>
+        <div className="wj-sp-mic">
+          <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+            <g transform="translate(1.5, 4) rotate(45 28.5 26)">
+              {/* Handle */}
+              <rect x="24" y="22" width="9" height="18" rx="4.5" />
+              {/* Connector */}
+              <rect x="22" y="18" width="13" height="5" rx="2" />
+              {/* Mic Head */}
+              <ellipse cx="28.5" cy="12" rx="9" ry="10" />
+              {/* Mesh */}
+              <line x1="22" y1="8" x2="35" y2="8" />
+              <line x1="21" y1="11" x2="36" y2="11" />
+              <line x1="21" y1="14" x2="36" y2="14" />
+              <line x1="22" y1="17" x2="35" y2="17" />
+            </g>
+          </svg>
+        </div>
+        <span className="wj-sp-title">Speaker Sessions</span>
+        <div className="wj-sp-desc">
+          <p>Direct access to industry veterans, AWS community builders, and certified cloud architects.</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── Regular card (cards 4–7) ── */
 function RegularCard({ card }) {
   return (
     <div
@@ -298,6 +334,73 @@ export default function WhyJoinUs() {
         .wj-cr-expanded .wj-cr-desc{opacity:1;transform:translateY(0);transition:opacity .4s ease .4s,transform .4s ease .4s}
         .wj-cr-desc p{font-family:'Courier New',monospace;font-size:13px;color:#dbc2ad;line-height:1.6;text-align:center;margin:0}
 
+        /* ══════════════════════════════════════
+           Speaker Card 3 — Interactive
+           ══════════════════════════════════════ */
+        .wj-sp-outer{flex-shrink:0}
+        .wj-sp-card{
+          position:relative;width:280px;min-width:280px;height:340px;
+          background:transparent;
+          border:1.5px solid #C8A882;border-radius:14px;
+          overflow:hidden;cursor:pointer;flex-shrink:0;
+          transition:all .65s cubic-bezier(.4,0,.2,1);
+        }
+
+        /* — 03 label — */
+        .wj-sp-number{
+          position:absolute;top:18px;left:20px;
+          font-family:'Courier New',monospace;font-size:40px;font-weight:900;
+          color:transparent;-webkit-text-stroke:2.5px #fff;
+          z-index:5;
+          transition:all .65s cubic-bezier(.4,0,.2,1);
+        }
+        .wj-sp-card:hover .wj-sp-number{-webkit-text-stroke-color:#FF9900}
+        .wj-sp-expanded .wj-sp-number{opacity:0;pointer-events:none}
+
+        /* — Mic SVG — */
+        .wj-sp-mic{
+          position:absolute;top:50%;left:50%;
+          transform:translate(-54%, -50%);
+          width:220px;height:220px;z-index:2;
+          transition:all .65s cubic-bezier(.4,0,.2,1);
+        }
+        .wj-sp-mic svg{display:block;width:100%;height:100%}
+        .wj-sp-mic rect, .wj-sp-mic ellipse, .wj-sp-mic line{
+          fill:none;stroke:#7A5230;stroke-width:1.5;
+          stroke-linecap:round;stroke-linejoin:round;
+          transition:stroke .3s ease;
+        }
+        .wj-sp-card:hover .wj-sp-mic rect,
+        .wj-sp-card:hover .wj-sp-mic ellipse,
+        .wj-sp-card:hover .wj-sp-mic line{stroke:#FF9900}
+        .wj-sp-card:hover .wj-sp-mic{transform:translate(-54%, -50%) scale(1.03)}
+        .wj-sp-expanded .wj-sp-mic{top:38%;transform:translate(-54%, -50%) scale(0.85)}
+        .wj-sp-expanded .wj-sp-mic rect,
+        .wj-sp-expanded .wj-sp-mic ellipse,
+        .wj-sp-expanded .wj-sp-mic line{stroke:#FF9900}
+
+        /* — Title text — */
+        .wj-sp-title{
+          position:absolute;top:calc(100% - 38px);left:50%;transform:translateX(-50%);
+          font-family:'Courier New',monospace;font-size:14px;font-weight:800;
+          text-transform:uppercase;letter-spacing:1.5px;white-space:nowrap;
+          color:transparent;-webkit-text-stroke:1.3px #fff;
+          z-index:3;
+          transition:all .65s cubic-bezier(.4,0,.2,1);
+        }
+        .wj-sp-expanded .wj-sp-title{top:18px;font-size:12px;letter-spacing:2px;-webkit-text-stroke-color:#5A3A1A}
+
+        /* — Description (expand only) — */
+        .wj-sp-desc{
+          position:absolute;bottom:16px;left:0;right:0;
+          padding:0 22px;
+          background:transparent;
+          z-index:4;opacity:0;transform:translateY(10px);
+          transition:opacity .4s ease 0s,transform .4s ease 0s;
+        }
+        .wj-sp-expanded .wj-sp-desc{opacity:1;transform:translateY(0);transition:opacity .4s ease .4s,transform .4s ease .4s}
+        .wj-sp-desc p{font-family:'Courier New',monospace;font-size:13px;color:#dbc2ad;line-height:1.6;text-align:center;margin:0}
+
       `}</style>
 
       <section id="why-join" className="relative py-24 px-container-padding bg-background border-b border-white/10 overflow-hidden">
@@ -327,8 +430,10 @@ export default function WhyJoinUs() {
               <WorkshopCard />
               {/* Card 2 — Special interactive credits card */}
               <CreditsCard />
-              {/* Cards 3–7 — Regular */}
-              {cards.slice(2).map(card => <RegularCard key={card.num} card={card} />)}
+              {/* Card 3 — Special interactive speaker card */}
+              <SpeakerCard />
+              {/* Cards 4–7 — Regular */}
+              {cards.slice(3).map(card => <RegularCard key={card.num} card={card} />)}
             </div>
           </div>
         </div>
