@@ -41,32 +41,19 @@ function CreditsCard({ expanded, onToggle }) {
         className={`wj-cr-card${expanded ? ' wj-cr-expanded' : ''}`}
         onClick={onToggle}
       >
-        {/* Left Ribbon — from exact top-left corner to medal top */}
-        <div className="wj-cr-ribbon wj-cr-ribbon-left">
-          <svg viewBox="0 0 140 240" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0,0 L124,220 L140,240 L14,14 Z" />
-            <path d="M0,0 L124,220 L112,212 L0,7 Z" />
-          </svg>
-        </div>
-
-        {/* Right Ribbon — from exact top-right corner to medal top */}
-        <div className="wj-cr-ribbon wj-cr-ribbon-right">
-          <svg viewBox="0 0 140 240" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M140,0 L16,220 L0,240 L126,14 Z" />
-            <path d="M140,0 L16,220 L28,212 L140,7 Z" />
-          </svg>
-        </div>
-
-        {/* Medal circle with star */}
-        <div className="wj-cr-medal">
-          <svg viewBox="0 0 70 70" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="35" cy="35" r="28" />
-            <circle cx="35" cy="35" r="24" />
-            <polygon points="35,12 38.5,25 52,25 41,33 45,46 35,38 25,46 29,33 18,25 31.5,25" />
-          </svg>
-        </div>
-
         <span className="wj-cr-number">02</span>
+        <div className="wj-cr-award">
+          <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+            <g data-name="08-award" id="_08-award">
+              <polygon points="23 11 16 15 9 11 9 1 23 1 23 11"/>
+              <circle cx="16" cy="23" r="8"/>
+              <path d="M16,19a4,4,0,0,0-4,4"/>
+              <path d="M16,27a4,4,0,0,0,4-4"/>
+              <line x1="13" x2="13" y1="1" y2="13"/>
+              <line x1="19" x2="19" y1="1" y2="13"/>
+            </g>
+          </svg>
+        </div>
         <span className="wj-cr-title">AWS Credits & Vouchers</span>
         <div className="wj-cr-desc">
           <p>$25 AWS credits for core team. Certification exam vouchers to get you officially certified.</p>
@@ -294,7 +281,7 @@ export default function WhyJoinUs() {
         /* — 01 label — */
         .wj-ws-number{
           position:absolute;top:18px;left:20px;
-          font-family:'Courier New',monospace;font-size:40px;font-weight:900;
+          font-family:'Inter',sans-serif;font-size:40px;font-weight:900;
           color:transparent;-webkit-text-stroke:2.5px #fff;
           z-index:3;
           transition:all .65s cubic-bezier(.4,0,.2,1);
@@ -354,7 +341,7 @@ export default function WhyJoinUs() {
         /* — 02 label (z-index 5, always in front of ribbons) — */
         .wj-cr-number{
           position:absolute;top:18px;left:20px;
-          font-family:'Courier New',monospace;font-size:40px;font-weight:900;
+          font-family:'Inter',sans-serif;font-size:40px;font-weight:900;
           color:transparent;-webkit-text-stroke:2.5px #fff;
           z-index:5;
           transition:all .65s cubic-bezier(.4,0,.2,1);
@@ -362,44 +349,29 @@ export default function WhyJoinUs() {
         .wj-cr-card:hover .wj-cr-number{-webkit-text-stroke-color:#FF9900}
         .wj-cr-expanded .wj-cr-number{opacity:0;pointer-events:none}
 
-        /* — Ribbons (span from top corners to medal, z-index 1) — */
-        .wj-cr-ribbon{
-          position:absolute;top:0;
-          width:50%;height:57%;
-          z-index:1;
-          transition:all .65s cubic-bezier(.4,0,.2,1);
-        }
-        .wj-cr-ribbon svg{display:block;width:100%;height:100%}
-        .wj-cr-ribbon path{
-          fill:none;stroke:#7A5230;stroke-width:3;
-          stroke-linecap:round;stroke-linejoin:round;
-          transition:stroke .3s ease;
-        }
-        .wj-cr-ribbon-left{left:0}
-        .wj-cr-ribbon-right{right:0}
-        .wj-cr-card:hover .wj-cr-ribbon path{stroke:#FF9900}
-        .wj-cr-expanded .wj-cr-ribbon path{stroke:#FF9900}
-        .wj-cr-expanded .wj-cr-ribbon{height:22%}
-
-        /* — Medal circle (at 70% height, moves up on expand) — */
-        .wj-cr-medal{
-          position:absolute;top:68%;left:50%;
+        /* — Award icon (at center, moves up on expand) — */
+        .wj-cr-award{
+          position:absolute;top:50%;left:50%;
           transform:translate(-50%,-50%);
-          width:90px;z-index:2;
+          width:117px;z-index:2;
           transition:all .65s cubic-bezier(.4,0,.2,1);
         }
-        .wj-cr-medal svg{display:block;width:100%;height:auto}
-        .wj-cr-medal circle,.wj-cr-medal polygon{
-          fill:none;stroke:#7A5230;stroke-width:2;
+        .wj-cr-award svg{display:block;width:100%;height:auto}
+        .wj-cr-award path, .wj-cr-award polygon, .wj-cr-award circle, .wj-cr-award line{
+          fill:none;stroke:#7A5230;stroke-width:1.5;
           stroke-linecap:round;stroke-linejoin:round;
           transition:stroke .3s ease;
         }
-        .wj-cr-card:hover .wj-cr-medal circle,
-        .wj-cr-card:hover .wj-cr-medal polygon{stroke:#FF9900}
-        .wj-cr-card:hover .wj-cr-medal{transform:translate(-50%,-50%) scale(1.05)}
-        .wj-cr-expanded .wj-cr-medal{top:33%;transform:translate(-50%,-50%) scale(0.75)}
-        .wj-cr-expanded .wj-cr-medal circle,
-        .wj-cr-expanded .wj-cr-medal polygon{stroke:#FF9900}
+        .wj-cr-card:hover .wj-cr-award path,
+        .wj-cr-card:hover .wj-cr-award polygon,
+        .wj-cr-card:hover .wj-cr-award circle,
+        .wj-cr-card:hover .wj-cr-award line{stroke:#FF9900}
+        .wj-cr-card:hover .wj-cr-award{transform:translate(-50%,-50%) scale(1.05)}
+        .wj-cr-expanded .wj-cr-award{top:46%;transform:translate(-50%,-50%) scale(0.75)}
+        .wj-cr-expanded .wj-cr-award path,
+        .wj-cr-expanded .wj-cr-award polygon,
+        .wj-cr-expanded .wj-cr-award circle,
+        .wj-cr-expanded .wj-cr-award line{stroke:#FF9900}
 
         /* — Title text — */
         .wj-cr-title{
@@ -438,7 +410,7 @@ export default function WhyJoinUs() {
         /* — 03 label — */
         .wj-sp-number{
           position:absolute;top:18px;left:20px;
-          font-family:'Courier New',monospace;font-size:40px;font-weight:900;
+          font-family:'Inter',sans-serif;font-size:40px;font-weight:900;
           color:transparent;-webkit-text-stroke:2.5px #fff;
           z-index:5;
           transition:all .65s cubic-bezier(.4,0,.2,1);
@@ -505,7 +477,7 @@ export default function WhyJoinUs() {
         /* — 04 label — */
         .wj-nw-number{
           position:absolute;top:18px;left:20px;
-          font-family:'Courier New',monospace;font-size:40px;font-weight:900;
+          font-family:'Inter',sans-serif;font-size:40px;font-weight:900;
           color:transparent;-webkit-text-stroke:2.5px #fff;
           z-index:5;
           transition:all .65s cubic-bezier(.4,0,.2,1);
@@ -567,7 +539,7 @@ export default function WhyJoinUs() {
         /* — 05 label — */
         .wj-bd-number{
           position:absolute;top:18px;left:20px;
-          font-family:'Courier New',monospace;font-size:40px;font-weight:900;
+          font-family:'Inter',sans-serif;font-size:40px;font-weight:900;
           color:transparent;-webkit-text-stroke:2.5px #fff;
           z-index:5;
           transition:all .65s cubic-bezier(.4,0,.2,1);
@@ -629,7 +601,7 @@ export default function WhyJoinUs() {
         /* — 06 label — */
         .wj-ct-number{
           position:absolute;top:18px;left:20px;
-          font-family:'Courier New',monospace;font-size:40px;font-weight:900;
+          font-family:'Inter',sans-serif;font-size:40px;font-weight:900;
           color:transparent;-webkit-text-stroke:2.5px #fff;
           z-index:5;
           transition:all .65s cubic-bezier(.4,0,.2,1);
@@ -691,7 +663,7 @@ export default function WhyJoinUs() {
         /* — 07 label — */
         .wj-cd-number{
           position:absolute;top:18px;left:20px;
-          font-family:'Courier New',monospace;font-size:40px;font-weight:900;
+          font-family:'Inter',sans-serif;font-size:40px;font-weight:900;
           color:transparent;-webkit-text-stroke:2.5px #fff;
           z-index:5;
           transition:all .65s cubic-bezier(.4,0,.2,1);
