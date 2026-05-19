@@ -3,17 +3,17 @@ import awsIcon from '../assets/aws_icon.jpeg';
 
 const BUILDERS = [
   // Outer Ring (5 members) — indices 0-4
-  { id: 1, initials: 'KM', fullName: 'Kavya Menon', role: 'PRESIDENT', desc: 'Leads the club vision and global AWS strategy.', color: '#FF9900', insta: '#', linkedin: '#' },
-  { id: 2, initials: 'AJ', fullName: 'Aryan Jain', role: 'VICE PRESIDENT', desc: 'Orchestrates operations and community engagement.', color: '#008296', insta: '#', linkedin: '#' },
-  { id: 3, initials: 'AS', fullName: 'Aditi Sharma', role: 'TECHNICAL LEAD', desc: 'Architects hands-on cloud workshops and labs.', color: '#E1523D', insta: '#', linkedin: '#' },
-  { id: 4, initials: 'PN', fullName: 'Pranav Nair', role: 'EVENTS HEAD', desc: 'Manages large scale bootcamps and hackathons.', color: '#8A2BE2', insta: '#', linkedin: '#' },
-  { id: 5, initials: 'RG', fullName: 'Rahul Gupta', role: 'MARKETING LEAD', desc: 'Drives social media and campus outreach.', color: '#0070BA', insta: '#', linkedin: '#' },
+  { id: 1, initials: 'AS', fullName: 'Ankit Subedi', role: 'CHAIRPERSON', desc: 'Leads the club vision and drives the AWS community forward.', color: '#FF9900', insta: '#', linkedin: '#' },
+  { id: 2, initials: 'AS', fullName: 'Aesha Singh', role: 'VICE CHAIRPERSON', desc: 'Orchestrates operations and strategic community growth.', color: '#008296', insta: '#', linkedin: '#' },
+  { id: 3, initials: 'VJ', fullName: 'Vidhi Prashant Jain', role: 'SECRETARY', desc: 'Manages documentation, communication, and club coordination.', color: '#E1523D', insta: '#', linkedin: '#' },
+  { id: 4, initials: 'TR', fullName: 'Tanishi Raj', role: 'CO-SECRETARY', desc: 'Supports administrative operations and event logistics.', color: '#8A2BE2', insta: '#', linkedin: '#' },
+  { id: 5, initials: 'PG', fullName: 'Pihu Gupta', role: 'DESIGN HEAD', desc: 'Creates the visual identity and design language of the club.', color: '#C2185B', insta: '#', linkedin: '#' },
   // Inner Ring (5 members) — indices 5-9
-  { id: 6, initials: 'DR', fullName: 'Diya Reddy', role: 'DEVREL', desc: 'Builds developer relations and content.', color: '#D13212', insta: '#', linkedin: '#' },
-  { id: 7, initials: 'MP', fullName: 'Mohit Patel', role: 'PROJECT LEAD', desc: 'Mentors students on AWS capstone projects.', color: '#6A0DAD', insta: '#', linkedin: '#' },
-  { id: 8, initials: 'VS', fullName: 'Varun Singh', role: 'CERTIFICATION HEAD', desc: 'Guides students through AWS cert paths.', color: '#0052CC', insta: '#', linkedin: '#' },
-  { id: 9, initials: 'NV', fullName: 'Neha Verma', role: 'DESIGN LEAD', desc: 'Creates the visual identity of the club.', color: '#C2185B', insta: '#', linkedin: '#' },
-  { id: 10, initials: 'SI', fullName: 'Samir Iyer', role: 'COMMUNITY MANAGER', desc: 'Fosters an inclusive club environment.', color: '#2E7D32', insta: '#', linkedin: '#' },
+  { id: 6, initials: 'AS', fullName: 'Arshi Saxena', role: 'EVENTS HEAD', desc: 'Plans and executes large-scale bootcamps and hackathons.', color: '#D13212', insta: '#', linkedin: '#' },
+  { id: 7, initials: 'AN', fullName: 'Ayush Naugariya', role: 'FINANCE HEAD', desc: 'Manages budgets, sponsorships, and financial planning.', color: '#6A0DAD', insta: '#', linkedin: '#' },
+  { id: 8, initials: 'JB', fullName: 'Jaanya Bagdi', role: 'OUTREACH HEAD', desc: 'Builds partnerships and expands the club network.', color: '#0052CC', insta: '#', linkedin: '#' },
+  { id: 9, initials: 'VK', fullName: 'Vivek Kumar', role: 'PUBLICITY HEAD', desc: 'Drives social media presence and campus outreach.', color: '#0070BA', insta: '#', linkedin: '#' },
+  { id: 10, initials: 'AB', fullName: 'Abhishek Kumar', role: 'TECHNICAL HEAD', desc: 'Architects hands-on cloud workshops and technical infrastructure.', color: '#2E7D32', insta: '#', linkedin: '#' },
 ];
 
 const OUTER_R = 250;
@@ -79,7 +79,8 @@ export default function TheBuilders() {
 
   return (
     <section className="tb-section">
-      <style dangerouslySetInnerHTML={{ __html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         /* ═══════════════════════════════════════════
            The Builders — Orbital Section
            ═══════════════════════════════════════════ */
@@ -149,7 +150,7 @@ export default function TheBuilders() {
         .tb-ring-inner {
           width: 340px;
           height: 340px;
-          border: 1.5px dashed rgba(255,153,0,0.15);
+          border: 1.5px dashed rgba(255,153,0,0.35);
         }
 
         /* — Center Logo — */
