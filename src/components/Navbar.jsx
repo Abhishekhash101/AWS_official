@@ -18,7 +18,7 @@ export default function Navbar() {
 
   const linkRefs = useRef([]);
   const navRef = useRef(null);
-  const fullText = 'AWS STUDENT BUILDER @ VIT';
+  const fullText = 'AWS STUDENT BUILDER GROUP @ VIT';
 
   // Update indicator position whenever activeSection changes
   useEffect(() => {

@@ -175,7 +175,7 @@ export default function AwsStudentBuilderLoader() {
       {/* 2 & 3. Animation Container holding Text and Pac-Man */}
       <div className="animation-container">
         <div className="text-container">
-          AWS STUDENT BUILDER
+          AWS STUDENT BUILDER GROUP
         </div>
         
         <div className="pacman-wrapper">

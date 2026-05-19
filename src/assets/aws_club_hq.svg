@@ -132,6 +132,7 @@
     <rect x="22" y="0" width="68" height="16" fill="#F59E0B" style="fill:rgb(245, 158, 11);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
     <!-- top notches -->
     <rect x="36" y="0" width="14" height="7" fill="#1a1f2e" style="fill:rgb(26, 31, 46);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+    <rect x="60" y="0" width="14" height="7" fill="#1a1f2e" style="fill:rgb(26, 31, 46);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
     <!-- left bar -->
     <rect x="0" y="22" width="16" height="68" fill="#F59E0B" style="fill:rgb(245, 158, 11);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
     <!-- left notches -->
@@ -155,7 +156,7 @@
 
   <!-- HQ label below chip -->
   <text x="340" y="495" text-anchor="middle" style="fill:rgb(245, 158, 11);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Courier New&quot;, monospace;font-size:22px;font-weight:700;text-anchor:middle;dominant-baseline:auto">HQ</text>
-  <text x="340" y="513" text-anchor="middle" style="fill:rgb(217, 119, 6);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Courier New&quot;, monospace;font-size:11px;font-weight:400;text-anchor:middle;dominant-baseline:auto">AWS STUDENT BUILDER</text>
+  <text x="340" y="513" text-anchor="middle" style="fill:rgb(217, 119, 6);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Courier New&quot;, monospace;font-size:11px;font-weight:400;text-anchor:middle;dominant-baseline:auto">AWS STUDENT BUILDER GROUP</text>
 
   <!-- Lower building server rack lines -->
   <line x1="185" y1="535" x2="495" y2="535" style="fill:none;stroke:rgb(217, 119, 6);color:rgb(255, 255, 255);stroke-width:0.8px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
@@ -234,7 +235,7 @@
   <rect x="496" y="690" width="88" height="12" style="fill:rgb(15, 20, 32);stroke:rgb(245, 158, 11);color:rgb(255, 255, 255);stroke-width:0.8px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
 
   <!-- Bottom tagline -->
-  <text x="340" y="785" text-anchor="middle" opacity="0.7" style="fill:rgb(245, 158, 11);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.7;font-family:&quot;Courier New&quot;, monospace;font-size:13px;font-weight:400;text-anchor:middle;dominant-baseline:auto">CLOUD · COMPUTE · COMMUNITY</text>
+
   <line x1="140" y1="770" x2="250" y2="770" stroke="#F59E0B" stroke-width="0.5" opacity="0.3" style="fill:rgb(0, 0, 0);stroke:rgb(245, 158, 11);color:rgb(255, 255, 255);stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.3;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
   <line x1="430" y1="770" x2="540" y2="770" stroke="#F59E0B" stroke-width="0.5" opacity="0.3" style="fill:rgb(0, 0, 0);stroke:rgb(245, 158, 11);color:rgb(255, 255, 255);stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.3;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
 </svg>

@@ -320,11 +320,11 @@ export default function WhyJoinUs() {
           position:absolute;top:calc(100% - 38px);left:50%;transform:translateX(-50%);
           font-family:'Courier New',monospace;font-size:14px;font-weight:800;
           text-transform:uppercase;letter-spacing:1.5px;white-space:nowrap;
-          color:transparent;-webkit-text-stroke:1.3px #fff;
+          color:#fff;
           z-index:3;
           transition:all .65s cubic-bezier(.4,0,.2,1);
         }
-        .wj-ws-expanded .wj-ws-title{top:18px;font-size:12px;letter-spacing:2px;-webkit-text-stroke-color:#5A3A1A}
+        .wj-ws-expanded .wj-ws-title{top:18px;font-size:12px;letter-spacing:2px;color:#5A3A1A}
 
         /* — Description (expand only) — */
         .wj-ws-desc{
@@ -389,11 +389,11 @@ export default function WhyJoinUs() {
           position:absolute;top:calc(100% - 38px);left:50%;transform:translateX(-50%);
           font-family:'Courier New',monospace;font-size:14px;font-weight:800;
           text-transform:uppercase;letter-spacing:1.5px;white-space:nowrap;
-          color:transparent;-webkit-text-stroke:1.3px #fff;
+          color:#fff;
           z-index:3;
           transition:all .65s cubic-bezier(.4,0,.2,1);
         }
-        .wj-cr-expanded .wj-cr-title{top:18px;font-size:12px;letter-spacing:2px;-webkit-text-stroke-color:#5A3A1A}
+        .wj-cr-expanded .wj-cr-title{top:18px;font-size:12px;letter-spacing:2px;color:#5A3A1A}
 
         /* — Description (expand only) — */
         .wj-cr-desc{
@@ -456,11 +456,11 @@ export default function WhyJoinUs() {
           position:absolute;top:calc(100% - 38px);left:50%;transform:translateX(-50%);
           font-family:'Courier New',monospace;font-size:14px;font-weight:800;
           text-transform:uppercase;letter-spacing:1.5px;white-space:nowrap;
-          color:transparent;-webkit-text-stroke:1.3px #fff;
+          color:#fff;
           z-index:3;
           transition:all .65s cubic-bezier(.4,0,.2,1);
         }
-        .wj-sp-expanded .wj-sp-title{top:18px;font-size:12px;letter-spacing:2px;-webkit-text-stroke-color:#5A3A1A}
+        .wj-sp-expanded .wj-sp-title{top:18px;font-size:12px;letter-spacing:2px;color:#5A3A1A}
 
         /* — Description (expand only) — */
         .wj-sp-desc{
@@ -518,11 +518,11 @@ export default function WhyJoinUs() {
           position:absolute;top:calc(100% - 38px);left:50%;transform:translateX(-50%);
           font-family:'Courier New',monospace;font-size:14px;font-weight:800;
           text-transform:uppercase;letter-spacing:1.5px;white-space:nowrap;
-          color:transparent;-webkit-text-stroke:1.3px #fff;
+          color:#fff;
           z-index:3;
           transition:all .65s cubic-bezier(.4,0,.2,1);
         }
-        .wj-nw-expanded .wj-nw-title{top:18px;font-size:12px;letter-spacing:2px;-webkit-text-stroke-color:#5A3A1A}
+        .wj-nw-expanded .wj-nw-title{top:18px;font-size:12px;letter-spacing:2px;color:#5A3A1A}
 
         /* — Description (expand only) — */
         .wj-nw-desc{
@@ -580,11 +580,11 @@ export default function WhyJoinUs() {
           position:absolute;top:calc(100% - 38px);left:50%;transform:translateX(-50%);
           font-family:'Courier New',monospace;font-size:14px;font-weight:800;
           text-transform:uppercase;letter-spacing:1.5px;white-space:nowrap;
-          color:transparent;-webkit-text-stroke:1.3px #fff;
+          color:#fff;
           z-index:3;
           transition:all .65s cubic-bezier(.4,0,.2,1);
         }
-        .wj-bd-expanded .wj-bd-title{top:18px;font-size:12px;letter-spacing:2px;-webkit-text-stroke-color:#5A3A1A}
+        .wj-bd-expanded .wj-bd-title{top:18px;font-size:12px;letter-spacing:2px;color:#5A3A1A}
 
         /* — Description (expand only) — */
         .wj-bd-desc{
@@ -642,11 +642,11 @@ export default function WhyJoinUs() {
           position:absolute;top:calc(100% - 38px);left:50%;transform:translateX(-50%);
           font-family:'Courier New',monospace;font-size:14px;font-weight:800;
           text-transform:uppercase;letter-spacing:1.5px;white-space:nowrap;
-          color:transparent;-webkit-text-stroke:1.3px #fff;
+          color:#fff;
           z-index:3;
           transition:all .65s cubic-bezier(.4,0,.2,1);
         }
-        .wj-ct-expanded .wj-ct-title{top:18px;font-size:12px;letter-spacing:2px;-webkit-text-stroke-color:#5A3A1A}
+        .wj-ct-expanded .wj-ct-title{top:18px;font-size:12px;letter-spacing:2px;color:#5A3A1A}
 
         /* — Description (expand only) — */
         .wj-ct-desc{
@@ -704,11 +704,11 @@ export default function WhyJoinUs() {
           position:absolute;top:calc(100% - 38px);left:50%;transform:translateX(-50%);
           font-family:'Courier New',monospace;font-size:14px;font-weight:800;
           text-transform:uppercase;letter-spacing:1.5px;white-space:nowrap;
-          color:transparent;-webkit-text-stroke:1.3px #fff;
+          color:#fff;
           z-index:3;
           transition:all .65s cubic-bezier(.4,0,.2,1);
         }
-        .wj-cd-expanded .wj-cd-title{top:18px;font-size:12px;letter-spacing:2px;-webkit-text-stroke-color:#5A3A1A}
+        .wj-cd-expanded .wj-cd-title{top:18px;font-size:12px;letter-spacing:2px;color:#5A3A1A}
 
         /* — Description (expand only) — */
         .wj-cd-desc{

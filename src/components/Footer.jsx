@@ -43,10 +43,10 @@ export default function Footer() {
         <div className="flex flex-col gap-3">
           <div className="font-headline-md text-headline-md text-white flex items-center gap-2 uppercase tracking-widest">
           <img src={awsIcon} alt="AWS Club Logo" className="w-7 h-7 rounded-full object-cover" />
-            AWS STUDENT BUILDER @ VIT
+            AWS STUDENT BUILDER GROUP @ VIT
           </div>
           <p className="font-label-sm text-[11px] text-on-surface-variant uppercase tracking-widest">
-            © 2026 AWS STUDENT BUILDER @ VIT VELLORE. ARCHITECTED FOR THE CLOUD.
+            © 2026 AWS STUDENT BUILDER GROUP @ VIT VELLORE. ARCHITECTED FOR THE CLOUD.
           </p>
         </div>
 

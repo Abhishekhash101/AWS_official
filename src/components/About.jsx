@@ -31,7 +31,7 @@ export default function About() {
         {/* Left Column — Text Content */}
         <div className="flex flex-col">
           <h2 className="font-headline-lg text-[40px] md:text-[56px] text-white mb-6 uppercase tracking-widest leading-tight">
-            AWS STUDENT BUILDER <br />at VIT VELLORE →{' '}
+            AWS STUDENT BUILDER GROUP <br />at VIT VELLORE →{' '}
             <br />
             {/* <span className="text-primary-container">
                 AWS Student Builder Group at VIT VELLORE
@@ -65,7 +65,7 @@ export default function About() {
           <img
             src={hqSvg}
             alt="AWS Club HQ"
-            className="w-full h-full object-contain opacity-80 group-hover:opacity-100 transition-opacity duration-700"
+            className="w-full h-full object-contain opacity-80 group-hover:opacity-100 transition-opacity duration-700 -translate-y-12 scale-[1.3]"
           />
         </div>
       </div>
