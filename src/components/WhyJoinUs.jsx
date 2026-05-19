@@ -221,10 +221,21 @@ export default function WhyJoinUs() {
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
-    const onWheel = (e) => { if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) { e.preventDefault(); el.scrollLeft += e.deltaY; } };
+    const onWheel = (e) => {
+      if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+      const atStart = el.scrollLeft <= 0;
+      const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 1;
+      // If scrolling down and already at the end, or scrolling up and already at the start, let page scroll
+      if ((e.deltaY > 0 && atEnd) || (e.deltaY < 0 && atStart)) return;
+      e.preventDefault();
+      el.scrollLeft += e.deltaY;
+    };
     el.addEventListener('wheel', onWheel, { passive: false });
     return () => el.removeEventListener('wheel', onWheel);
   }, []);
+
+
+
 
   const onMouseDown = (e) => {
     isDragging.current = true;
