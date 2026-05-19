@@ -725,7 +725,7 @@ export default function WhyJoinUs() {
 
       `}</style>
 
-      <section id="why-join" className="relative py-24 px-container-padding bg-background border-b border-white/10 overflow-hidden">
+      <section id="why-join-us" className="relative py-24 px-container-padding bg-background border-b border-white/10 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage:'linear-gradient(rgba(255,153,0,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,153,0,0.04) 1px,transparent 1px)', backgroundSize:'40px 40px' }} />
 
         <div className="w-full relative z-10">

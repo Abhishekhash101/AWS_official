@@ -1,30 +1,48 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import awsIcon from '../assets/aws_icon.jpeg';
 
 const navLinks = [
-  { label: 'Home', href: '#home', active: true },
-  { label: 'About', href: '#about', active: false },
-  { label: 'Features', href: '#features', active: false },
-  { label: 'Events', href: '#events', active: false },
-  { label: 'The Builders', href: '#builders', active: false },
+  { label: 'Home', href: '#home', sectionId: 'home' },
+  { label: 'About', href: '#about', sectionId: 'about' },
+  { label: 'Events', href: '#features', sectionId: 'features' },
+  { label: 'Why ?', href: '#why-join-us', sectionId: 'why-join-us' },
+  { label: 'The Builders', href: '#builders', sectionId: 'builders' },
 ];
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('home');
   const [displayedText, setDisplayedText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
+  const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0, opacity: 0 });
+
+  const linkRefs = useRef([]);
+  const navRef = useRef(null);
   const fullText = 'AWS STUDENT BUILDER @ VIT';
 
+  // Update indicator position whenever activeSection changes
+  useEffect(() => {
+    const activeIdx = navLinks.findIndex((l) => l.sectionId === activeSection);
+    const el = linkRefs.current[activeIdx];
+    const nav = navRef.current;
+    if (!el || !nav) return;
+    const navRect = nav.getBoundingClientRect();
+    const elRect = el.getBoundingClientRect();
+    setIndicatorStyle({
+      left: elRect.left - navRect.left,
+      width: elRect.width,
+      opacity: 1,
+    });
+  }, [activeSection]);
+
+  // Typewriter effect
   useEffect(() => {
     let timeout;
-
     if (!isDeleting && displayedText === fullText) {
-      // Pause at the end before deleting
       timeout = setTimeout(() => setIsDeleting(true), 2000);
     } else if (isDeleting && displayedText === '') {
-      // Pause when empty before typing again
       timeout = setTimeout(() => setIsDeleting(false), 500);
     } else {
-      // Typing or Deleting speed
       const delta = isDeleting ? 50 : 100;
       timeout = setTimeout(() => {
         setDisplayedText((prev) =>
@@ -34,20 +52,32 @@ export default function Navbar() {
         );
       }, delta);
     }
-
     return () => clearTimeout(timeout);
   }, [displayedText, isDeleting]);
+
+  // Active section tracker via IntersectionObserver
+  useEffect(() => {
+    const observers = [];
+    navLinks.forEach(({ sectionId }) => {
+      const el = document.getElementById(sectionId);
+      if (!el) return;
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) setActiveSection(sectionId);
+        },
+        { rootMargin: '-30% 0px -60% 0px', threshold: 0 }
+      );
+      observer.observe(el);
+      observers.push(observer);
+    });
+    return () => observers.forEach((o) => o.disconnect());
+  }, []);
 
   return (
     <nav className="bg-background/80 backdrop-blur-xl border-b border-white/5 fixed top-0 left-0 w-full z-50 flex justify-between items-center px-container-padding py-4 max-w-full">
       {/* Logo */}
       <div className="font-headline-md text-headline-md text-on-surface tracking-tighter uppercase flex items-center gap-2">
-        <span
-          className="material-symbols-outlined text-on-surface"
-          style={{ fontVariationSettings: "'FILL' 1" }}
-        >
-          cloud
-        </span>
+        <img src={awsIcon} alt="AWS Club Logo" className="w-7 h-7 rounded-full object-cover flex-shrink-0" />
         <span className="min-w-[28ch] block sm:inline-block">
           {displayedText}
           <span className="animate-pulse">_</span>
@@ -55,20 +85,32 @@ export default function Navbar() {
       </div>
 
       {/* Desktop Nav Links */}
-      <div className="hidden md:flex gap-6 items-center">
-        {navLinks.map((link) => (
+      <div className="hidden md:flex gap-6 items-center relative" ref={navRef}>
+        {navLinks.map((link, idx) => (
           <a
             key={link.label}
+            ref={(el) => (linkRefs.current[idx] = el)}
             className={
-              link.active
-                ? 'text-on-surface font-bold border-b-2 border-primary-container pb-1 font-label-md text-label-md hover:text-primary-container transition-all duration-300'
-                : 'text-on-surface-variant font-label-md text-label-md hover:text-primary-container transition-colors duration-300'
+              link.sectionId === activeSection
+                ? 'text-white font-bold font-label-md text-label-md transition-colors duration-300 pb-1'
+                : 'text-on-surface-variant font-label-md text-label-md hover:text-primary-container transition-colors duration-300 pb-1'
             }
             href={link.href}
           >
             {link.label}
           </a>
         ))}
+
+        {/* Sliding indicator line */}
+        <span
+          className="absolute bottom-[-6px] h-[2px] bg-primary-container rounded-full pointer-events-none"
+          style={{
+            left: indicatorStyle.left,
+            width: indicatorStyle.width,
+            opacity: indicatorStyle.opacity,
+            transition: 'left 0.4s cubic-bezier(0.4, 0, 0.2, 1), width 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease',
+          }}
+        />
       </div>
 
       {/* Desktop CTA */}
@@ -98,8 +140,8 @@ export default function Navbar() {
             <a
               key={link.label}
               className={
-                link.active
-                  ? 'text-on-surface font-bold border-b-2 border-primary-container pb-1 font-label-md text-label-md'
+                link.sectionId === activeSection
+                  ? 'text-white font-bold font-label-md text-label-md border-l-2 border-primary-container pl-3 transition-all duration-300'
                   : 'text-on-surface-variant font-label-md text-label-md hover:text-primary-container transition-colors duration-300'
               }
               href={link.href}

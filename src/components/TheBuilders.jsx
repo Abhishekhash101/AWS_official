@@ -78,7 +78,7 @@ export default function TheBuilders() {
   };
 
   return (
-    <section className="tb-section">
+    <section className="tb-section" id="builders">
       <style dangerouslySetInnerHTML={{
         __html: `
         /* ═══════════════════════════════════════════

@@ -1,3 +1,5 @@
+import awsIcon from '../assets/aws_icon.jpeg';
+
 export default function Footer() {
   const socials = [
     {
@@ -40,12 +42,7 @@ export default function Footer() {
         {/* Left — Brand */}
         <div className="flex flex-col gap-3">
           <div className="font-headline-md text-headline-md text-white flex items-center gap-2 uppercase tracking-widest">
-            <span
-              className="material-symbols-outlined text-primary-container"
-              style={{ fontVariationSettings: "'FILL' 1" }}
-            >
-              cloud
-            </span>
+          <img src={awsIcon} alt="AWS Club Logo" className="w-7 h-7 rounded-full object-cover" />
             AWS STUDENT BUILDER @ VIT
           </div>
           <p className="font-label-sm text-[11px] text-on-surface-variant uppercase tracking-widest">
