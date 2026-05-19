@@ -1,0 +1,338 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: transparent; }
+  .orbit-scene {
+    position: relative;
+    width: 100%;
+    min-height: 620px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: visible;
+  }
+  .orbit-container {
+    position: relative;
+    width: 560px;
+    height: 560px;
+    flex-shrink: 0;
+  }
+  .orbit-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1.5px dashed rgba(255,153,0,0.25);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .ring-outer { width: 500px; height: 500px; }
+  .ring-inner { width: 340px; height: 340px; border-color: rgba(255,153,0,0.15); }
+  .aws-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 110px;
+    height: 110px;
+    background: #232f3e;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    box-shadow: 0 0 0 6px rgba(255,153,0,0.15), 0 0 0 12px rgba(255,153,0,0.07);
+  }
+  .aws-logo-text {
+    font-family: 'Amazon Ember', Arial Black, sans-serif;
+    font-weight: 900;
+    font-size: 22px;
+    color: #FF9900;
+    letter-spacing: 1px;
+    line-height: 1;
+  }
+  .aws-sub {
+    font-size: 9px;
+    color: #FF9900;
+    letter-spacing: 2px;
+    opacity: 0.8;
+    margin-top: 2px;
+  }
+  .orbit-track {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0; left: 0;
+  }
+  .profile-anchor {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+  }
+  .profile-avatar {
+    position: absolute;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transform: translate(-50%, -50%);
+    z-index: 5;
+    border: 2.5px solid #FF9900;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+    user-select: none;
+  }
+  .profile-avatar:hover {
+    transform: translate(-50%, -50%) scale(1.18);
+    z-index: 20;
+    box-shadow: 0 0 0 4px rgba(255,153,0,0.4);
+  }
+  .profile-name-tag {
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+    pointer-events: none;
+    background: var(--color-background-primary);
+    padding: 1px 5px;
+    border-radius: 4px;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .profile-avatar:hover .profile-name-tag { opacity: 1; }
+  .popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+  }
+  .popup-card {
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-secondary);
+    border-radius: 20px;
+    padding: 28px 28px 24px;
+    width: 320px;
+    position: relative;
+    animation: popIn 0.25s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  }
+  @keyframes popIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .popup-close {
+    position: absolute;
+    top: 14px; right: 14px;
+    background: var(--color-background-secondary);
+    border: none;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .popup-avatar-big {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    margin: 0 auto 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; font-weight: 700; color: #fff;
+    border: 3px solid #FF9900;
+  }
+  .popup-name {
+    font-size: 18px; font-weight: 500;
+    color: var(--color-text-primary);
+    text-align: center;
+    margin-bottom: 4px;
+  }
+  .popup-role {
+    font-size: 12px;
+    color: #FF9900;
+    text-align: center;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .popup-desc {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    text-align: center;
+    line-height: 1.6;
+    margin-bottom: 18px;
+    padding: 0 4px;
+  }
+  .popup-links {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+  .popup-link {
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 16px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 13px; font-weight: 500;
+    transition: opacity 0.15s;
+    border: 0.5px solid var(--color-border-secondary);
+    color: var(--color-text-primary);
+    background: var(--color-background-secondary);
+    cursor: pointer;
+  }
+  .popup-link:hover { opacity: 0.75; }
+  .popup-link.insta { color: #E1306C; border-color: #E1306C; }
+  .popup-link.linkedin { color: #0077B5; border-color: #0077B5; }
+  .section-label {
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #FF9900;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  .section-title {
+    text-align: center;
+    font-size: 26px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-bottom: 32px;
+  }
+</style>
+
+<h2 class="sr-only">AWS Club builders — 10 members orbiting the AWS logo in two rings</h2>
+<p class="section-label">meet</p>
+<h3 class="section-title">the builders</h3>
+
+<div class="orbit-scene">
+  <div class="orbit-container" id="orbitContainer">
+    <div class="orbit-ring ring-outer"></div>
+    <div class="orbit-ring ring-inner"></div>
+    <div class="aws-center">
+      <span class="aws-logo-text">aws</span>
+      <span class="aws-sub">CLUB</span>
+    </div>
+  </div>
+</div>
+
+<div id="popupContainer"></div>
+
+<script>
+const members = [
+  { name: "Aryan Sharma", role: "Cloud Architect", initials: "AS", color: "#E05A2B", desc: "Building scalable infra on AWS since day one. Lambda enthusiast.", insta: "aryan.builds", linkedin: "aryan-sharma" },
+  { name: "Priya Nair", role: "ML Engineer", initials: "PN", color: "#9C27B0", desc: "Turning data into decisions with SageMaker and a lot of chai.", insta: "priya.ml", linkedin: "priya-nair-aws" },
+  { name: "Rohit Gupta", role: "DevOps Lead", initials: "RG", color: "#0077B5", desc: "CI/CD pipelines are my love language. CodePipeline wizard.", insta: "rohit.devops", linkedin: "rohit-gupta-dev" },
+  { name: "Sneha Iyer", role: "Security Guru", initials: "SI", color: "#2E7D32", desc: "IAM policies, GuardDuty, and zero-trust — keeping us safe.", insta: "sneha.sec", linkedin: "sneha-iyer" },
+  { name: "Karan Mehta", role: "Full Stack Dev", initials: "KM", color: "#FF9900", desc: "Amplify, AppSync, and coffee-fueled late-night deploys.", insta: "karan.stack", linkedin: "karan-mehta-aws" },
+  { name: "Divya Reddy", role: "Data Engineer", initials: "DR", color: "#C62828", desc: "Glue, Athena, and Redshift — data pipelines that actually work.", insta: "divya.data", linkedin: "divya-reddy" },
+  { name: "Aditya Joshi", role: "Blockchain Dev", initials: "AJ", color: "#00838F", desc: "Managed Blockchain on AWS, DeFi explorer, coffee machine hacker.", insta: "adi.chain", linkedin: "aditya-joshi-bc" },
+  { name: "Meera Pillai", role: "IoT Specialist", initials: "MP", color: "#6A1B9A", desc: "AWS IoT Greengrass and edge computing for the real world.", insta: "meera.iot", linkedin: "meera-pillai" },
+  { name: "Vikram Singh", role: "Cloud Native SDE", initials: "VS", color: "#1565C0", desc: "EKS, Fargate, containers — microservices all the way down.", insta: "vikram.cloud", linkedin: "vikram-singh-aws" },
+  { name: "Nisha Verma", role: "Serverless Queen", initials: "NV", color: "#AD1457", desc: "No servers, no problems. SAM, Lambda, and EventBridge maestro.", insta: "nisha.serverless", linkedin: "nisha-verma" }
+];
+
+const outerR = 250;
+const innerR = 170;
+const outerGroup = [0,1,2,3,4];
+const innerGroup = [5,6,7,8,9];
+
+let angles = members.map((_, i) => {
+  if (outerGroup.includes(i)) return (i / outerGroup.length) * Math.PI * 2;
+  const j = i - 5;
+  return (j / innerGroup.length) * Math.PI * 2;
+});
+
+const speeds = members.map((_, i) => outerGroup.includes(i) ? 0.0004 : -0.0006);
+
+let animFrame;
+let paused = false;
+const container = document.getElementById('orbitContainer');
+
+members.forEach((m, i) => {
+  const anchor = document.createElement('div');
+  anchor.className = 'profile-anchor';
+  anchor.id = `anchor-${i}`;
+
+  const avatar = document.createElement('div');
+  avatar.className = 'profile-avatar';
+  avatar.style.background = m.color;
+  avatar.innerHTML = `${m.initials}<span class="profile-name-tag">${m.name.split(' ')[0]}</span>`;
+  avatar.setAttribute('aria-label', `${m.name}, ${m.role}`);
+  avatar.addEventListener('click', () => openPopup(i));
+
+  anchor.appendChild(avatar);
+  container.appendChild(anchor);
+});
+
+function updatePositions() {
+  members.forEach((_, i) => {
+    const r = outerGroup.includes(i) ? outerR : innerR;
+    const x = Math.cos(angles[i]) * r;
+    const y = Math.sin(angles[i]) * r;
+    const anchor = document.getElementById(`anchor-${i}`);
+    if (anchor) {
+      anchor.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
+    }
+  });
+}
+
+function animate(ts) {
+  if (!paused) {
+    members.forEach((_, i) => { angles[i] += speeds[i]; });
+    updatePositions();
+  }
+  animFrame = requestAnimationFrame(animate);
+}
+
+updatePositions();
+requestAnimationFrame(animate);
+
+function openPopup(idx) {
+  paused = true;
+  const m = members[idx];
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay';
+  overlay.innerHTML = `
+    <div class="popup-card">
+      <button class="popup-close" aria-label="Close"><i class="ti ti-x" aria-hidden="true"></i></button>
+      <div class="popup-avatar-big" style="background:${m.color}">${m.initials}</div>
+      <p class="popup-name">${m.name}</p>
+      <p class="popup-role">${m.role}</p>
+      <p class="popup-desc">${m.desc}</p>
+      <div class="popup-links">
+        <a class="popup-link insta" href="https://instagram.com/${m.insta}" target="_blank">
+          <i class="ti ti-brand-instagram" aria-hidden="true"></i> Instagram
+        </a>
+        <a class="popup-link linkedin" href="https://linkedin.com/in/${m.linkedin}" target="_blank">
+          <i class="ti ti-brand-linkedin" aria-hidden="true"></i> LinkedIn
+        </a>
+      </div>
+    </div>
+  `;
+  overlay.querySelector('.popup-close').addEventListener('click', () => closePopup(overlay));
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closePopup(overlay); });
+  document.getElementById('popupContainer').appendChild(overlay);
+}
+
+function closePopup(overlay) {
+  overlay.style.opacity = '0';
+  overlay.style.transition = 'opacity 0.2s';
+  setTimeout(() => { overlay.remove(); paused = false; }, 200);
+}
+</script>
