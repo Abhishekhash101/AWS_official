@@ -1,7 +1,7 @@
 export default function Callout() {
   return (
     <div className="w-full bg-primary-container text-background py-16 px-container-padding">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
+      <div className="w-full flex flex-col md:flex-row items-center justify-between gap-8">
         <div className="flex items-center gap-6">
           <div className="w-16 h-16 bg-background flex items-center justify-center">
             <span className="material-symbols-outlined text-primary-container text-3xl">

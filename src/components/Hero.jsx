@@ -21,7 +21,7 @@ export default function Hero() {
 
   return (
     <section
-      className="relative min-h-[90vh] flex flex-col pt-12 pb-16 overflow-hidden max-w-7xl mx-auto px-container-padding"
+      className="relative min-h-[90vh] flex flex-col pt-12 pb-16 overflow-hidden w-full px-container-padding"
       id="home"
     >
       {/* Layer 0: The Floating Orange Blocks */}

@@ -26,7 +26,7 @@ export default function About() {
 
   return (
     <section className="py-24 relative bg-background border-b border-white/10" id="about">
-      <div className="max-w-7xl mx-auto px-container-padding relative z-10 grid grid-cols-1 md:grid-cols-2 gap-16 items-start">
+      <div className="w-full px-container-padding relative z-10 grid grid-cols-1 md:grid-cols-2 gap-16 items-start">
         {/* Left Column — Text Content */}
         <div className="flex flex-col">
           <h2 className="font-headline-lg text-[40px] md:text-[56px] text-white mb-6 uppercase tracking-widest leading-tight">

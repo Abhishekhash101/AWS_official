@@ -30,7 +30,7 @@ export default function CoreProtocols() {
       className="py-24 px-container-padding bg-background relative border-b border-white/10"
       id="features"
     >
-      <div className="max-w-7xl mx-auto">
+      <div className="w-full">
         <SectionHeading icon="developer_board" title="Core Protocols" />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

@@ -5,6 +5,7 @@ import Hero from './components/Hero';
 import Marquee from './components/Marquee';
 import About from './components/About';
 import CoreProtocols from './components/CoreProtocols';
+import WhyJoinUs from './components/WhyJoinUs';
 import Callout from './components/Callout';
 import Footer from './components/Footer';
 
@@ -29,6 +30,7 @@ export default function App() {
           <Marquee />
           <About />
           <CoreProtocols />
+          <WhyJoinUs />
           <Callout />
           <Footer />
         </main>
