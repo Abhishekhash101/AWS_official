@@ -203,20 +203,26 @@ function CertificationCard() {
   );
 }
 
-/* ── Regular card (Card 7) ── */
-function RegularCard({ card }) {
+/* ── Special interactive Card 7 ── */
+function CommunityCard() {
+  const [expanded, setExpanded] = useState(false);
   return (
-    <div
-      className="wj-card relative flex flex-col select-none flex-shrink-0 bg-surface-container-lowest border border-white/10 rounded-sm"
-      style={{ width: 240, minWidth: 240, height: 280, borderTop: '2px solid var(--color-primary-container)', padding: '28px 24px', boxSizing: 'border-box' }}
-    >
-      <div className="flex items-center justify-center rounded-sm flex-shrink-0" style={{ width: 44, height: 44, background: 'rgba(255,153,0,0.1)', border: '1px solid rgba(255,153,0,0.3)' }}>
-        <span className="text-[22px] leading-none" role="img" aria-label={card.title}>{card.icon}</span>
+    <div className="wj-cd-outer">
+      <div
+        className={`wj-cd-card${expanded ? ' wj-cd-expanded' : ''}`}
+        onClick={() => setExpanded(v => !v)}
+      >
+        <span className="wj-cd-number">07</span>
+        <div className="wj-cd-globe">
+          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+            <path d="M32,0C14.327,0,0,14.327,0,32s14.327,32,32,32s32-14.327,32-32S49.673,0,32,0z M49.972,31 c-0.138-5.582-1.414-10.878-3.613-15.667c2.652-1.022,5.169-2.317,7.515-3.854c4.824,5.14,7.854,11.976,8.102,19.521H49.972z M33.333,61.966c-0.11,0.005-0.222,0.005-0.333,0.009V50.035c3.324,0.087,6.547,0.581,9.605,1.47 C40.184,55.541,37.029,59.084,33.333,61.966z M44.549,52.141c2.283,0.801,4.462,1.817,6.523,3.018 c-3.991,3.29-8.849,5.563-14.178,6.438C39.902,58.861,42.484,55.672,44.549,52.141z M21.394,51.505 c3.059-0.89,6.282-1.383,9.606-1.47v11.939c-0.111-0.004-0.223-0.004-0.333-0.009C26.97,59.084,23.816,55.541,21.394,51.505z M27.105,61.596c-5.329-0.874-10.187-3.147-14.178-6.438c2.062-1.2,4.24-2.217,6.523-3.017 C21.515,55.672,24.098,58.861,27.105,61.596z M2.025,31c0.248-7.545,3.277-14.381,8.102-19.521c2.346,1.536,4.862,2.831,7.515,3.854 C15.442,20.122,14.166,25.418,14.028,31H2.025z M43.57,14.196c-3.345,1.069-6.894,1.67-10.57,1.766V2.025 c0.111,0.004,0.223,0.004,0.333,0.009C37.541,5.314,41.047,9.453,43.57,14.196z M36.895,2.404 c5.944,0.976,11.298,3.696,15.521,7.622c-2.176,1.391-4.496,2.57-6.944,3.499C43.278,9.326,40.369,5.562,36.895,2.404z M31,2.025 v13.937c-3.677-0.096-7.226-0.696-10.57-1.766c2.523-4.743,6.029-8.882,10.237-12.162C30.777,2.029,30.889,2.029,31,2.025z M18.529,13.525c-2.448-0.929-4.769-2.108-6.944-3.499c4.223-3.926,9.576-6.646,15.521-7.622 C23.631,5.562,20.722,9.326,18.529,13.525z M19.532,16.009c3.622,1.189,7.472,1.873,11.468,1.972V31H16.031 C16.17,25.654,17.403,20.584,19.532,16.009z M31,33v15.036c-3.684,0.092-7.245,0.665-10.615,1.689 C17.732,44.712,16.188,39.029,16.031,33H31z M33,48.036V33h14.969c-0.156,6.029-1.701,11.712-4.354,16.726 C40.245,48.701,36.684,48.128,33,48.036z M33,31V17.98c3.996-0.099,7.846-0.782,11.468-1.972c2.129,4.575,3.362,9.646,3.501,14.991 H33z M2.025,33h12.003c0.154,6.253,1.74,12.146,4.447,17.369c-2.496,0.899-4.871,2.044-7.109,3.396 C5.827,48.513,2.294,41.172,2.025,33z M52.634,53.766c-2.238-1.353-4.613-2.497-7.109-3.396c2.707-5.224,4.293-11.116,4.447-17.369 h12.003C61.706,41.172,58.173,48.513,52.634,53.766z" />
+          </svg>
+        </div>
+        <span className="wj-cd-title">Community Day</span>
+        <div className="wj-cd-desc">
+          <p>Participate in AWS Student Community Day — a large-scale student-led event with clubs nationwide.</p>
+        </div>
       </div>
-      <span className="font-label-sm mt-4" style={{ fontSize: 10, color: 'rgba(255,153,0,0.5)', letterSpacing: '0.1em' }}>{card.num}</span>
-      <span className="font-headline-md text-[14px] font-bold uppercase text-on-surface tracking-wider mt-1 leading-snug">{card.title}</span>
-      <div className="w-full flex-shrink-0" style={{ height: 1, background: 'rgba(255,153,0,0.2)', margin: '12px 0' }} />
-      <p className="font-body-md text-[13px] text-outline leading-relaxed m-0">{card.desc}</p>
     </div>
   );
 }
@@ -676,6 +682,70 @@ export default function WhyJoinUs() {
         .wj-ct-expanded .wj-ct-desc{opacity:1;transform:translateY(0);transition:opacity .4s ease .4s,transform .4s ease .4s}
         .wj-ct-desc p{font-family:'Courier New',monospace;font-size:13px;color:#dbc2ad;line-height:1.6;text-align:center;margin:0}
 
+        /* ══════════════════════════════════════
+           Community Card 7 — Interactive
+           ══════════════════════════════════════ */
+        .wj-cd-outer{flex-shrink:0}
+        .wj-cd-card{
+          position:relative;width:280px;min-width:280px;height:340px;
+          background:transparent;
+          border:1.5px solid #C8A882;border-radius:14px;
+          overflow:hidden;cursor:pointer;flex-shrink:0;
+          transition:all .65s cubic-bezier(.4,0,.2,1);
+        }
+
+        /* — 07 label — */
+        .wj-cd-number{
+          position:absolute;top:18px;left:20px;
+          font-family:'Courier New',monospace;font-size:40px;font-weight:900;
+          color:transparent;-webkit-text-stroke:2.5px #fff;
+          z-index:5;
+          transition:all .65s cubic-bezier(.4,0,.2,1);
+        }
+        .wj-cd-card:hover .wj-cd-number{-webkit-text-stroke-color:#FF9900}
+        .wj-cd-expanded .wj-cd-number{opacity:0;pointer-events:none}
+
+        /* — Globe SVG — */
+        .wj-cd-globe{
+          position:absolute;top:50%;left:50%;
+          transform:translate(-50%, -50%);
+          width:160px;height:160px;z-index:2;
+          transition:all .65s cubic-bezier(.4,0,.2,1);
+        }
+        .wj-cd-globe svg{display:block;width:100%;height:100%}
+        .wj-cd-globe path{
+          fill:#7A5230;
+          transition:fill .3s ease;
+        }
+        .wj-cd-card:hover .wj-cd-globe path{fill:#FF9900}
+        .wj-cd-card:hover .wj-cd-globe{transform:translate(-50%, -50%) scale(1.05)}
+        .wj-cd-expanded .wj-cd-globe{top:36%;transform:translate(-50%, -50%) scale(0.75)}
+        .wj-cd-expanded .wj-cd-globe path{fill:#FF9900}
+
+        /* — Title text — */
+        .wj-cd-title{
+          position:absolute;top:calc(100% - 38px);left:50%;transform:translateX(-50%);
+          font-family:'Courier New',monospace;font-size:14px;font-weight:800;
+          text-transform:uppercase;letter-spacing:1.5px;white-space:nowrap;
+          color:transparent;-webkit-text-stroke:1.3px #fff;
+          z-index:3;
+          transition:all .65s cubic-bezier(.4,0,.2,1);
+        }
+        .wj-cd-expanded .wj-cd-title{top:18px;font-size:12px;letter-spacing:2px;-webkit-text-stroke-color:#5A3A1A}
+
+        /* — Description (expand only) — */
+        .wj-cd-desc{
+          position:absolute;bottom:16px;left:0;right:0;
+          padding:0 22px;
+          background:transparent;
+          z-index:4;opacity:0;transform:translateY(10px);
+          transition:opacity .4s ease 0s,transform .4s ease 0s;
+        }
+        .wj-cd-expanded .wj-cd-desc{opacity:1;transform:translateY(0);transition:opacity .4s ease .4s,transform .4s ease .4s}
+        .wj-cd-desc p{font-family:'Courier New',monospace;font-size:13px;color:#dbc2ad;line-height:1.6;text-align:center;margin:0}
+
+
+
       `}</style>
 
       <section id="why-join" className="relative py-24 px-container-padding bg-background border-b border-white/10 overflow-hidden">
@@ -713,8 +783,8 @@ export default function WhyJoinUs() {
               <BuildCard />
               {/* Card 6 — Special interactive certification card */}
               <CertificationCard />
-              {/* Card 7 — Regular */}
-              {cards.slice(6).map(card => <RegularCard key={card.num} card={card} />)}
+              {/* Card 7 — Special interactive community card */}
+              <CommunityCard />
             </div>
           </div>
         </div>
