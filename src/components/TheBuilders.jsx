@@ -283,8 +283,8 @@ export default function TheBuilders() {
 
         /* Left image panel */
         .tb-popup-img-panel {
-          width: 160px;
-          min-width: 160px;
+          width: 190px;
+          min-width: 190px;
           height: 100%;
           background: #111;
           border-top-left-radius: 20px;
@@ -296,7 +296,7 @@ export default function TheBuilders() {
           bottom: 0;
           left: 50%;
           transform: translateX(-50%);
-          width: 180px;
+          width: 210px;
           height: 115%;
           object-fit: cover;
           object-position: top center;
