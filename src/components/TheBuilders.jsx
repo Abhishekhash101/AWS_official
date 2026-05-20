@@ -250,7 +250,7 @@ export default function TheBuilders() {
           border: 0.5px solid #222;
           border-radius: 20px;
           padding: 0;
-          width: 320px;
+          width: 380px;
           height: 380px;
           position: relative;
           animation: tbPopIn 0.3s cubic-bezier(0.34,1.56,0.64,1) forwards;
@@ -283,8 +283,8 @@ export default function TheBuilders() {
 
         /* Left image panel */
         .tb-popup-img-panel {
-          width: 130px;
-          min-width: 130px;
+          width: 160px;
+          min-width: 160px;
           height: 100%;
           background: #111;
           border-top-left-radius: 20px;
