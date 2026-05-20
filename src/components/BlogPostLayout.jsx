@@ -197,7 +197,7 @@ export default function BlogPostLayout({ slug, children }) {
               <Link
                 key={rp.slug}
                 to={`/blog/${rp.slug}`}
-                className="flex flex-col gap-1 py-2 border-b border-white/4 last:border-b-0 group"
+                className="flex flex-col gap-1 py-3 border-b border-white/15 last:border-b-0 group"
               >
                 <span
                   className="font-label-sm text-[8px] tracking-widest uppercase"

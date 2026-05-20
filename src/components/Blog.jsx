@@ -142,7 +142,7 @@ export default function Blog() {
                 >
                   <Link
                     to={`/blog/${post.slug}`}
-                    className="group flex items-center justify-between gap-3 py-3 border-b border-white/6 last:border-b-0 cursor-pointer hover:pl-1 transition-all duration-200 no-underline"
+                    className="group flex items-center justify-between gap-3 py-4 border-b border-white/15 last:border-b-0 cursor-pointer hover:pl-1 transition-all duration-200 no-underline"
                   >
                     <div>
                       <span

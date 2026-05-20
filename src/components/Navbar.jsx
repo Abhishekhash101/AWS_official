@@ -7,6 +7,7 @@ const navLinks = [
   { label: 'Events', href: '#features', sectionId: 'features' },
   { label: 'Why ?', href: '#why-join-us', sectionId: 'why-join-us' },
   { label: 'The Builders', href: '#builders', sectionId: 'builders' },
+  { label: 'Blog', href: '#blog', sectionId: 'blog' },
 ];
 
 export default function Navbar() {
