@@ -13,6 +13,8 @@ import aeshaImg from '../assets/Board memb/aesha.jpeg';
 import aeshaPopupImg from '../assets/Board memb/aesha_gerated.png';
 import abhishekImg from '../assets/Board memb/abhishek.jpg';
 import abhishekPopupImg from '../assets/Board memb/abhishek_generated.png';
+import jaanyaImg from '../assets/Board memb/jannya.jpeg';
+import jaanyaPopupImg from '../assets/Board memb/jannya_generated.png';
 
 const BUILDERS = [
   // Outer Ring (5 members) — indices 0-4
@@ -24,7 +26,7 @@ const BUILDERS = [
   // Inner Ring (5 members) — indices 5-9
   { id: 6, initials: 'AS', fullName: 'Arshi Saxena', role: 'EVENTS HEAD', desc: 'Plans and executes large-scale bootcamps and hackathons.', color: '#D13212', insta: 'https://www.instagram.com/arshi_saxenaa/', linkedin: 'https://www.linkedin.com/in/arshi-saxena-59268130a', image: arshiImg, popupImage: arshiPopupImg },
   { id: 7, initials: 'AN', fullName: 'Ayush Naugariya', role: 'FINANCE HEAD', desc: 'Manages budgets, sponsorships, and financial planning.', color: '#6A0DAD', insta: '#', linkedin: '#' },
-  { id: 8, initials: 'JB', fullName: 'Jaanya Bagdi', role: 'OUTREACH HEAD', desc: 'Builds partnerships and expands the club network.', color: '#0052CC', insta: '#', linkedin: '#' },
+  { id: 8, initials: 'JB', fullName: 'Jaanya Bagdi', role: 'OUTREACH HEAD', desc: 'Builds partnerships and expands the club network.', color: '#0052CC', insta: 'https://www.instagram.com/jaanya._.08?igsh=dzhvMDZmNGYxM3lx', linkedin: 'https://www.linkedin.com/in/jaanya-bagdi-929228222?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app', image: jaanyaImg, popupImage: jaanyaPopupImg },
   { id: 9, initials: 'VK', fullName: 'Vivek Kashyap', role: 'PUBLICITY HEAD', desc: 'Drives social media presence and campus outreach.', color: '#0070BA', insta: 'https://www.instagram.com/vivek_kashyap121?igsh=MXA1ejI4bXJ1NHp0eA%3D%3D&utm_source=qr', linkedin: 'https://www.linkedin.com/in/vivek-kashyap-402101325?utm_source=share_via&utm_content=profile&utm_medium=member_ios', image: vivekImg, popupImage: vivekPopupImg },
   { id: 10, initials: 'AB', fullName: 'Abhishek Kumar', role: 'TECHNICAL HEAD', desc: 'Architects hands-on cloud workshops and technical infrastructure.', color: '#2E7D32', insta: 'https://www.instagram.com/abhishek_is_error/', linkedin: 'https://www.linkedin.com/in/abhishek-kumar-740171345/', image: abhishekImg, popupImage: abhishekPopupImg },
 ];

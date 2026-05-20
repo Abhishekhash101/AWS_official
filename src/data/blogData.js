@@ -1,0 +1,68 @@
+const BLOG_DATA = [
+  {
+    slug: 'aws-bedrock',
+    title: 'The Rise of AWS Bedrock',
+    subtitle: 'How Amazon is Making Generative AI Accessible to Every Developer',
+    description:
+      'A comprehensive deep dive into AWS Bedrock — Amazon\'s fully managed service for foundation models, exploring its architecture, capabilities, and how it\'s democratizing generative AI for developers worldwide.',
+    author: 'Aesha Singh',
+    initials: 'AS',
+    role: 'Cloud Enthusiast · VIT Vellore',
+    category: 'Cloud / AI',
+    categoryColor: 'purple',
+    readTime: '12 min',
+    date: 'May 2026',
+    featured: true,
+    tags: ['aws-bedrock', 'generative-ai', 'foundation-models', 'cloud', 'llm', 'rag'],
+  },
+  {
+    slug: 'aws-lambda',
+    title: 'What is AWS Lambda?',
+    subtitle: 'Run Code Without Servers',
+    description:
+      'A beginner-friendly guide to AWS Lambda — understand serverless computing, how Lambda works, real-world use cases, and why it\'s changing how developers build and deploy software.',
+    author: 'Rithika S',
+    initials: 'RS',
+    role: 'Cloud Developer · VIT Vellore',
+    category: 'Cloud / Serverless',
+    categoryColor: 'blue',
+    readTime: '7 min',
+    date: 'May 2026',
+    featured: false,
+    tags: ['aws-lambda', 'serverless', 'cloud-computing', 'faas', 'aws'],
+  },
+  {
+    slug: 'predictive-analytics',
+    title: 'How Amazon Knew You\'d Run Out of Groceries Before You Did',
+    subtitle: 'The AWS-Powered Prediction Engine Behind Modern Commerce',
+    description:
+      'Explore how Amazon uses AWS services like SageMaker, Kinesis, and Forecast to predict customer needs before they even realize them — from anticipatory shipping to real-time demand forecasting.',
+    author: 'Aesha Singh',
+    initials: 'AS',
+    role: 'Cloud Enthusiast · VIT Vellore',
+    category: 'Cloud / ML',
+    categoryColor: 'green',
+    readTime: '14 min',
+    date: 'May 2026',
+    featured: false,
+    tags: ['predictive-analytics', 'aws', 'machine-learning', 'sagemaker', 'forecast'],
+  },
+  {
+    slug: 'google-maps-traffic',
+    title: 'The Hidden Science Behind Google Maps Traffic Prediction',
+    subtitle: 'How Millions of Phones Power the World\'s Smartest Navigation',
+    description:
+      'A fascinating exploration of how Google Maps predicts traffic in real-time using crowdsourced data, machine learning, GPS signals, and massive cloud infrastructure.',
+    author: 'AWS Blog Team',
+    initials: 'AT',
+    role: 'AWS Student Builder Group · VIT',
+    category: 'Tech / ML',
+    categoryColor: 'orange',
+    readTime: '10 min',
+    date: 'May 2026',
+    featured: false,
+    tags: ['google-maps', 'machine-learning', 'traffic-prediction', 'cloud-computing', 'gps'],
+  },
+];
+
+export default BLOG_DATA;

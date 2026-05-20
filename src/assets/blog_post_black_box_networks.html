@@ -1,0 +1,209 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0;}
+
+  .page{background:#0a0e17;font-family:'DM Sans',sans-serif;border-radius:14px;overflow:hidden;position:relative;}
+  .grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(255,153,0,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,153,0,.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+
+  /* NAV */
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:.9rem 2rem;border-bottom:1px solid rgba(255,153,0,.12);position:relative;z-index:1;}
+  .nav-left{display:flex;align-items:center;gap:10px;}
+  .back-btn{display:flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#ff9900;border:1px solid rgba(255,153,0,.3);padding:5px 12px;border-radius:4px;cursor:pointer;background:none;transition:background .15s;}
+  .back-btn:hover{background:rgba(255,153,0,.1);}
+  .nav-brand{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:#fff;letter-spacing:2px;}
+  .nav-right{display:flex;align-items:center;gap:8px;}
+  .share-btn{font-family:'JetBrains Mono',monospace;font-size:10px;color:#8892a4;border:1px solid rgba(255,255,255,.1);padding:5px 12px;border-radius:4px;cursor:pointer;background:none;transition:background .15s;}
+  .share-btn:hover{background:rgba(255,255,255,.05);}
+
+  /* HERO */
+  .hero{padding:2.5rem 2rem 1.5rem;border-bottom:1px solid rgba(255,153,0,.1);position:relative;z-index:1;}
+  .hero-top{display:flex;align-items:center;gap:8px;margin-bottom:1.1rem;}
+  .tag{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:1px;text-transform:uppercase;padding:3px 10px;border-radius:3px;}
+  .tag-ai{background:rgba(168,85,247,.1);color:#c084fc;border:1px solid rgba(168,85,247,.2);}
+  .tag-feat{background:rgba(255,153,0,.1);color:#ff9900;border:1px solid rgba(255,153,0,.2);}
+  .hero-title{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;color:#fff;letter-spacing:1px;line-height:1.05;margin-bottom:.8rem;max-width:680px;}
+  .hero-sub{font-size:14px;color:#8892a4;line-height:1.65;max-width:600px;margin-bottom:1.4rem;}
+  .hero-meta{display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
+  .author-row{display:flex;align-items:center;gap:8px;}
+  .avatar{width:32px;height:32px;border-radius:50%;background:rgba(255,153,0,.12);border:1px solid rgba(255,153,0,.28);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:#ff9900;flex-shrink:0;}
+  .author-info{}
+  .author-name{font-size:13px;font-weight:500;color:#e2e8f0;}
+  .author-role{font-size:11px;color:#8892a4;}
+  .meta-divider{width:1px;height:28px;background:rgba(255,255,255,.1);}
+  .meta-stat{display:flex;align-items:center;gap:5px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#8892a4;}
+  .meta-stat i{font-size:13px;color:#ff9900;}
+
+  /* LAYOUT */
+  .layout{display:grid;grid-template-columns:1fr 220px;gap:0;position:relative;z-index:1;}
+
+  /* ARTICLE */
+  .article{padding:2rem 2rem 2rem 2rem;border-right:1px solid rgba(255,153,0,.08);}
+  .section-label{font-family:'JetBrains Mono',monospace;font-size:9px;color:#ff9900;letter-spacing:2px;text-transform:uppercase;margin-bottom:.6rem;display:flex;align-items:center;gap:6px;}
+  .section-label::after{content:'';flex:1;height:1px;background:rgba(255,153,0,.15);}
+  .article h2{font-family:'Bebas Neue',sans-serif;font-size:1.35rem;color:#fff;letter-spacing:.5px;margin:1.5rem 0 .6rem;}
+  .article p{font-size:13.5px;color:#a0aab8;line-height:1.75;margin-bottom:1rem;}
+  .quote-block{border-left:2px solid #ff9900;padding:.8rem 1.2rem;margin:1.25rem 0;background:rgba(255,153,0,.05);border-radius:0 6px 6px 0;}
+  .quote-block p{color:#e2e8f0;font-style:italic;font-size:13.5px;margin:0;}
+  .code-block{background:#111827;border:1px solid rgba(255,153,0,.15);border-radius:6px;padding:1rem 1.25rem;margin:1.2rem 0;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#a0aab8;line-height:1.7;}
+  .code-block .comment{color:#4b5563;}
+  .code-block .keyword{color:#ff9900;}
+  .code-block .string{color:#34d399;}
+  .img-placeholder{background:#111827;border:1px solid rgba(255,255,255,.07);border-radius:8px;height:140px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;margin:1.25rem 0;}
+  .img-placeholder i{font-size:28px;color:rgba(255,153,0,.3);}
+  .img-placeholder span{font-family:'JetBrains Mono',monospace;font-size:9px;color:#4b5563;letter-spacing:1px;}
+  .tag-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:1.5rem;padding-top:1.2rem;border-top:1px solid rgba(255,255,255,.07);}
+  .pill{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.5px;padding:3px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.1);color:#8892a4;cursor:pointer;}
+  .pill:hover{border-color:rgba(255,153,0,.3);color:#ff9900;}
+
+  /* SIDEBAR */
+  .sidebar{padding:1.5rem 1.25rem;display:flex;flex-direction:column;gap:1.25rem;}
+  .sb-section{border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:.9rem 1rem;background:#111827;}
+  .sb-label{font-family:'JetBrains Mono',monospace;font-size:9px;color:#ff9900;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:.7rem;}
+  .toc-item{font-size:12px;color:#8892a4;padding:4px 0;cursor:pointer;display:flex;align-items:center;gap:6px;border-bottom:1px solid rgba(255,255,255,.04);transition:color .15s;}
+  .toc-item:last-child{border-bottom:none;}
+  .toc-item:hover{color:#ff9900;}
+  .toc-item i{font-size:11px;color:rgba(255,153,0,.4);}
+  .toc-item.active{color:#ff9900;}
+  .toc-item.active i{color:#ff9900;}
+  .rel-item{display:flex;flex-direction:column;gap:3px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer;}
+  .rel-item:last-child{border-bottom:none;}
+  .rel-cat{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:1px;text-transform:uppercase;color:#ff9900;}
+  .rel-title{font-size:12px;color:#a0aab8;line-height:1.3;}
+  .rel-title:hover{color:#e2e8f0;}
+  .progress-wrap{background:rgba(255,255,255,.06);border-radius:999px;height:4px;overflow:hidden;}
+  .progress-bar{background:#ff9900;height:100%;border-radius:999px;width:35%;}
+  .progress-label{display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:9px;color:#8892a4;margin-top:5px;}
+</style>
+
+<h2 class="sr-only">Blog post page: Unboxing Complexity — Black Box Networks Demystified by Aastha Gupta</h2>
+<div class="page">
+  <div class="grid-bg"></div>
+
+  <div class="nav">
+    <div class="nav-left">
+      <button class="back-btn" onclick="sendPrompt('Go back to blog listing')"><i class="ti ti-arrow-left" aria-hidden="true"></i> BLOGS</button>
+      <span class="nav-brand">AWS × GDSC</span>
+    </div>
+    <div class="nav-right">
+      <button class="share-btn"><i class="ti ti-share" aria-hidden="true"></i> Share</button>
+      <button class="share-btn"><i class="ti ti-bookmark" aria-hidden="true"></i> Save</button>
+    </div>
+  </div>
+
+  <div class="hero">
+    <div class="hero-top">
+      <span class="tag tag-feat">Featured</span>
+      <span class="tag tag-ai">AI / ML</span>
+    </div>
+    <div class="hero-title">Unboxing Complexity: Black Box Networks Demystified</div>
+    <div class="hero-sub">A deep dive into how neural networks make decisions — and why we often can't explain them. Exploring explainability in modern ML systems.</div>
+    <div class="hero-meta">
+      <div class="author-row">
+        <div class="avatar">AG</div>
+        <div class="author-info">
+          <div class="author-name">Aastha Gupta</div>
+          <div class="author-role">AI/ML Researcher · GDSC-VIT</div>
+        </div>
+      </div>
+      <div class="meta-divider"></div>
+      <div class="meta-stat"><i class="ti ti-clock" aria-hidden="true"></i> 5 min read</div>
+      <div class="meta-stat"><i class="ti ti-calendar" aria-hidden="true"></i> Nov 2024</div>
+      <div class="meta-stat"><i class="ti ti-eye" aria-hidden="true"></i> 2.4k views</div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="article">
+
+      <div class="section-label">Introduction</div>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+      <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+
+      <div class="img-placeholder">
+        <i class="ti ti-photo" aria-hidden="true"></i>
+        <span>FIGURE 1 — NEURAL NETWORK DIAGRAM</span>
+      </div>
+
+      <h2>What is a Black Box?</h2>
+      <div class="section-label"></div>
+      <p>Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae. Proin vel ante a orci tempus eleifend ut et magna. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+
+      <div class="quote-block">
+        <p>"Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa quae ab illo inventore veritatis."</p>
+      </div>
+
+      <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.</p>
+
+      <h2>How Neural Networks Decide</h2>
+      <div class="section-label"></div>
+      <p>Ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam.</p>
+
+      <div class="code-block">
+        <span class="comment"># Simplified forward pass example</span><br>
+        <span class="keyword">def</span> forward(x, weights):<br>
+        &nbsp;&nbsp;layer1 = relu(x @ weights[<span class="string">'W1'</span>])<br>
+        &nbsp;&nbsp;layer2 = relu(layer1 @ weights[<span class="string">'W2'</span>])<br>
+        &nbsp;&nbsp;<span class="keyword">return</span> softmax(layer2 @ weights[<span class="string">'Wout'</span>])
+      </div>
+
+      <p>Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur.</p>
+
+      <h2>Explainability Techniques</h2>
+      <div class="section-label"></div>
+      <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati.</p>
+
+      <div class="img-placeholder">
+        <i class="ti ti-photo" aria-hidden="true"></i>
+        <span>FIGURE 2 — GRAD-CAM HEATMAP</span>
+      </div>
+
+      <p>Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est.</p>
+
+      <h2>Conclusion</h2>
+      <div class="section-label"></div>
+      <p>Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur.</p>
+
+      <div class="tag-row">
+        <span class="pill">neural-networks</span>
+        <span class="pill">explainability</span>
+        <span class="pill">ai-ml</span>
+        <span class="pill">deep-learning</span>
+        <span class="pill">xai</span>
+      </div>
+    </div>
+
+    <div class="sidebar">
+      <div class="sb-section">
+        <div class="sb-label">Reading progress</div>
+        <div class="progress-wrap"><div class="progress-bar"></div></div>
+        <div class="progress-label"><span>35%</span><span>~3 min left</span></div>
+      </div>
+
+      <div class="sb-section">
+        <div class="sb-label">Table of contents</div>
+        <div class="toc-item active"><i class="ti ti-point-filled" aria-hidden="true"></i>Introduction</div>
+        <div class="toc-item"><i class="ti ti-point" aria-hidden="true"></i>What is a Black Box?</div>
+        <div class="toc-item"><i class="ti ti-point" aria-hidden="true"></i>How Networks Decide</div>
+        <div class="toc-item"><i class="ti ti-point" aria-hidden="true"></i>Explainability</div>
+        <div class="toc-item"><i class="ti ti-point" aria-hidden="true"></i>Conclusion</div>
+      </div>
+
+      <div class="sb-section">
+        <div class="sb-label">Related posts</div>
+        <div class="rel-item" onclick="sendPrompt('Open The Deepfake Tango blog post')">
+          <span class="rel-cat">AI Ethics</span>
+          <span class="rel-title">The Deepfake Tango</span>
+        </div>
+        <div class="rel-item" onclick="sendPrompt('Open From Code to Cure blog post')">
+          <span class="rel-cat">Cloud / Health</span>
+          <span class="rel-title">From Code to Cure: Big Tech in Healthcare</span>
+        </div>
+        <div class="rel-item" onclick="sendPrompt('Open Internet Anonymity 101 blog post')">
+          <span class="rel-cat">Privacy</span>
+          <span class="rel-title">Internet Anonymity 101: Lurking in Darkness</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

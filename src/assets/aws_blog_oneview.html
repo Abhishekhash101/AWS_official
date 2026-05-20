@@ -1,0 +1,126 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0;}
+  .w{background:#0a0e17;padding:2rem;border-radius:14px;font-family:'DM Sans',sans-serif;position:relative;overflow:hidden;height:420px;display:flex;flex-direction:column;}
+  .grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(255,153,0,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,153,0,.04) 1px,transparent 1px);background-size:36px 36px;pointer-events:none;}
+
+  /* Header row */
+  .hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;position:relative;flex-shrink:0;}
+  .hdr-left{display:flex;align-items:center;gap:12px;}
+  .term{font-family:'JetBrains Mono',monospace;font-size:10px;color:#ff9900;background:rgba(255,153,0,.1);border:1px solid rgba(255,153,0,.22);padding:3px 10px;border-radius:3px;letter-spacing:1px;}
+  .ttl{font-family:'Bebas Neue',sans-serif;font-size:2.4rem;color:#fff;letter-spacing:2px;line-height:1;}
+  .va{font-family:'JetBrains Mono',monospace;font-size:10px;color:#ff9900;border:1px solid rgba(255,153,0,.3);padding:5px 14px;border-radius:3px;cursor:pointer;text-decoration:none;transition:background .15s;}
+  .va:hover{background:rgba(255,153,0,.1);}
+
+  /* Body: feat left + list right */
+  .body{display:grid;grid-template-columns:1fr 1fr;gap:14px;flex:1;min-height:0;}
+
+  /* Featured card */
+  .feat{background:#111827;border:1px solid rgba(255,153,0,.22);border-radius:10px;padding:1.25rem;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;position:relative;}
+  .feat-badge{font-family:'JetBrains Mono',monospace;font-size:9px;color:#ff9900;background:rgba(255,153,0,.1);border:1px solid rgba(255,153,0,.2);padding:2px 8px;border-radius:2px;display:inline-block;margin-bottom:.6rem;letter-spacing:1px;text-transform:uppercase;}
+  .feat-title{font-family:'Bebas Neue',sans-serif;font-size:1.45rem;color:#fff;line-height:1.1;letter-spacing:.5px;margin-bottom:.5rem;}
+  .feat-desc{font-size:11.5px;color:#8892a4;line-height:1.55;flex:1;}
+  .feat-bottom{margin-top:.9rem;display:flex;align-items:center;justify-content:space-between;}
+  .avatar{width:26px;height:26px;border-radius:50%;background:rgba(255,153,0,.12);border:1px solid rgba(255,153,0,.28);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:#ff9900;margin-right:7px;flex-shrink:0;}
+  .auth-row{display:flex;align-items:center;}
+  .auth-name{font-size:11px;color:#e2e8f0;font-weight:500;}
+  .read-btn{background:#ff9900;color:#000;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;border:none;border-radius:4px;padding:6px 14px;cursor:pointer;letter-spacing:.5px;white-space:nowrap;}
+  .read-btn:hover{opacity:.85;}
+  .deco{position:absolute;bottom:-18px;right:-18px;width:72px;height:72px;border-radius:50%;border:1.5px solid rgba(255,153,0,.1);}
+
+  /* Blog list */
+  .list{display:flex;flex-direction:column;gap:0;justify-content:space-between;height:100%;}
+  .item{border-bottom:1px solid rgba(255,255,255,.07);padding:.6rem 0;display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;transition:padding-left .15s;}
+  .item:last-child{border-bottom:none;}
+  .item:hover{padding-left:4px;}
+  .item-left{}
+  .icat{font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:2px;display:inline-block;margin-bottom:3px;}
+  .c1{background:rgba(100,180,255,.08);color:#64b4ff;}
+  .c2{background:rgba(168,85,247,.08);color:#c084fc;}
+  .c3{background:rgba(52,211,153,.08);color:#34d399;}
+  .c4{background:rgba(255,153,0,.08);color:#ff9900;}
+  .ititle{font-size:13px;font-weight:600;color:#e2e8f0;line-height:1.25;}
+  .iauthor{font-size:10.5px;color:#8892a4;margin-top:1px;}
+  .arr{width:24px;height:24px;border-radius:50%;border:1px solid rgba(255,153,0,.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;}
+  .item:hover .arr{background:#ff9900;border-color:#ff9900;}
+  .item:hover .arr i{color:#000;}
+  .arr i{font-size:11px;color:#ff9900;}
+</style>
+
+<h2 class="sr-only">AWS VIT blog section — featured post and recent articles</h2>
+<div class="w">
+  <div class="grid-bg"></div>
+
+  <div class="hdr">
+    <div class="hdr-left">
+      <span class="term">$ ls /blogs</span>
+      <span class="ttl">BLOGS</span>
+    </div>
+    <a class="va" onclick="sendPrompt('Show me all blog posts')">VIEW ALL →</a>
+  </div>
+
+  <div class="body">
+    <div class="feat">
+      <div>
+        <span class="feat-badge">⚡ Featured</span>
+        <div class="feat-title">Unboxing Complexity: Black Box Networks Demystified</div>
+        <div class="feat-desc">A deep dive into how neural networks make decisions — and why explainability in modern ML still challenges us all.</div>
+      </div>
+      <div class="feat-bottom">
+        <div class="auth-row">
+          <div class="avatar">AG</div>
+          <div>
+            <div class="auth-name">Aastha Gupta</div>
+            <div style="font-size:10px;color:#8892a4;">5 min · AI / ML</div>
+          </div>
+        </div>
+        <button class="read-btn">READ →</button>
+      </div>
+      <div class="deco"></div>
+    </div>
+
+    <div class="list">
+      <div class="item">
+        <div class="item-left">
+          <span class="icat c1">Cloud / Health</span>
+          <div class="ititle">From Code to Cure: Big Tech in Healthcare</div>
+          <div class="iauthor">Emily Gilbert</div>
+        </div>
+        <div class="arr"><i class="ti ti-arrow-right"></i></div>
+      </div>
+      <div class="item">
+        <div class="item-left">
+          <span class="icat c2">Product</span>
+          <div class="ititle">Why Spotify Wrapped Drops in November</div>
+          <div class="iauthor">Aditya Chheda</div>
+        </div>
+        <div class="arr"><i class="ti ti-arrow-right"></i></div>
+      </div>
+      <div class="item">
+        <div class="item-left">
+          <span class="icat c3">Privacy / Sec</span>
+          <div class="ititle">Internet Anonymity 101: Lurking in Darkness</div>
+          <div class="iauthor">Aditya Sareen</div>
+        </div>
+        <div class="arr"><i class="ti ti-arrow-right"></i></div>
+      </div>
+      <div class="item">
+        <div class="item-left">
+          <span class="icat c2">AI Ethics</span>
+          <div class="ititle">The Deepfake Tango</div>
+          <div class="iauthor">Aditya Chheda</div>
+        </div>
+        <div class="arr"><i class="ti ti-arrow-right"></i></div>
+      </div>
+      <div class="item">
+        <div class="item-left">
+          <span class="icat c4">Open Source</span>
+          <div class="ititle">Contributing to Open Source as a Student</div>
+          <div class="iauthor">Priya Nair</div>
+        </div>
+        <div class="arr"><i class="ti ti-arrow-right"></i></div>
+      </div>
+    </div>
+  </div>
+</div>
