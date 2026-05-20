@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import awsIcon from '../assets/aws_icon.jpeg';
 import ankitImg from '../assets/Board memb/ankit.png';
-import vivekImg from '../assets/Board memb/Vivek.jpeg';
+import vivekImg from '../assets/Board memb/vivek_generated.png';
 
 const BUILDERS = [
   // Outer Ring (5 members) — indices 0-4
@@ -14,7 +14,7 @@ const BUILDERS = [
   { id: 6, initials: 'AS', fullName: 'Arshi Saxena', role: 'EVENTS HEAD', desc: 'Plans and executes large-scale bootcamps and hackathons.', color: '#D13212', insta: '#', linkedin: '#' },
   { id: 7, initials: 'AN', fullName: 'Ayush Naugariya', role: 'FINANCE HEAD', desc: 'Manages budgets, sponsorships, and financial planning.', color: '#6A0DAD', insta: '#', linkedin: '#' },
   { id: 8, initials: 'JB', fullName: 'Jaanya Bagdi', role: 'OUTREACH HEAD', desc: 'Builds partnerships and expands the club network.', color: '#0052CC', insta: '#', linkedin: '#' },
-  { id: 9, initials: 'VK', fullName: 'Vivek Kashyap', role: 'PUBLICITY HEAD', desc: 'Drives social media presence and campus outreach.', color: '#0070BA', insta: 'https://www.instagram.com/vivek_kashyap121/', linkedin: 'https://www.linkedin.com/in/vivek-kashyap-402101325?utm_source=share_via&utm_content=profile&utm_medium=member_ios', image: vivekImg },
+  { id: 9, initials: 'VK', fullName: 'Vivek Kashyap', role: 'PUBLICITY HEAD', desc: 'Drives social media presence and campus outreach.', color: '#0070BA', insta: 'https://www.instagram.com/vivek_kashyap121?igsh=MXA1ejI4bXJ1NHp0eA%3D%3D&utm_source=qr', linkedin: 'https://www.linkedin.com/in/vivek-kashyap-402101325?utm_source=share_via&utm_content=profile&utm_medium=member_ios', image: vivekImg },
   { id: 10, initials: 'AB', fullName: 'Abhishek Kumar', role: 'TECHNICAL HEAD', desc: 'Architects hands-on cloud workshops and technical infrastructure.', color: '#2E7D32', insta: '#', linkedin: '#' },
 ];
 
@@ -235,24 +235,24 @@ export default function TheBuilders() {
         .tb-overlay {
           position: fixed;
           inset: 0;
-          background: rgba(0,0,0,0.6);
-          backdrop-filter: blur(4px);
+          background: rgba(0,0,0,0.7);
+          backdrop-filter: blur(6px);
           z-index: 100;
           display: flex;
           align-items: center;
           justify-content: center;
         }
         .tb-popup {
-          background: #140d06;
-          border: 1px solid rgba(255,255,255,0.1);
-          border-radius: 16px;
-          padding: 32px;
-          width: 340px;
+          background: #000;
+          border: 0.5px solid #222;
+          border-radius: 20px;
+          padding: 0;
+          width: 320px;
+          height: 380px;
           position: relative;
           animation: tbPopIn 0.3s cubic-bezier(0.34,1.56,0.64,1) forwards;
           display: flex;
-          flex-direction: column;
-          align-items: center;
+          flex-direction: row;
         }
         @keyframes tbPopIn {
           from { transform: scale(0.85); opacity: 0; }
@@ -260,91 +260,114 @@ export default function TheBuilders() {
         }
         .tb-popup-close {
           position: absolute;
-          top: 14px;
-          right: 14px;
-          background: #271e15;
-          border: none;
-          width: 32px;
-          height: 32px;
+          top: 10px;
+          right: 10px;
+          background: rgba(0,0,0,0.5);
+          border: 0.5px solid #333;
+          width: 26px;
+          height: 26px;
           border-radius: 50%;
           cursor: pointer;
-          color: #a38d7a;
-          font-size: 16px;
+          color: #888;
+          font-size: 13px;
           display: flex;
           align-items: center;
           justify-content: center;
-          transition: color 0.2s;
+          transition: color 0.2s, background 0.2s;
+          z-index: 10;
         }
-        .tb-popup-close:hover { color: #fff; }
-        .tb-popup-avatar {
-          width: 80px;
-          height: 80px;
-          border-radius: 50%;
-          margin-bottom: 16px;
+        .tb-popup-close:hover { color: #fff; background: rgba(255,255,255,0.1); }
+
+        /* Left image panel */
+        .tb-popup-img-panel {
+          width: 130px;
+          min-width: 130px;
+          height: 100%;
+          background: #111;
+          border-top-left-radius: 20px;
+          border-bottom-left-radius: 20px;
+          position: relative;
+        }
+        .tb-popup-img-panel img {
+          position: absolute;
+          bottom: 0;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 180px;
+          height: 115%;
+          object-fit: cover;
+          object-position: top center;
+          display: block;
+          z-index: 20;
+          pointer-events: none;
+        }
+        /* Fallback initials when no image */
+        .tb-popup-img-fallback {
+          width: 100%;
+          height: 100%;
+          border-top-left-radius: 20px;
+          border-bottom-left-radius: 20px;
           display: flex;
           align-items: center;
           justify-content: center;
           font-family: 'Inter', sans-serif;
-          font-size: 28px;
+          font-size: 42px;
           font-weight: 700;
           color: #fff;
-          border: 3px solid #FF9900;
+        }
+
+        /* Right content panel */
+        .tb-popup-content {
+          flex: 1;
+          padding: 20px 14px 18px;
+          border-left: 0.5px solid #1e1e1e;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
         }
         .tb-popup-name {
-          font-family: 'Space Mono', monospace;
-          font-size: 20px;
-          font-weight: 700;
-          color: #f1dfd1;
-          margin-bottom: 6px;
+          font-family: 'Inter', sans-serif;
+          font-size: 19px;
+          font-weight: 600;
+          color: #fff;
+          letter-spacing: 0.4px;
+          margin: 0;
         }
         .tb-popup-role {
-          font-family: 'Space Mono', monospace;
-          font-size: 10px;
-          color: #FF9900;
-          font-weight: 600;
-          letter-spacing: 2px;
-          text-transform: uppercase;
-          margin-bottom: 16px;
-          background: rgba(255,153,0,0.08);
-          border: 1px solid rgba(255,153,0,0.25);
-          padding: 4px 12px;
-          border-radius: 20px;
-        }
-        .tb-popup-desc {
           font-family: 'Inter', sans-serif;
-          font-size: 13px;
-          color: #a38d7a;
-          text-align: center;
-          line-height: 1.7;
-          margin-bottom: 24px;
+          font-size: 11px;
+          color: #777;
+          font-weight: 400;
+          text-transform: uppercase;
+          letter-spacing: 0.3px;
+          margin-top: 8px;
         }
-        .tb-popup-links {
+        .tb-popup-socials {
           display: flex;
-          gap: 12px;
-          width: 100%;
+          flex-direction: column;
+          gap: 8px;
         }
-        .tb-popup-link {
-          flex: 1;
+        .tb-popup-social-btn {
           display: flex;
           align-items: center;
           justify-content: center;
           gap: 6px;
-          padding: 10px 0;
-          border-radius: 8px;
+          width: 100%;
+          padding: 8px 0;
+          background: #131313;
+          border: 0.5px solid #2a2a2a;
+          border-radius: 9px;
           text-decoration: none;
-          font-family: 'Space Mono', monospace;
-          font-size: 11px;
-          font-weight: 600;
-          letter-spacing: 1px;
-          transition: opacity 0.15s;
-          border: 1px solid rgba(255,255,255,0.1);
-          color: #f1dfd1;
-          background: #271e15;
           cursor: pointer;
+          transition: background 0.15s;
+          font-family: 'Inter', sans-serif;
+          font-size: 11px;
+          color: #bbb;
         }
-        .tb-popup-link:hover { opacity: 0.75; }
-        .tb-popup-link.insta { color: #E1306C; border-color: rgba(225,48,108,0.3); }
-        .tb-popup-link.linkedin { color: #0077B5; border-color: rgba(0,119,181,0.3); }
+        .tb-popup-social-btn:hover { background: #1e1e1e; }
+        .tb-popup-social-btn .social-icon { font-size: 16px; }
+        .tb-popup-social-btn.insta .social-icon { color: #e1306c; }
+        .tb-popup-social-btn.linkedin .social-icon { color: #0a66c2; }
       `}} />
 
       <div className="tb-header">
@@ -395,15 +418,34 @@ export default function TheBuilders() {
         <div className="tb-overlay" onClick={closePopup}>
           <div className="tb-popup" onClick={e => e.stopPropagation()}>
             <button className="tb-popup-close" aria-label="Close" onClick={closePopup}>✕</button>
-            <div className="tb-popup-avatar" style={{ background: selectedBuilder.color }}>
-              {selectedBuilder.initials}
+
+            {/* Left — Image */}
+            <div className="tb-popup-img-panel">
+              {selectedBuilder.image ? (
+                <img src={selectedBuilder.image} alt={selectedBuilder.fullName} />
+              ) : (
+                <div className="tb-popup-img-fallback" style={{ background: selectedBuilder.color }}>
+                  {selectedBuilder.initials}
+                </div>
+              )}
             </div>
-            <p className="tb-popup-name">{selectedBuilder.fullName}</p>
-            <span className="tb-popup-role">{selectedBuilder.role}</span>
-            <p className="tb-popup-desc">{selectedBuilder.desc}</p>
-            <div className="tb-popup-links">
-              <a className="tb-popup-link linkedin" href={selectedBuilder.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>
-              <a className="tb-popup-link insta" href={selectedBuilder.insta} target="_blank" rel="noreferrer">Instagram</a>
+
+            {/* Right — Content */}
+            <div className="tb-popup-content">
+              <div>
+                <p className="tb-popup-name">{selectedBuilder.fullName}</p>
+                <p className="tb-popup-role">{selectedBuilder.role}</p>
+              </div>
+              <div className="tb-popup-socials">
+                <a className="tb-popup-social-btn insta" href={selectedBuilder.insta} target="_blank" rel="noreferrer">
+                  <i className="ti ti-brand-instagram social-icon"></i>
+                  Instagram
+                </a>
+                <a className="tb-popup-social-btn linkedin" href={selectedBuilder.linkedin} target="_blank" rel="noreferrer">
+                  <i className="ti ti-brand-linkedin social-icon"></i>
+                  LinkedIn
+                </a>
+              </div>
             </div>
           </div>
         </div>
