@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import awsIcon from '../assets/aws_icon.jpeg';
 import ankitImg from '../assets/Board memb/ankit.png';
-import vivekImg from '../assets/Board memb/vivek_generated.png';
+import vivekPopupImg from '../assets/Board memb/vivek_generated.png';
+import vivekImg from '../assets/Board memb/Vivek.jpeg';
 
 const BUILDERS = [
   // Outer Ring (5 members) — indices 0-4
@@ -14,7 +15,7 @@ const BUILDERS = [
   { id: 6, initials: 'AS', fullName: 'Arshi Saxena', role: 'EVENTS HEAD', desc: 'Plans and executes large-scale bootcamps and hackathons.', color: '#D13212', insta: '#', linkedin: '#' },
   { id: 7, initials: 'AN', fullName: 'Ayush Naugariya', role: 'FINANCE HEAD', desc: 'Manages budgets, sponsorships, and financial planning.', color: '#6A0DAD', insta: '#', linkedin: '#' },
   { id: 8, initials: 'JB', fullName: 'Jaanya Bagdi', role: 'OUTREACH HEAD', desc: 'Builds partnerships and expands the club network.', color: '#0052CC', insta: '#', linkedin: '#' },
-  { id: 9, initials: 'VK', fullName: 'Vivek Kashyap', role: 'PUBLICITY HEAD', desc: 'Drives social media presence and campus outreach.', color: '#0070BA', insta: 'https://www.instagram.com/vivek_kashyap121?igsh=MXA1ejI4bXJ1NHp0eA%3D%3D&utm_source=qr', linkedin: 'https://www.linkedin.com/in/vivek-kashyap-402101325?utm_source=share_via&utm_content=profile&utm_medium=member_ios', image: vivekImg },
+  { id: 9, initials: 'VK', fullName: 'Vivek Kashyap', role: 'PUBLICITY HEAD', desc: 'Drives social media presence and campus outreach.', color: '#0070BA', insta: 'https://www.instagram.com/vivek_kashyap121?igsh=MXA1ejI4bXJ1NHp0eA%3D%3D&utm_source=qr', linkedin: 'https://www.linkedin.com/in/vivek-kashyap-402101325?utm_source=share_via&utm_content=profile&utm_medium=member_ios', image: vivekImg, popupImage: vivekPopupImg },
   { id: 10, initials: 'AB', fullName: 'Abhishek Kumar', role: 'TECHNICAL HEAD', desc: 'Architects hands-on cloud workshops and technical infrastructure.', color: '#2E7D32', insta: '#', linkedin: '#' },
 ];
 
@@ -421,8 +422,8 @@ export default function TheBuilders() {
 
             {/* Left — Image */}
             <div className="tb-popup-img-panel">
-              {selectedBuilder.image ? (
-                <img src={selectedBuilder.image} alt={selectedBuilder.fullName} />
+              {(selectedBuilder.popupImage || selectedBuilder.image) ? (
+                <img src={selectedBuilder.popupImage || selectedBuilder.image} alt={selectedBuilder.fullName} />
               ) : (
                 <div className="tb-popup-img-fallback" style={{ background: selectedBuilder.color }}>
                   {selectedBuilder.initials}
