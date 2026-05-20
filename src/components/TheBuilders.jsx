@@ -3,6 +3,8 @@ import awsIcon from '../assets/aws_icon.jpeg';
 import ankitImg from '../assets/Board memb/ankit.png';
 import vivekPopupImg from '../assets/Board memb/vivek_generated.png';
 import vivekImg from '../assets/Board memb/Vivek.jpeg';
+import arshiImg from '../assets/Board memb/Arshi_card.jpeg';
+import arshiPopupImg from '../assets/Board memb/arshi_generated.png';
 
 const BUILDERS = [
   // Outer Ring (5 members) — indices 0-4
@@ -12,7 +14,7 @@ const BUILDERS = [
   { id: 4, initials: 'TR', fullName: 'Tanishi Raj', role: 'CO-SECRETARY', desc: 'Supports administrative operations and event logistics.', color: '#8A2BE2', insta: '#', linkedin: '#' },
   { id: 5, initials: 'PG', fullName: 'Pihu Gupta', role: 'DESIGN HEAD', desc: 'Creates the visual identity and design language of the club.', color: '#C2185B', insta: '#', linkedin: '#' },
   // Inner Ring (5 members) — indices 5-9
-  { id: 6, initials: 'AS', fullName: 'Arshi Saxena', role: 'EVENTS HEAD', desc: 'Plans and executes large-scale bootcamps and hackathons.', color: '#D13212', insta: '#', linkedin: '#' },
+  { id: 6, initials: 'AS', fullName: 'Arshi Saxena', role: 'EVENTS HEAD', desc: 'Plans and executes large-scale bootcamps and hackathons.', color: '#D13212', insta: 'https://www.instagram.com/arshi_saxenaa/', linkedin: 'https://www.linkedin.com/in/arshi-saxena-59268130a', image: arshiImg, popupImage: arshiPopupImg },
   { id: 7, initials: 'AN', fullName: 'Ayush Naugariya', role: 'FINANCE HEAD', desc: 'Manages budgets, sponsorships, and financial planning.', color: '#6A0DAD', insta: '#', linkedin: '#' },
   { id: 8, initials: 'JB', fullName: 'Jaanya Bagdi', role: 'OUTREACH HEAD', desc: 'Builds partnerships and expands the club network.', color: '#0052CC', insta: '#', linkedin: '#' },
   { id: 9, initials: 'VK', fullName: 'Vivek Kashyap', role: 'PUBLICITY HEAD', desc: 'Drives social media presence and campus outreach.', color: '#0070BA', insta: 'https://www.instagram.com/vivek_kashyap121?igsh=MXA1ejI4bXJ1NHp0eA%3D%3D&utm_source=qr', linkedin: 'https://www.linkedin.com/in/vivek-kashyap-402101325?utm_source=share_via&utm_content=profile&utm_medium=member_ios', image: vivekImg, popupImage: vivekPopupImg },
