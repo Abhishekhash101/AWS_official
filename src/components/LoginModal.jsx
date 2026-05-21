@@ -55,7 +55,7 @@ export default function LoginModal({ isOpen, onClose }) {
     const pwd2 = document.getElementById('r-pwd2').value;
     
     if (!first || !last || !email || !phone || !pwd) { setMsg({ text: 'Please fill in all fields.', type: 'error' }); return; }
-    if (!email.includes('@')) { setMsg({ text: 'Please enter a valid email.', type: 'error' }); return; }
+    if (!email.toLowerCase().endsWith('@vitstudent.ac.in')) { setMsg({ text: 'Only VIT students (@vitstudent.ac.in) are allowed.', type: 'error' }); return; }
     if (pwd.length < 8) { setMsg({ text: 'Password must be at least 8 characters.', type: 'error' }); return; }
     if (pwd !== pwd2) { setMsg({ text: 'Passwords do not match.', type: 'error' }); return; }
     
@@ -148,7 +148,7 @@ export default function LoginModal({ isOpen, onClose }) {
                     <label className="block text-xs font-medium text-on-surface-variant mb-2">Email address</label>
                     <input id="l-email" type="email" placeholder="you@example.com" className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all placeholder-white/30" />
                   </div>
-                  <div className="mb-2">
+                  <div className="mb-6">
                     <label className="block text-xs font-medium text-on-surface-variant mb-2">Password</label>
                     <div className="relative">
                       <input id="l-pwd" type={showPwd ? "text" : "password"} placeholder="Enter your password" className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all pr-10 placeholder-white/30" />
@@ -156,9 +156,6 @@ export default function LoginModal({ isOpen, onClose }) {
                         <span className="material-symbols-outlined text-[18px]">{showPwd ? 'visibility' : 'visibility_off'}</span>
                       </button>
                     </div>
-                  </div>
-                  <div className="text-right mb-5">
-                    <a href="#" className="text-xs text-primary-container hover:underline">Forgot password?</a>
                   </div>
                   <button onClick={handleLogin} disabled={isLoading} className="w-full bg-primary-container text-background font-bold text-sm py-3 rounded-lg hover:bg-[#ffb033] transition-colors uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed">
                     {isLoading ? 'Signing in...' : 'Sign in to your account'}

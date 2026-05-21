@@ -22,6 +22,10 @@ app.post('/api/register', async (req, res) => {
       return res.status(400).json({ error: 'Please provide all required fields' });
     }
 
+    if (!email.toLowerCase().endsWith('@vitstudent.ac.in')) {
+      return res.status(400).json({ error: 'Only VIT students (@vitstudent.ac.in) are allowed to register' });
+    }
+
     // Check if user exists
     const userCheck = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
     if (userCheck.rows.length > 0) {
