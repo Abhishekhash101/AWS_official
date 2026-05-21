@@ -6,42 +6,84 @@ export default function LoginModal({ isOpen, onClose }) {
   const [showPwd, setShowPwd] = useState(false);
   const [showPwd2, setShowPwd2] = useState(false);
   const [msg, setMsg] = useState({ text: '', type: '' });
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSwitchTab = (newTab) => {
     setTab(newTab);
     setMsg({ text: '', type: '' });
   };
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     const email = document.getElementById('l-email').value.trim();
     const pwd = document.getElementById('l-pwd').value;
     if (!email || !pwd) { setMsg({ text: 'Please fill in all fields.', type: 'error' }); return; }
     if (!email.includes('@')) { setMsg({ text: 'Please enter a valid email.', type: 'error' }); return; }
-    setMsg({ text: '✓ Sign in successful! Redirecting...', type: 'success' });
-    setTimeout(() => {
-      onClose();
-    }, 1500);
+    
+    setIsLoading(true);
+    setMsg({ text: '', type: '' });
+    try {
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password: pwd }),
+      });
+      const data = await response.json();
+      
+      if (!response.ok) {
+        setMsg({ text: data.error || 'Login failed', type: 'error' });
+        return;
+      }
+      
+      localStorage.setItem('token', data.token);
+      setMsg({ text: '✓ Sign in successful! Redirecting...', type: 'success' });
+      setTimeout(() => {
+        onClose();
+      }, 1500);
+    } catch (err) {
+      setMsg({ text: 'Network error. Please try again later.', type: 'error' });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     const first = document.getElementById('r-first').value.trim();
     const last = document.getElementById('r-last').value.trim();
     const email = document.getElementById('r-email').value.trim();
     const phone = document.getElementById('r-phone').value.trim();
     const pwd = document.getElementById('r-pwd').value;
     const pwd2 = document.getElementById('r-pwd2').value;
-    const terms = document.getElementById('r-terms').checked;
     
     if (!first || !last || !email || !phone || !pwd) { setMsg({ text: 'Please fill in all fields.', type: 'error' }); return; }
     if (!email.includes('@')) { setMsg({ text: 'Please enter a valid email.', type: 'error' }); return; }
     if (pwd.length < 8) { setMsg({ text: 'Password must be at least 8 characters.', type: 'error' }); return; }
     if (pwd !== pwd2) { setMsg({ text: 'Passwords do not match.', type: 'error' }); return; }
-    if (!terms) { setMsg({ text: 'Please accept the terms and conditions.', type: 'error' }); return; }
     
-    setMsg({ text: '✓ Account created! Welcome to the network.', type: 'success' });
-    setTimeout(() => {
-      onClose();
-    }, 1500);
+    setIsLoading(true);
+    setMsg({ text: '', type: '' });
+    try {
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ firstName: first, lastName: last, email, phone, password: pwd }),
+      });
+      const data = await response.json();
+      
+      if (!response.ok) {
+        setMsg({ text: data.error || 'Registration failed', type: 'error' });
+        return;
+      }
+      
+      localStorage.setItem('token', data.token);
+      setMsg({ text: '✓ Account created! Welcome to the network.', type: 'success' });
+      setTimeout(() => {
+        onClose();
+      }, 1500);
+    } catch (err) {
+      setMsg({ text: 'Network error. Please try again later.', type: 'error' });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -118,8 +160,8 @@ export default function LoginModal({ isOpen, onClose }) {
                   <div className="text-right mb-5">
                     <a href="#" className="text-xs text-primary-container hover:underline">Forgot password?</a>
                   </div>
-                  <button onClick={handleLogin} className="w-full bg-primary-container text-background font-bold text-sm py-3 rounded-lg hover:bg-[#ffb033] transition-colors uppercase tracking-wider">
-                    Sign in to your account
+                  <button onClick={handleLogin} disabled={isLoading} className="w-full bg-primary-container text-background font-bold text-sm py-3 rounded-lg hover:bg-[#ffb033] transition-colors uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed">
+                    {isLoading ? 'Signing in...' : 'Sign in to your account'}
                   </button>
                   {msg.text && (
                     <div className={`mt-4 p-3 rounded-lg text-xs text-center font-medium ${msg.type === 'success' ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'}`}>
@@ -176,15 +218,8 @@ export default function LoginModal({ isOpen, onClose }) {
                     </div>
                   </div>
                   
-                  <div className="flex items-start gap-2 mb-5">
-                    <input id="r-terms" type="checkbox" className="mt-1 w-3.5 h-3.5 rounded border-white/20 bg-white/5 text-primary-container focus:ring-primary-container focus:ring-offset-background accent-primary-container" />
-                    <label htmlFor="r-terms" className="text-xs text-on-surface-variant leading-tight">
-                      I agree to the <a href="#" className="text-primary-container hover:underline">terms and conditions</a>
-                    </label>
-                  </div>
-                  
-                  <button onClick={handleRegister} className="w-full bg-primary-container text-background font-bold text-sm py-3 rounded-lg hover:bg-[#ffb033] transition-colors uppercase tracking-wider">
-                    Create my account
+                  <button onClick={handleRegister} disabled={isLoading} className="w-full bg-primary-container text-background font-bold text-sm py-3 rounded-lg hover:bg-[#ffb033] transition-colors uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed">
+                    {isLoading ? 'Creating account...' : 'Create my account'}
                   </button>
                   {msg.text && (
                     <div className={`mt-4 p-3 rounded-lg text-xs text-center font-medium ${msg.type === 'success' ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'}`}>
