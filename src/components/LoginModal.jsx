@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+const API_URL = import.meta.env.VITE_API_URL || '';
+
 export default function LoginModal({ isOpen, onClose }) {
   const [tab, setTab] = useState('login');
   const [showPwd, setShowPwd] = useState(false);
@@ -22,7 +24,7 @@ export default function LoginModal({ isOpen, onClose }) {
     setIsLoading(true);
     setMsg({ text: '', type: '' });
     try {
-      const response = await fetch('/api/login', {
+      const response = await fetch(`${API_URL}/api/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password: pwd }),
@@ -62,7 +64,7 @@ export default function LoginModal({ isOpen, onClose }) {
     setIsLoading(true);
     setMsg({ text: '', type: '' });
     try {
-      const response = await fetch('/api/register', {
+      const response = await fetch(`${API_URL}/api/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ firstName: first, lastName: last, email, phone, password: pwd }),
