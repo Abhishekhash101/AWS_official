@@ -52,11 +52,10 @@ export default function LoginModal({ isOpen, onClose }) {
     const first = document.getElementById('r-first').value.trim();
     const last = document.getElementById('r-last').value.trim();
     const email = document.getElementById('r-email').value.trim();
-    const phone = document.getElementById('r-phone').value.trim();
     const pwd = document.getElementById('r-pwd').value;
     const pwd2 = document.getElementById('r-pwd2').value;
     
-    if (!first || !last || !email || !phone || !pwd) { setMsg({ text: 'Please fill in all fields.', type: 'error' }); return; }
+    if (!first || !last || !email || !pwd) { setMsg({ text: 'Please fill in all fields.', type: 'error' }); return; }
     if (!email.toLowerCase().endsWith('@vitstudent.ac.in')) { setMsg({ text: 'Only VIT students (@vitstudent.ac.in) are allowed.', type: 'error' }); return; }
     if (pwd.length < 8) { setMsg({ text: 'Password must be at least 8 characters.', type: 'error' }); return; }
     if (pwd !== pwd2) { setMsg({ text: 'Passwords do not match.', type: 'error' }); return; }
@@ -67,7 +66,7 @@ export default function LoginModal({ isOpen, onClose }) {
       const response = await fetch(`${API_URL}/api/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ firstName: first, lastName: last, email, phone, password: pwd }),
+        body: JSON.stringify({ firstName: first, lastName: last, email, password: pwd }),
       });
       const data = await response.json();
       
@@ -194,10 +193,7 @@ export default function LoginModal({ isOpen, onClose }) {
                     <label className="block text-xs font-medium text-on-surface-variant mb-2">Email address</label>
                     <input id="r-email" type="email" placeholder="you@example.com" className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all placeholder-white/30" />
                   </div>
-                  <div className="mb-4">
-                    <label className="block text-xs font-medium text-on-surface-variant mb-2">Phone number</label>
-                    <input id="r-phone" type="tel" placeholder="+91 98765 43210" className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all placeholder-white/30" />
-                  </div>
+
                   <div className="mb-4">
                     <label className="block text-xs font-medium text-on-surface-variant mb-2">Password</label>
                     <div className="relative">
