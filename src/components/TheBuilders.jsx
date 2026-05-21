@@ -17,6 +17,8 @@ import jaanyaImg from '../assets/Board memb/jannya.jpeg';
 import jaanyaPopupImg from '../assets/Board memb/jannya_generated.png';
 import ayushImg from '../assets/Board memb/ayush.jpeg';
 import ayushPopupImg from '../assets/Board memb/ayush_generated.png';
+import pihuImg from '../assets/Board memb/pihu.jpeg';
+import pihuPopupImg from '../assets/Board memb/pihu_generated.png';
 
 const BUILDERS = [
   // Outer Ring (5 members) — indices 0-4
@@ -24,7 +26,7 @@ const BUILDERS = [
   { id: 2, initials: 'AS', fullName: 'Aesha Singh', role: 'VICE CHAIRPERSON', desc: 'Orchestrates operations and strategic community growth.', color: '#008296', insta: 'https://www.instagram.com/__aesha.06?igsh=MWwydms5M3JtbnllcA%3D%3D&utm_source=qr', linkedin: 'https://www.linkedin.com/in/aesha-singh-b2b497353?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app', image: aeshaImg, popupImage: aeshaPopupImg },
   { id: 3, initials: 'VJ', fullName: 'Vidhi Prashant Jain', role: 'SECRETARY', desc: 'Manages documentation, communication, and club coordination.', color: '#E1523D', insta: 'https://www.instagram.com/vidhi.j0606?igsh=bThwN25vamIzMjZm&utm_source=qr', linkedin: 'https://www.linkedin.com/in/vidhi-jain0606/', image: vidiImg, popupImage: vidiPopupImg },
   { id: 4, initials: 'TR', fullName: 'Tanishi Raj', role: 'CO-SECRETARY', desc: 'Supports administrative operations and event logistics.', color: '#8A2BE2', insta: 'https://www.instagram.com/tanishi_raj115/', linkedin: 'https://www.linkedin.com/in/tanishiraj/', image: tanishaImg, popupImage: tanishaPopupImg },
-  { id: 5, initials: 'PG', fullName: 'Pihu Gupta', role: 'DESIGN HEAD', desc: 'Creates the visual identity and design language of the club.', color: '#C2185B', insta: '#', linkedin: '#' },
+  { id: 5, initials: 'PG', fullName: 'Pihu Gupta', role: 'DESIGN HEAD', desc: 'Creates the visual identity and design language of the club.', color: '#C2185B', insta: 'https://www.instagram.com/_eroda_h/', linkedin: 'https://www.linkedin.com/in/pihu-gupta-676514353/', image: pihuImg, popupImage: pihuPopupImg },
   // Inner Ring (5 members) — indices 5-9
   { id: 6, initials: 'AS', fullName: 'Arshi Saxena', role: 'EVENTS HEAD', desc: 'Plans and executes large-scale bootcamps and hackathons.', color: '#D13212', insta: 'https://www.instagram.com/arshi_saxenaa/', linkedin: 'https://www.linkedin.com/in/arshi-saxena-59268130a', image: arshiImg, popupImage: arshiPopupImg },
   { id: 7, initials: 'AN', fullName: 'Ayush Naugariya', role: 'FINANCE HEAD', desc: 'Manages budgets, sponsorships, and financial planning.', color: '#6A0DAD', insta: 'https://www.instagram.com/ayushnaugariya/', linkedin: 'https://www.linkedin.com/in/ayushnaugariya', image: ayushImg, popupImage: ayushPopupImg },
