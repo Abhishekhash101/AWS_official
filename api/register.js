@@ -21,7 +21,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { firstName, lastName, email, phone, password } = req.body;
+    const { firstName, lastName, email, password } = req.body;
 
     if (!firstName || !lastName || !email || !password) {
       return res.status(400).json({ error: 'Please provide all required fields' });
@@ -45,8 +45,8 @@ export default async function handler(req, res) {
 
     // Insert user
     const newUser = await db.query(
-      'INSERT INTO users (first_name, last_name, email, phone, password_hash) VALUES ($1, $2, $3, $4, $5) RETURNING id, first_name, email',
-      [firstName, lastName, email, phone, passwordHash]
+      'INSERT INTO users (first_name, last_name, email, password_hash) VALUES ($1, $2, $3, $4) RETURNING id, first_name, email',
+      [firstName, lastName, email, passwordHash]
     );
 
     const token = jwt.sign({ id: newUser.rows[0].id }, process.env.JWT_SECRET, { expiresIn: '7d' });
