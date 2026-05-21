@@ -66,8 +66,9 @@ export default function Hero() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 mt-4 md:mt-0 md:ml-auto">
             <a
-              className="bg-primary-container text-background font-headline-md text-label-md px-8 py-4 hover:bg-primary transition-all flex items-center justify-center gap-2 uppercase tracking-widest"
+              className="bg-primary-container text-background font-headline-md text-label-md px-8 py-4 hover:bg-primary transition-all flex items-center justify-center gap-2 uppercase tracking-widest cursor-pointer"
               href="#join"
+              onClick={(e) => { e.preventDefault(); window.dispatchEvent(new Event('open-login-modal')); }}
             >
               INITIATE SEQUENCE
               <span className="material-symbols-outlined">terminal</span>

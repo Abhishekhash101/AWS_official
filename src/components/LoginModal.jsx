@@ -1,0 +1,202 @@
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+export default function LoginModal({ isOpen, onClose }) {
+  const [tab, setTab] = useState('login');
+  const [showPwd, setShowPwd] = useState(false);
+  const [showPwd2, setShowPwd2] = useState(false);
+  const [msg, setMsg] = useState({ text: '', type: '' });
+
+  const handleSwitchTab = (newTab) => {
+    setTab(newTab);
+    setMsg({ text: '', type: '' });
+  };
+
+  const handleLogin = () => {
+    const email = document.getElementById('l-email').value.trim();
+    const pwd = document.getElementById('l-pwd').value;
+    if (!email || !pwd) { setMsg({ text: 'Please fill in all fields.', type: 'error' }); return; }
+    if (!email.includes('@')) { setMsg({ text: 'Please enter a valid email.', type: 'error' }); return; }
+    setMsg({ text: '✓ Sign in successful! Redirecting...', type: 'success' });
+    setTimeout(() => {
+      onClose();
+    }, 1500);
+  };
+
+  const handleRegister = () => {
+    const first = document.getElementById('r-first').value.trim();
+    const last = document.getElementById('r-last').value.trim();
+    const email = document.getElementById('r-email').value.trim();
+    const phone = document.getElementById('r-phone').value.trim();
+    const pwd = document.getElementById('r-pwd').value;
+    const pwd2 = document.getElementById('r-pwd2').value;
+    const terms = document.getElementById('r-terms').checked;
+    
+    if (!first || !last || !email || !phone || !pwd) { setMsg({ text: 'Please fill in all fields.', type: 'error' }); return; }
+    if (!email.includes('@')) { setMsg({ text: 'Please enter a valid email.', type: 'error' }); return; }
+    if (pwd.length < 8) { setMsg({ text: 'Password must be at least 8 characters.', type: 'error' }); return; }
+    if (pwd !== pwd2) { setMsg({ text: 'Passwords do not match.', type: 'error' }); return; }
+    if (!terms) { setMsg({ text: 'Please accept the terms and conditions.', type: 'error' }); return; }
+    
+    setMsg({ text: '✓ Account created! Welcome to the network.', type: 'success' });
+    setTimeout(() => {
+      onClose();
+    }, 1500);
+  };
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div 
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={onClose}
+        >
+          <motion.div 
+            className="bg-[#111318] border border-white/10 rounded-2xl p-6 md:p-8 max-w-[440px] w-full relative overflow-hidden shadow-2xl"
+            initial={{ y: 20, scale: 0.95 }}
+            animate={{ y: 0, scale: 1 }}
+            exit={{ y: 20, scale: 0.95 }}
+            transition={{ type: "spring", duration: 0.5, bounce: 0.2 }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close Button */}
+            <button 
+              className="absolute top-4 right-4 text-on-surface-variant hover:text-white transition-colors"
+              onClick={onClose}
+            >
+              <span className="material-symbols-outlined text-xl">close</span>
+            </button>
+
+            <div className="flex items-center justify-between mb-6 pr-6">
+              <div>
+                <div className="text-xl font-bold text-white mb-1">
+                  {tab === 'login' ? 'Welcome back' : 'Join the network'}
+                </div>
+                <div className="text-sm text-on-surface-variant">
+                  {tab === 'login' ? 'Sign in to your account' : 'Create your free account'}
+                </div>
+              </div>
+              <div className="w-10 h-10 rounded-full bg-primary-container/10 flex items-center justify-center border border-primary-container/20">
+                <span className="material-symbols-outlined text-primary-container">group</span>
+              </div>
+            </div>
+
+            <div className="flex border-b border-white/10 mb-6">
+              <button 
+                className={`flex-1 pb-3 text-sm font-medium transition-all flex items-center justify-center gap-2 border-b-2 ${tab === 'login' ? 'border-primary-container text-primary-container' : 'border-transparent text-on-surface-variant hover:text-white'}`}
+                onClick={() => handleSwitchTab('login')}
+              >
+                <span className="material-symbols-outlined text-[18px]">login</span> Sign in
+              </button>
+              <button 
+                className={`flex-1 pb-3 text-sm font-medium transition-all flex items-center justify-center gap-2 border-b-2 ${tab === 'register' ? 'border-primary-container text-primary-container' : 'border-transparent text-on-surface-variant hover:text-white'}`}
+                onClick={() => handleSwitchTab('register')}
+              >
+                <span className="material-symbols-outlined text-[18px]">person_add</span> Register
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {tab === 'login' ? (
+                <motion.div key="login" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+                  <div className="mb-4">
+                    <label className="block text-xs font-medium text-on-surface-variant mb-2">Email address</label>
+                    <input id="l-email" type="email" placeholder="you@example.com" className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all placeholder-white/30" />
+                  </div>
+                  <div className="mb-2">
+                    <label className="block text-xs font-medium text-on-surface-variant mb-2">Password</label>
+                    <div className="relative">
+                      <input id="l-pwd" type={showPwd ? "text" : "password"} placeholder="Enter your password" className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all pr-10 placeholder-white/30" />
+                      <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-white transition-colors" onClick={() => setShowPwd(!showPwd)}>
+                        <span className="material-symbols-outlined text-[18px]">{showPwd ? 'visibility' : 'visibility_off'}</span>
+                      </button>
+                    </div>
+                  </div>
+                  <div className="text-right mb-5">
+                    <a href="#" className="text-xs text-primary-container hover:underline">Forgot password?</a>
+                  </div>
+                  <button onClick={handleLogin} className="w-full bg-primary-container text-background font-bold text-sm py-3 rounded-lg hover:bg-[#ffb033] transition-colors uppercase tracking-wider">
+                    Sign in to your account
+                  </button>
+                  {msg.text && (
+                    <div className={`mt-4 p-3 rounded-lg text-xs text-center font-medium ${msg.type === 'success' ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'}`}>
+                      {msg.text}
+                    </div>
+                  )}
+                  
+                  <div className="flex items-center gap-3 my-5">
+                    <div className="h-px bg-white/10 flex-1"></div>
+                    <span className="text-xs text-on-surface-variant">or</span>
+                    <div className="h-px bg-white/10 flex-1"></div>
+                  </div>
+                  
+                  <button onClick={() => handleSwitchTab('register')} className="w-full bg-transparent border border-white/20 text-white font-medium text-sm py-3 rounded-lg hover:bg-white/5 transition-colors flex items-center justify-center gap-2">
+                    <span className="material-symbols-outlined text-[18px]">person_add</span> Create a new account
+                  </button>
+                </motion.div>
+              ) : (
+                <motion.div key="register" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+                  <div className="grid grid-cols-2 gap-3 mb-4">
+                    <div>
+                      <label className="block text-xs font-medium text-on-surface-variant mb-2">First name</label>
+                      <input id="r-first" type="text" placeholder="Ravi" className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all placeholder-white/30" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-on-surface-variant mb-2">Last name</label>
+                      <input id="r-last" type="text" placeholder="Kumar" className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all placeholder-white/30" />
+                    </div>
+                  </div>
+                  <div className="mb-4">
+                    <label className="block text-xs font-medium text-on-surface-variant mb-2">Email address</label>
+                    <input id="r-email" type="email" placeholder="you@example.com" className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all placeholder-white/30" />
+                  </div>
+                  <div className="mb-4">
+                    <label className="block text-xs font-medium text-on-surface-variant mb-2">Phone number</label>
+                    <input id="r-phone" type="tel" placeholder="+91 98765 43210" className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all placeholder-white/30" />
+                  </div>
+                  <div className="mb-4">
+                    <label className="block text-xs font-medium text-on-surface-variant mb-2">Password</label>
+                    <div className="relative">
+                      <input id="r-pwd" type={showPwd ? "text" : "password"} placeholder="Min. 8 characters" className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all pr-10 placeholder-white/30" />
+                      <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-white transition-colors" onClick={() => setShowPwd(!showPwd)}>
+                        <span className="material-symbols-outlined text-[18px]">{showPwd ? 'visibility' : 'visibility_off'}</span>
+                      </button>
+                    </div>
+                  </div>
+                  <div className="mb-5">
+                    <label className="block text-xs font-medium text-on-surface-variant mb-2">Confirm password</label>
+                    <div className="relative">
+                      <input id="r-pwd2" type={showPwd2 ? "text" : "password"} placeholder="Repeat password" className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all pr-10 placeholder-white/30" />
+                      <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-white transition-colors" onClick={() => setShowPwd2(!showPwd2)}>
+                        <span className="material-symbols-outlined text-[18px]">{showPwd2 ? 'visibility' : 'visibility_off'}</span>
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-2 mb-5">
+                    <input id="r-terms" type="checkbox" className="mt-1 w-3.5 h-3.5 rounded border-white/20 bg-white/5 text-primary-container focus:ring-primary-container focus:ring-offset-background accent-primary-container" />
+                    <label htmlFor="r-terms" className="text-xs text-on-surface-variant leading-tight">
+                      I agree to the <a href="#" className="text-primary-container hover:underline">terms and conditions</a>
+                    </label>
+                  </div>
+                  
+                  <button onClick={handleRegister} className="w-full bg-primary-container text-background font-bold text-sm py-3 rounded-lg hover:bg-[#ffb033] transition-colors uppercase tracking-wider">
+                    Create my account
+                  </button>
+                  {msg.text && (
+                    <div className={`mt-4 p-3 rounded-lg text-xs text-center font-medium ${msg.type === 'success' ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'}`}>
+                      {msg.text}
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}

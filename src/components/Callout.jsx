@@ -15,8 +15,9 @@ export default function Callout() {
           </h2>
         </div>
         <a
-          className="bg-background text-primary-container font-headline-md text-label-md px-8 py-4 hover:bg-white transition-all uppercase tracking-widest"
+          className="bg-background text-primary-container font-headline-md text-label-md px-8 py-4 hover:bg-white transition-all uppercase tracking-widest cursor-pointer"
           href="#join"
+          onClick={(e) => { e.preventDefault(); window.dispatchEvent(new Event('open-login-modal')); }}
         >
           Join the Network
         </a>

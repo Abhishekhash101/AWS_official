@@ -1,0 +1,172 @@
+
+<h2 class="sr-only">Login and register popup modal that appears when a user clicks Join Network</h2>
+
+<style>
+  .inp { width: 100%; box-sizing: border-box; padding: 9px 12px; font-size: 14px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-primary); color: var(--color-text-primary); outline: none; transition: border-color .15s; }
+  .inp:focus { border-color: #534AB7; box-shadow: 0 0 0 3px rgba(83,74,183,0.12); }
+  .inp::placeholder { color: var(--color-text-tertiary); }
+  .btn-primary { width: 100%; padding: 10px; font-size: 14px; font-weight: 500; border-radius: var(--border-radius-md); border: none; background: #534AB7; color: #fff; cursor: pointer; transition: opacity .15s; }
+  .btn-primary:hover { opacity: .88; }
+  .btn-primary:active { transform: scale(.98); }
+  .tab-btn { flex: 1; padding: 8px; font-size: 13px; font-weight: 500; border: none; background: transparent; cursor: pointer; border-bottom: 2px solid transparent; color: var(--color-text-secondary); transition: all .15s; }
+  .tab-btn.active { border-bottom-color: #534AB7; color: #534AB7; }
+  .divider { display: flex; align-items: center; gap: 10px; margin: 14px 0; }
+  .divider span { font-size: 12px; color: var(--color-text-tertiary); white-space: nowrap; }
+  .divider::before, .divider::after { content:''; flex:1; height: 0.5px; background: var(--color-border-tertiary); }
+  .field { margin-bottom: 12px; }
+  .field label { display: block; font-size: 12px; color: var(--color-text-secondary); margin-bottom: 5px; font-weight: 500; }
+  .msg { font-size: 12px; margin-top: 10px; text-align: center; padding: 8px; border-radius: var(--border-radius-md); display: none; }
+  .msg.success { display: block; background: var(--color-background-success); color: var(--color-text-success); }
+  .msg.error { display: block; background: var(--color-background-danger); color: var(--color-text-danger); }
+  .pwd-wrap { position: relative; }
+  .pwd-wrap .inp { padding-right: 38px; }
+  .eye-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--color-text-tertiary); font-size: 16px; padding: 2px; }
+  .eye-btn:hover { color: var(--color-text-secondary); }
+</style>
+
+<div style="background: var(--color-background-secondary); padding: 2rem 1rem; border-radius: var(--border-radius-lg); display: flex; flex-direction: column; align-items: center; gap: 1.5rem;">
+
+  <div style="background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1.25rem 1.5rem; max-width: 440px; width: 100%;">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+      <div>
+        <div style="font-size: 16px; font-weight: 500; color: var(--color-text-primary);" id="modal-title">Welcome to the network</div>
+        <div style="font-size: 12px; color: var(--color-text-secondary); margin-top: 2px;" id="modal-sub">Sign in or create your account below</div>
+      </div>
+      <div style="width: 36px; height: 36px; border-radius: 50%; background: #EEEDFE; display: flex; align-items: center; justify-content: center;">
+        <i class="ti ti-users" style="font-size:18px; color:#534AB7;" aria-hidden="true"></i>
+      </div>
+    </div>
+
+    <div style="display: flex; border-bottom: 0.5px solid var(--color-border-tertiary); margin-bottom: 1.25rem;">
+      <button class="tab-btn active" id="tab-login" onclick="switchTab('login')">
+        <i class="ti ti-login" style="font-size:14px; vertical-align:-2px; margin-right:4px;" aria-hidden="true"></i>Sign in
+      </button>
+      <button class="tab-btn" id="tab-register" onclick="switchTab('register')">
+        <i class="ti ti-user-plus" style="font-size:14px; vertical-align:-2px; margin-right:4px;" aria-hidden="true"></i>Register
+      </button>
+    </div>
+
+    <div id="panel-login">
+      <div class="field">
+        <label>Email address</label>
+        <input class="inp" type="email" id="l-email" placeholder="you@example.com">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <div class="pwd-wrap">
+          <input class="inp" type="password" id="l-pwd" placeholder="Enter your password">
+          <button class="eye-btn" onclick="togglePwd('l-pwd', this)" aria-label="Show password">
+            <i class="ti ti-eye" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
+      <div style="text-align: right; margin-bottom: 14px;">
+        <a href="#" style="font-size: 12px; color: #534AB7; text-decoration: none;">Forgot password?</a>
+      </div>
+      <button class="btn-primary" onclick="handleLogin()">Sign in to your account</button>
+      <div class="msg" id="l-msg"></div>
+      <div class="divider"><span>or</span></div>
+      <button style="width:100%; padding:9px; font-size:13px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-primary); color: var(--color-text-primary); cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;" onclick="switchTab('register')">
+        <i class="ti ti-user-plus" style="font-size:16px;" aria-hidden="true"></i> Create a new account
+      </button>
+    </div>
+
+    <div id="panel-register" style="display:none;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <div class="field">
+          <label>First name</label>
+          <input class="inp" type="text" id="r-first" placeholder="Ravi">
+        </div>
+        <div class="field">
+          <label>Last name</label>
+          <input class="inp" type="text" id="r-last" placeholder="Kumar">
+        </div>
+      </div>
+      <div class="field">
+        <label>Email address</label>
+        <input class="inp" type="email" id="r-email" placeholder="you@example.com">
+      </div>
+      <div class="field">
+        <label>Phone number</label>
+        <input class="inp" type="tel" id="r-phone" placeholder="+91 98765 43210">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <div class="pwd-wrap">
+          <input class="inp" type="password" id="r-pwd" placeholder="Min. 8 characters">
+          <button class="eye-btn" onclick="togglePwd('r-pwd', this)" aria-label="Show password">
+            <i class="ti ti-eye" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
+      <div class="field">
+        <label>Confirm password</label>
+        <div class="pwd-wrap">
+          <input class="inp" type="password" id="r-pwd2" placeholder="Repeat password">
+          <button class="eye-btn" onclick="togglePwd('r-pwd2', this)" aria-label="Show confirm password">
+            <i class="ti ti-eye" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
+      <div style="display: flex; gap: 8px; align-items: flex-start; margin-bottom: 14px;">
+        <input type="checkbox" id="r-terms" style="margin-top: 3px; accent-color: #534AB7;">
+        <label for="r-terms" style="font-size: 12px; color: var(--color-text-secondary);">I agree to the <a href="#" style="color:#534AB7; text-decoration:none;">terms and conditions</a></label>
+      </div>
+      <button class="btn-primary" onclick="handleRegister()">Create my account</button>
+      <div class="msg" id="r-msg"></div>
+    </div>
+  </div>
+
+  <div style="font-size: 12px; color: var(--color-text-tertiary); text-align: center; max-width: 340px;">
+    This is a preview of the popup. In your actual site, this will appear as an overlay when the user clicks <em>Join network</em>.
+  </div>
+</div>
+
+<script>
+function switchTab(tab) {
+  const isLogin = tab === 'login';
+  document.getElementById('panel-login').style.display = isLogin ? 'block' : 'none';
+  document.getElementById('panel-register').style.display = isLogin ? 'none' : 'block';
+  document.getElementById('tab-login').classList.toggle('active', isLogin);
+  document.getElementById('tab-register').classList.toggle('active', !isLogin);
+  document.getElementById('modal-title').textContent = isLogin ? 'Welcome back' : 'Join the network';
+  document.getElementById('modal-sub').textContent = isLogin ? 'Sign in to your account' : 'Create your free account';
+}
+
+function togglePwd(id, btn) {
+  const inp = document.getElementById(id);
+  const showing = inp.type === 'text';
+  inp.type = showing ? 'password' : 'text';
+  btn.querySelector('i').className = showing ? 'ti ti-eye' : 'ti ti-eye-off';
+}
+
+function showMsg(id, text, type) {
+  const el = document.getElementById(id);
+  el.textContent = text;
+  el.className = 'msg ' + type;
+}
+
+function handleLogin() {
+  const email = document.getElementById('l-email').value.trim();
+  const pwd = document.getElementById('l-pwd').value;
+  if (!email || !pwd) { showMsg('l-msg', 'Please fill in all fields.', 'error'); return; }
+  if (!email.includes('@')) { showMsg('l-msg', 'Please enter a valid email.', 'error'); return; }
+  showMsg('l-msg', '✓ Sign in successful! Redirecting...', 'success');
+}
+
+function handleRegister() {
+  const first = document.getElementById('r-first').value.trim();
+  const last = document.getElementById('r-last').value.trim();
+  const email = document.getElementById('r-email').value.trim();
+  const phone = document.getElementById('r-phone').value.trim();
+  const pwd = document.getElementById('r-pwd').value;
+  const pwd2 = document.getElementById('r-pwd2').value;
+  const terms = document.getElementById('r-terms').checked;
+  if (!first || !last || !email || !phone || !pwd) { showMsg('r-msg', 'Please fill in all fields.', 'error'); return; }
+  if (!email.includes('@')) { showMsg('r-msg', 'Please enter a valid email.', 'error'); return; }
+  if (pwd.length < 8) { showMsg('r-msg', 'Password must be at least 8 characters.', 'error'); return; }
+  if (pwd !== pwd2) { showMsg('r-msg', 'Passwords do not match.', 'error'); return; }
+  if (!terms) { showMsg('r-msg', 'Please accept the terms and conditions.', 'error'); return; }
+  showMsg('r-msg', '✓ Account created! Welcome to the network.', 'success');
+}
+</script>

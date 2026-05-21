@@ -116,8 +116,9 @@ export default function Navbar() {
 
       {/* Desktop CTA */}
       <a
-        className="hidden md:inline-flex bg-primary-container text-background font-headline-md text-label-md px-6 py-2 hover:bg-primary transition-colors items-center gap-2 uppercase tracking-widest animate-attention group"
+        className="hidden md:inline-flex bg-primary-container text-background font-headline-md text-label-md px-6 py-2 hover:bg-primary transition-colors items-center gap-2 uppercase tracking-widest animate-attention group cursor-pointer"
         href="#join"
+        onClick={(e) => { e.preventDefault(); window.dispatchEvent(new Event('open-login-modal')); }}
       >
         JOIN CLOUD
         <span className="material-symbols-outlined text-sm inline-block group-hover:animate-arrow-swing">arrow_forward</span>
@@ -152,9 +153,9 @@ export default function Navbar() {
             </a>
           ))}
           <a
-            className="bg-primary-container text-background font-headline-md text-label-md px-6 py-2 hover:bg-primary transition-colors items-center gap-2 uppercase tracking-widest inline-flex mt-2 animate-attention group"
+            className="bg-primary-container text-background font-headline-md text-label-md px-6 py-2 hover:bg-primary transition-colors items-center gap-2 uppercase tracking-widest inline-flex mt-2 animate-attention group cursor-pointer"
             href="#join"
-            onClick={() => setMobileOpen(false)}
+            onClick={(e) => { e.preventDefault(); setMobileOpen(false); window.dispatchEvent(new Event('open-login-modal')); }}
           >
             JOIN CLOUD
             <span className="material-symbols-outlined text-sm inline-block group-hover:animate-arrow-swing">arrow_forward</span>

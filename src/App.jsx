@@ -15,6 +15,7 @@ import BlogBedrock from './pages/BlogBedrock';
 import BlogLambda from './pages/BlogLambda';
 import BlogPredictiveAnalytics from './pages/BlogPredictiveAnalytics';
 import BlogGoogleMaps from './pages/BlogGoogleMaps';
+import LoginModal from './components/LoginModal';
 
 function HomePage() {
   return (
@@ -37,6 +38,13 @@ function HomePage() {
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+
+  useEffect(() => {
+    const handleOpenModal = () => setIsLoginModalOpen(true);
+    window.addEventListener('open-login-modal', handleOpenModal);
+    return () => window.removeEventListener('open-login-modal', handleOpenModal);
+  }, []);
 
   useEffect(() => {
     // Show loader for 8 seconds to demonstrate the animation
@@ -49,6 +57,7 @@ export default function App() {
   return (
     <>
       {isLoading && <AwsStudentBuilderLoader />}
+      <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
       <div className="bg-background text-on-surface bg-grid-pattern min-h-screen relative overflow-x-hidden selection:bg-primary-container selection:text-on-primary-container font-body-md">
         <Routes>
           <Route path="/" element={<HomePage />} />
