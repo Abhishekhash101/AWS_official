@@ -19,6 +19,8 @@ import LoginModal from './components/LoginModal';
 import AwsQuiz from './pages/AwsQuiz';
 import QuizHub from './pages/QuizHub';
 import CaseStudyQuiz from './pages/CaseStudyQuiz';
+import AdminPage from './pages/AdminPage';
+import AccountPage from './pages/AccountPage';
 
 function HomePage() {
   return (
@@ -71,6 +73,8 @@ export default function App() {
           <Route path="/quiz" element={<QuizHub />} />
           <Route path="/quiz/:quizId" element={<AwsQuiz />} />
           <Route path="/case-study/:caseId" element={<CaseStudyQuiz />} />
+          <Route path="/admin" element={<AdminPage />} />
+          <Route path="/account" element={<AccountPage />} />
         </Routes>
       </div>
     </>

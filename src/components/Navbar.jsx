@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import awsIcon from '../assets/aws_icon.jpeg';
+import { getUser, logout } from '../utils/auth';
 
 const navLinks = [
   { label: 'Home', href: '#home', sectionId: 'home' },
@@ -18,6 +19,14 @@ export default function Navbar() {
   const [displayedText, setDisplayedText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0, opacity: 0 });
+  const [user, setUser] = useState(getUser());
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  useEffect(() => {
+    const handleAuthChange = () => setUser(getUser());
+    window.addEventListener('auth-change', handleAuthChange);
+    return () => window.removeEventListener('auth-change', handleAuthChange);
+  }, []);
 
   const linkRefs = useRef([]);
   const navRef = useRef(null);
@@ -117,23 +126,64 @@ export default function Navbar() {
       </div>
 
       {/* Desktop Quiz CTA */}
-      <button
-        onClick={() => navigate('/quiz')}
-        className="hidden md:inline-flex border border-[#FF9900]/40 text-[#FF9900] font-headline-md text-label-md px-4 py-2 hover:bg-[#FF9900]/10 transition-colors items-center gap-2 uppercase tracking-widest"
-      >
-        QUIZ
-        <span className="material-symbols-outlined text-sm">quiz</span>
-      </button>
+      {user && (
+        <button
+          onClick={() => navigate('/quiz')}
+          className="hidden md:inline-flex border border-[#FF9900]/40 text-[#FF9900] font-headline-md text-label-md px-4 py-2 hover:bg-[#FF9900]/10 transition-colors items-center gap-2 uppercase tracking-widest mr-4"
+        >
+          QUIZ
+          <span className="material-symbols-outlined text-sm">quiz</span>
+        </button>
+      )}
 
-      {/* Desktop CTA */}
-      <a
-        className="hidden md:inline-flex bg-primary-container text-background font-headline-md text-label-md px-6 py-2 hover:bg-primary transition-colors items-center gap-2 uppercase tracking-widest animate-attention group cursor-pointer"
-        href="#join"
-        onClick={(e) => { e.preventDefault(); window.dispatchEvent(new Event('open-login-modal')); }}
-      >
-        JOIN CLOUD
-        <span className="material-symbols-outlined text-sm inline-block group-hover:animate-arrow-swing">arrow_forward</span>
-      </a>
+      {/* Desktop CTA / User Dropdown */}
+      {!user ? (
+        <a
+          className="hidden md:inline-flex bg-primary-container text-background font-headline-md text-label-md px-6 py-2 hover:bg-primary transition-colors items-center gap-2 uppercase tracking-widest animate-attention group cursor-pointer"
+          href="#join"
+          onClick={(e) => { e.preventDefault(); window.dispatchEvent(new Event('open-login-modal')); }}
+        >
+          JOIN CLOUD
+          <span className="material-symbols-outlined text-sm inline-block group-hover:animate-arrow-swing">arrow_forward</span>
+        </a>
+      ) : (
+        <div className="hidden md:block relative">
+          <button
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+            className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 hover:bg-white/10 transition-colors"
+          >
+            <span className="material-symbols-outlined text-primary-container text-xl">account_circle</span>
+            <span className="font-mono text-sm text-white uppercase tracking-widest">{user.first_name}</span>
+            <span className="material-symbols-outlined text-on-surface-variant text-sm">
+              {dropdownOpen ? 'expand_less' : 'expand_more'}
+            </span>
+          </button>
+          
+          {dropdownOpen && (
+            <div className="absolute right-0 mt-2 w-48 bg-[#111318] border border-white/10 shadow-xl overflow-hidden z-50">
+              <button
+                onClick={() => { setDropdownOpen(false); navigate('/account'); }}
+                className="w-full text-left px-4 py-3 font-mono text-sm text-on-surface-variant hover:text-white hover:bg-white/5 transition-colors flex items-center gap-2 border-b border-white/5"
+              >
+                <span className="material-symbols-outlined text-sm">manage_accounts</span>
+                Account
+              </button>
+              <button
+                onClick={() => {
+                  setDropdownOpen(false);
+                  logout();
+                  window.dispatchEvent(new Event('auth-change'));
+                  navigate('/');
+                }}
+                className="w-full text-left px-4 py-3 font-mono text-sm text-red-400 hover:bg-red-500/10 transition-colors flex items-center gap-2"
+              >
+                <span className="material-symbols-outlined text-sm">logout</span>
+                Logout
+              </button>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Mobile Menu Button */}
       <button
@@ -163,14 +213,49 @@ export default function Navbar() {
               {link.label}
             </a>
           ))}
-          <a
-            className="bg-primary-container text-background font-headline-md text-label-md px-6 py-2 hover:bg-primary transition-colors items-center gap-2 uppercase tracking-widest inline-flex mt-2 animate-attention group cursor-pointer"
-            href="#join"
-            onClick={(e) => { e.preventDefault(); setMobileOpen(false); window.dispatchEvent(new Event('open-login-modal')); }}
-          >
-            JOIN CLOUD
-            <span className="material-symbols-outlined text-sm inline-block group-hover:animate-arrow-swing">arrow_forward</span>
-          </a>
+          <div className="mt-4 pt-4 border-t border-white/10 w-full flex flex-col gap-3">
+            {user && (
+              <button
+                onClick={() => { setMobileOpen(false); navigate('/quiz'); }}
+                className="text-left font-label-md text-[#FF9900] text-label-md flex items-center gap-2"
+              >
+                <span className="material-symbols-outlined text-sm">quiz</span>
+                QUIZ
+              </button>
+            )}
+            {!user ? (
+              <a
+                className="bg-primary-container text-background font-headline-md text-label-md px-6 py-2 hover:bg-primary transition-colors items-center gap-2 uppercase tracking-widest inline-flex animate-attention group cursor-pointer w-max"
+                href="#join"
+                onClick={(e) => { e.preventDefault(); setMobileOpen(false); window.dispatchEvent(new Event('open-login-modal')); }}
+              >
+                JOIN CLOUD
+                <span className="material-symbols-outlined text-sm inline-block group-hover:animate-arrow-swing">arrow_forward</span>
+              </a>
+            ) : (
+              <>
+                <button
+                  onClick={() => { setMobileOpen(false); navigate('/account'); }}
+                  className="text-left font-label-md text-white text-label-md flex items-center gap-2"
+                >
+                  <span className="material-symbols-outlined text-sm">manage_accounts</span>
+                  ACCOUNT
+                </button>
+                <button
+                  onClick={() => {
+                    setMobileOpen(false);
+                    logout();
+                    window.dispatchEvent(new Event('auth-change'));
+                    navigate('/');
+                  }}
+                  className="text-left font-label-md text-red-400 text-label-md flex items-center gap-2 mt-2"
+                >
+                  <span className="material-symbols-outlined text-sm">logout</span>
+                  LOGOUT
+                </button>
+              </>
+            )}
+          </div>
         </div>
       )}
     </nav>

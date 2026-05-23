@@ -1,7 +1,35 @@
 import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
 import InteractiveHeroGrid from './InteractiveHeroGrid';
 
 export default function Hero() {
+  const [welcomeMsg, setWelcomeMsg] = useState(null);
+  const [displayedMsg, setDisplayedMsg] = useState('');
+
+  useEffect(() => {
+    const handler = (e) => {
+      const { type, user } = e.detail;
+      const text = type === 'login' ? `Welcome back ${user.first_name}` : `Welcome ${user.first_name}`;
+      setWelcomeMsg(text);
+      setDisplayedMsg('');
+    };
+    window.addEventListener('auth-success', handler);
+    return () => window.removeEventListener('auth-success', handler);
+  }, []);
+
+  useEffect(() => {
+    if (!welcomeMsg) return;
+    let i = 0;
+    const interval = setInterval(() => {
+      setDisplayedMsg(welcomeMsg.substring(0, i + 1));
+      i++;
+      if (i >= welcomeMsg.length) {
+        clearInterval(interval);
+        setTimeout(() => setWelcomeMsg(null), 5000); // Hide after 5 seconds
+      }
+    }, 100);
+    return () => clearInterval(interval);
+  }, [welcomeMsg]);
   const levitateTransition = (delay) => ({
     repeat: Infinity,
     duration: 5,
@@ -46,6 +74,12 @@ export default function Hero() {
 
       {/* Layer 20: The Content Wrapper */}
       <div className="relative z-20 w-full mt-32 md:mt-48 flex flex-col items-start text-left pointer-events-auto">
+        {welcomeMsg && (
+          <div className="mb-4 inline-flex items-center gap-2 bg-[#FF9900]/10 border border-[#FF9900]/30 px-4 py-2 text-[#FF9900] font-mono text-sm uppercase tracking-widest shadow-[0_0_15px_rgba(255,153,0,0.2)] animate-pulse">
+            <span className="material-symbols-outlined text-sm">terminal</span>
+            {displayedMsg}<span className="animate-pulse">_</span>
+          </div>
+        )}
         {/* Status Badge */}
         <div className="mb-6 inline-flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-1 text-on-surface-variant font-label-sm text-label-sm uppercase tracking-widest">
           <span className="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>

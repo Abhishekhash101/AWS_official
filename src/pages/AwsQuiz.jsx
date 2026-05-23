@@ -1,7 +1,8 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import awsIcon from '../assets/aws_icon.jpeg';
 import { QUESTION_BANKS, QUIZZES } from '../data/quizData';
+import { isLoggedIn, submitScore } from '../utils/auth';
 
 function shuffleArray(arr) {
   const a = [...arr];
@@ -31,6 +32,15 @@ export default function AwsQuiz() {
   const movingTimer = useRef(null);
   const containerRef = useRef(null);
   const [gridState, setGridState] = useState({ x: 0, y: 0, size: 1, isVisible: false });
+  const [scoreSaved, setScoreSaved] = useState(false);
+
+  // Auth gate — redirect to home + open login if not logged in
+  useEffect(() => {
+    if (!isLoggedIn()) {
+      window.dispatchEvent(new Event('open-login-modal'));
+      navigate('/');
+    }
+  }, [navigate]);
 
   function triggerMove() {
     clearTimeout(movingTimer.current);
@@ -70,6 +80,14 @@ export default function AwsQuiz() {
 
   function handleNext() {
     if (currentIdx + 1 >= questions.length) {
+      // Save score before showing results
+      submitScore({
+        quizId: quizMeta.id,
+        quizTitle: quizMeta.title,
+        quizType: 'quiz',
+        score: score + (selected !== null && selected === questions[currentIdx].correct ? 0 : 0), // already counted
+        total: questions.length,
+      }).then(res => setScoreSaved(res.ok));
       setScreen(SCREEN.RESULTS);
     } else {
       triggerMove();
@@ -311,6 +329,12 @@ export default function AwsQuiz() {
               ))}
             </div>
 
+            {/* DB save indicator */}
+            <div className={`mb-4 px-4 py-2.5 font-mono text-[11px] flex items-center gap-2 transition-all ${scoreSaved ? 'border border-[#639922]/40 bg-[#639922]/10 text-[#a8e063]' : 'border border-white/8 bg-white/3 text-[#dbc2ad]'}`}>
+              <span className="material-symbols-outlined text-sm">{scoreSaved ? 'cloud_done' : 'cloud_sync'}</span>
+              {scoreSaved ? 'Score saved to database ✓' : 'Saving score...'}
+            </div>
+
             <div className="border border-white/10 bg-white/3 p-4 mb-4">
               <div className="font-mono text-[10px] text-[#dbc2ad] uppercase tracking-widest mb-3">Answer Trail</div>
               <div className="flex gap-2">
@@ -321,12 +345,7 @@ export default function AwsQuiz() {
               <div className="font-mono text-[10px] text-[#dbc2ad] mt-2 italic">Green = correct · Red = wrong</div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <button onClick={startQuiz}
-                className="border border-white/15 bg-white/3 text-[#f1dfd1] font-mono text-xs py-3 hover:border-white/30 transition-colors uppercase tracking-widest flex items-center justify-center gap-2">
-                <span className="material-symbols-outlined text-sm">refresh</span>
-                Try Again
-              </button>
+            <div className="grid grid-cols-1 gap-3">
               <button onClick={() => navigate('/quiz')}
                 className="bg-[#FF9900] text-[#111] font-mono text-xs py-3 hover:bg-[#ffc082] transition-colors uppercase tracking-widest font-bold flex items-center justify-center gap-2">
                 <span className="material-symbols-outlined text-sm">grid_view</span>

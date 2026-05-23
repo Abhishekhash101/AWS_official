@@ -1,7 +1,8 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import awsIcon from '../assets/aws_icon.jpeg';
 import { CASE_STUDIES, CASE_STUDY_QUESTIONS } from '../data/quizData';
+import { isLoggedIn, submitScore } from '../utils/auth';
 
 export default function CaseStudyQuiz() {
   const { caseId } = useParams();
@@ -19,7 +20,16 @@ export default function CaseStudyQuiz() {
   const [showExplanation, setShowExplanation] = useState(false);
   const [score, setScore] = useState(0);
   const [isMoving, setIsMoving] = useState(false);
+  const [scoreSaved, setScoreSaved] = useState(false);
   const [gridState, setGridState] = useState({ x: 0, y: 0, size: 1, isVisible: false });
+
+  // Auth gate
+  useEffect(() => {
+    if (!isLoggedIn()) {
+      window.dispatchEvent(new Event('open-login-modal'));
+      navigate('/');
+    }
+  }, [navigate]);
 
   if (!meta || !bank) {
     return (
@@ -66,6 +76,13 @@ export default function CaseStudyQuiz() {
 
   function handleNext() {
     if (currentIdx + 1 >= questions.length) {
+      submitScore({
+        quizId: caseId,
+        quizTitle: meta.title,
+        quizType: 'case_study',
+        score,
+        total: questions.length,
+      }).then(res => setScoreSaved(res.ok));
       setPhase('results');
     } else {
       triggerMove();
@@ -221,11 +238,7 @@ export default function CaseStudyQuiz() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <button onClick={() => { setPhase('intro'); setCurrentIdx(0); setSelected(null); setAnswers([]); setScore(0); setShowExplanation(false); }}
-                className="border border-white/15 bg-white/3 text-[#f1dfd1] font-mono text-xs py-3 hover:border-white/30 transition-colors uppercase tracking-widest flex items-center justify-center gap-2">
-                <span className="material-symbols-outlined text-sm">refresh</span>Try Again
-              </button>
+            <div className="grid grid-cols-1 gap-3">
               <button onClick={() => navigate('/quiz')}
                 className="bg-[#FF9900] text-[#111] font-mono text-xs py-3 hover:bg-[#ffc082] transition-colors uppercase tracking-widest font-bold flex items-center justify-center gap-2">
                 <span className="material-symbols-outlined text-sm">grid_view</span>All Tests

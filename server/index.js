@@ -12,102 +12,117 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Admin credentials (temporary hardcoded)
+const ADMIN_ID = 'aws_admin';
+const ADMIN_PASSWORD = 'CloudAdmin@2025';
+const ADMIN_JWT_SECRET = (process.env.JWT_SECRET || 'fallback') + '_admin';
+
 const allowedOrigins = [
   'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:5175',
+  'http://localhost:5176',
   'http://localhost:3000',
   'https://aws-official.onrender.com',
-  process.env.CORS_ORIGIN, // your Vercel URL e.g. https://your-app.vercel.app
+  process.env.CORS_ORIGIN,
 ].filter(Boolean);
 
 app.use(cors({
   origin: (origin, callback) => {
-    // allow requests with no origin (mobile apps, curl, etc.)
     if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+    if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app') || /localhost:\d+/.test(origin))
       return callback(null, true);
-    }
     callback(new Error(`CORS blocked: ${origin}`));
   },
   credentials: true,
 }));
 app.use(express.json());
 
-// Register API
+// ── Auth middleware ───────────────────────────────────────────
+function authMiddleware(req, res, next) {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) return res.status(401).json({ error: 'No token provided' });
+  try {
+    req.user = jwt.verify(token, process.env.JWT_SECRET);
+    next();
+  } catch {
+    res.status(401).json({ error: 'Invalid or expired token' });
+  }
+}
+
+function adminMiddleware(req, res, next) {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) return res.status(401).json({ error: 'No token provided' });
+  try {
+    req.admin = jwt.verify(token, ADMIN_JWT_SECRET);
+    next();
+  } catch {
+    res.status(401).json({ error: 'Invalid admin token' });
+  }
+}
+
+// ── Init quiz_scores table ────────────────────────────────────
+async function initDb() {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS quiz_scores (
+      id           SERIAL PRIMARY KEY,
+      user_id      INTEGER REFERENCES users(id) ON DELETE CASCADE,
+      quiz_id      VARCHAR(64) NOT NULL,
+      quiz_title   VARCHAR(128),
+      quiz_type    VARCHAR(32) DEFAULT 'quiz',
+      score        INTEGER NOT NULL,
+      total        INTEGER NOT NULL,
+      pct          INTEGER NOT NULL,
+      attempted_at TIMESTAMPTZ DEFAULT NOW()
+    );
+  `);
+  console.log('quiz_scores table ready');
+}
+initDb().catch(console.error);
+
+// ── Register ─────────────────────────────────────────────────
 app.post('/api/register', async (req, res) => {
   try {
     const { firstName, lastName, email, phone, password } = req.body;
-
-    if (!firstName || !lastName || !email || !password) {
+    if (!firstName || !lastName || !email || !password)
       return res.status(400).json({ error: 'Please provide all required fields' });
-    }
-
-    if (!email.toLowerCase().endsWith('@vitstudent.ac.in')) {
-      return res.status(400).json({ error: 'Only VIT students (@vitstudent.ac.in) are allowed to register' });
-    }
-
-    // Check if user exists
-    const userCheck = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
-    if (userCheck.rows.length > 0) {
+    if (!email.toLowerCase().endsWith('@vitstudent.ac.in'))
+      return res.status(400).json({ error: 'Only VIT students (@vitstudent.ac.in) are allowed' });
+    const userCheck = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
+    if (userCheck.rows.length > 0)
       return res.status(400).json({ error: 'User already exists with this email' });
-    }
-
-    // Hash password
-    const salt = await bcrypt.genSalt(10);
-    const passwordHash = await bcrypt.hash(password, salt);
-
-    // Insert user
+    const passwordHash = await bcrypt.hash(password, 10);
     const newUser = await pool.query(
-      'INSERT INTO users (first_name, last_name, email, phone, password_hash) VALUES ($1, $2, $3, $4, $5) RETURNING id, first_name, email',
+      'INSERT INTO users (first_name, last_name, email, phone, password_hash) VALUES ($1,$2,$3,$4,$5) RETURNING id, first_name, last_name, email',
       [firstName, lastName, email, phone, passwordHash]
     );
-
-    // Generate JWT
     const token = jwt.sign({ id: newUser.rows[0].id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-
-    res.status(201).json({ 
-      message: 'Account created successfully', 
-      token, 
-      user: newUser.rows[0] 
-    });
+    res.status(201).json({ message: 'Account created successfully', token, user: newUser.rows[0] });
   } catch (error) {
     console.error('Register error:', error);
-    if (error.code === '23505') {
-      return res.status(400).json({ error: 'User already exists with this email' });
-    }
+    if (error.code === '23505') return res.status(400).json({ error: 'User already exists' });
     res.status(500).json({ error: 'Server error during registration' });
   }
 });
 
-// Login API
+// ── Login ─────────────────────────────────────────────────────
 app.post('/api/login', async (req, res) => {
   try {
     const { email, password } = req.body;
-
-    if (!email || !password) {
+    if (!email || !password)
       return res.status(400).json({ error: 'Please provide email and password' });
-    }
-
-    // Check user
     const userResult = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
-    if (userResult.rows.length === 0) {
+    if (userResult.rows.length === 0)
       return res.status(400).json({ error: 'Invalid email or password' });
-    }
-
     const user = userResult.rows[0];
-
-    // Validate password
     const validPassword = await bcrypt.compare(password, user.password_hash);
-    if (!validPassword) {
+    if (!validPassword)
       return res.status(400).json({ error: 'Invalid email or password' });
-    }
-
-    // Generate JWT
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-
-    res.json({ 
-      message: 'Login successful', 
-      token, 
-      user: { id: user.id, first_name: user.first_name, email: user.email } 
+    res.json({
+      message: 'Login successful',
+      token,
+      user: { id: user.id, first_name: user.first_name, last_name: user.last_name, email: user.email }
     });
   } catch (error) {
     console.error('Login error:', error);
@@ -115,19 +130,164 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
+// ── User Profile — Update Name ────────────────────────────────
+app.put('/api/user/profile', authMiddleware, async (req, res) => {
+  try {
+    const { firstName, lastName } = req.body;
+    if (!firstName || !lastName) return res.status(400).json({ error: 'Missing fields' });
+    const result = await pool.query(
+      'UPDATE users SET first_name = $1, last_name = $2 WHERE id = $3 RETURNING id, first_name, last_name, email',
+      [firstName, lastName, req.user.id]
+    );
+    res.json({ message: 'Profile updated', user: result.rows[0] });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update profile' });
+  }
+});
+
+// ── User Profile — Update Password ────────────────────────────
+app.put('/api/user/password', authMiddleware, async (req, res) => {
+  try {
+    const { oldPassword, newPassword } = req.body;
+    if (!oldPassword || !newPassword) return res.status(400).json({ error: 'Missing fields' });
+    const userResult = await pool.query('SELECT password_hash FROM users WHERE id = $1', [req.user.id]);
+    const valid = await bcrypt.compare(oldPassword, userResult.rows[0].password_hash);
+    if (!valid) return res.status(400).json({ error: 'Incorrect old password' });
+    
+    const hash = await bcrypt.hash(newPassword, 10);
+    await pool.query('UPDATE users SET password_hash = $1 WHERE id = $2', [hash, req.user.id]);
+    res.json({ message: 'Password updated successfully' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update password' });
+  }
+});
+
+// ── Quiz Scores — Submit ──────────────────────────────────────
+app.post('/api/quiz-scores', authMiddleware, async (req, res) => {
+  try {
+    const { quizId, quizTitle, quizType, score, total } = req.body;
+    if (quizId === undefined || score === undefined || !total)
+      return res.status(400).json({ error: 'Missing required fields' });
+    const pct = Math.round((score / total) * 100);
+    const result = await pool.query(
+      `INSERT INTO quiz_scores (user_id, quiz_id, quiz_title, quiz_type, score, total, pct)
+       VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *`,
+      [req.user.id, quizId, quizTitle, quizType || 'quiz', score, total, pct]
+    );
+    res.status(201).json({ message: 'Score saved', score: result.rows[0] });
+  } catch (error) {
+    console.error('Score save error:', error);
+    res.status(500).json({ error: 'Failed to save score' });
+  }
+});
+
+// ── Quiz Scores — My history ──────────────────────────────────
+app.get('/api/quiz-scores/me', authMiddleware, async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT * FROM quiz_scores WHERE user_id = $1 ORDER BY attempted_at DESC',
+      [req.user.id]
+    );
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch scores' });
+  }
+});
+
+// ── Admin — Login ─────────────────────────────────────────────
+app.post('/api/admin/login', (req, res) => {
+  const { adminId, password } = req.body;
+  if (adminId !== ADMIN_ID || password !== ADMIN_PASSWORD)
+    return res.status(401).json({ error: 'Invalid admin credentials' });
+  const token = jwt.sign({ role: 'admin' }, ADMIN_JWT_SECRET, { expiresIn: '8h' });
+  res.json({ message: 'Admin login successful', token });
+});
+
+// ── Admin — All scores ────────────────────────────────────────
+app.get('/api/admin/scores', adminMiddleware, async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT qs.id, qs.quiz_id, qs.quiz_title, qs.quiz_type,
+             qs.score, qs.total, qs.pct, qs.attempted_at,
+             u.first_name, u.last_name, u.email
+      FROM quiz_scores qs
+      JOIN users u ON qs.user_id = u.id
+      ORDER BY qs.attempted_at DESC
+    `);
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Admin scores error:', error);
+    res.status(500).json({ error: 'Failed to fetch scores' });
+  }
+});
+
+// ── Admin — Stats ─────────────────────────────────────────────
+app.get('/api/admin/stats', adminMiddleware, async (req, res) => {
+  try {
+    const [students, attempts, avg, top] = await Promise.all([
+      pool.query('SELECT COUNT(DISTINCT user_id) as count FROM quiz_scores'),
+      pool.query('SELECT COUNT(*) as count FROM quiz_scores'),
+      pool.query('SELECT ROUND(AVG(pct)) as avg FROM quiz_scores'),
+      pool.query(`
+        SELECT u.first_name, u.last_name, u.email,
+               ROUND(AVG(qs.pct)) as avg_pct, COUNT(*) as attempts
+        FROM quiz_scores qs JOIN users u ON qs.user_id = u.id
+        GROUP BY u.id, u.first_name, u.last_name, u.email
+        ORDER BY avg_pct DESC LIMIT 5
+      `),
+    ]);
+    res.json({
+      totalStudents: parseInt(students.rows[0].count),
+      totalAttempts: parseInt(attempts.rows[0].count),
+      avgScore: parseInt(avg.rows[0].avg || 0),
+      topScorers: top.rows,
+    });
+  } catch (error) {
+    console.error('Admin stats error:', error);
+    res.status(500).json({ error: 'Failed to fetch stats' });
+  }
+});
+
+// ── Health check ─────────────────────────────────────────────
+app.get('/api/health', async (req, res) => {
+  try {
+    await pool.query('SELECT 1');
+    res.json({
+      status: 'ok',
+      backend: 'running',
+      database: 'connected',
+      timestamp: new Date().toISOString(),
+    });
+  } catch (err) {
+    res.status(500).json({ status: 'error', backend: 'running', database: 'disconnected', error: err.message });
+  }
+});
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Serve static frontend in production
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../dist')));
-  
   app.get('/{*path}', (req, res) => {
     res.sendFile(path.join(__dirname, '../dist/index.html'));
   });
 }
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log('yah react and backend are running 🎉');
+const server = app.listen(PORT, () => {
+  console.log('\n┌──────────────────────────────────────────┐');
+  console.log(`│  ✅ Backend running  →  http://localhost:${PORT}  │`);
+  console.log('│  📡 Database        →  Neon PostgreSQL    │');
+  console.log('│  🔑 Admin login     →  /admin              │');
+  console.log('│  ❤️  Health check   →  /api/health         │');
+  console.log('└──────────────────────────────────────────┘\n');
+});
+
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`\n❌ Port ${PORT} is already in use. Kill the process using it and restart.\n`);
+    console.error('   Run: kill -9 $(lsof -ti:5000)');
+  } else {
+    console.error('❌ Server error:', err);
+  }
+  process.exit(1);
 });
