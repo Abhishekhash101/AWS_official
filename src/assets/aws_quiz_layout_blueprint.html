@@ -1,0 +1,214 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+.bp { font-family: var(--font-sans); padding: 1.5rem 0; }
+.section-label { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-text-tertiary); margin-bottom: 6px; }
+.zone { border: 1.5px dashed var(--color-border-secondary); border-radius: 8px; padding: 10px 14px; margin-bottom: 10px; position: relative; }
+.zone-title { font-size: 12px; font-weight: 500; color: var(--color-text-secondary); margin-bottom: 4px; }
+.zone-desc { font-size: 12px; color: var(--color-text-tertiary); line-height: 1.5; }
+.zone.highlight { border-color: #FF9900; background: #FAEEDA22; }
+.zone.green { border-color: #639922; background: #EAF3DE44; }
+.zone.blue { border-color: #378ADD; background: #E6F1FB44; }
+.zone.red { border-color: #E24B4A; background: #FCEBEB44; }
+.tag { display: inline-block; font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 4px; margin-right: 4px; }
+.tag.amber { background: #FAEEDA; color: #633806; }
+.tag.gray { background: #F1EFE8; color: #444441; }
+.tag.blue { background: #E6F1FB; color: #0C447C; }
+.tag.green { background: #EAF3DE; color: #27500A; }
+.tag.red { background: #FCEBEB; color: #791F1F; }
+.row { display: grid; gap: 8px; margin-bottom: 10px; }
+.row-2 { grid-template-columns: 1fr 1fr; }
+.row-3 { grid-template-columns: 1fr 1fr 1fr; }
+.row-4 { grid-template-columns: repeat(4, 1fr); }
+.divider { height: 0.5px; background: var(--color-border-tertiary); margin: 14px 0; }
+.page-wrap { background: var(--color-background-secondary); border-radius: 12px; padding: 16px; }
+.annotation { font-size: 11px; color: var(--color-text-tertiary); margin-top: 4px; font-style: italic; }
+.arrow { color: #FF9900; font-size: 14px; }
+.screen-label { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-text-tertiary); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+.screen-label::after { content: ''; flex: 1; height: 0.5px; background: var(--color-border-tertiary); }
+</style>
+
+<div class="bp">
+  <h2 class="sr-only">AWS quiz page layout blueprint with all UI sections annotated</h2>
+
+  <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
+    <span style="background:#FF9900;color:#111;font-size:11px;font-weight:500;padding:3px 10px;border-radius:4px;letter-spacing:.05em;">AWS QUIZ</span>
+    <span style="font-size:13px;color:var(--color-text-secondary);">Page layout blueprint — 3 screens</span>
+  </div>
+
+  <div class="screen-label">Screen 1 — Quiz in progress</div>
+  <div class="page-wrap" style="margin-bottom:18px;">
+
+    <div class="zone highlight" style="margin-bottom:8px;">
+      <div class="zone-title"><i class="ti ti-layout-navbar" aria-hidden="true" style="font-size:14px;margin-right:4px;"></i> Navbar / header</div>
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div class="zone-desc">AWS Club logo + quiz title</div>
+        <div class="zone-desc" style="text-align:right;">Exit button <span class="tag amber">optional</span></div>
+      </div>
+    </div>
+
+    <div class="zone highlight" style="margin-bottom:8px;">
+      <div class="zone-title"><i class="ti ti-chart-line" aria-hidden="true" style="font-size:14px;margin-right:4px;"></i> Progress bar section</div>
+      <div class="row row-2" style="margin-top:6px; margin-bottom:0;">
+        <div class="zone" style="border-style:solid; border-width:0.5px; padding:8px;">
+          <div class="zone-desc">Question counter — "Q 3 of 10"</div>
+        </div>
+        <div class="zone" style="border-style:solid; border-width:0.5px; padding:8px;">
+          <div class="zone-desc">% label — "30% complete"</div>
+        </div>
+      </div>
+      <div style="height:8px; background:#FF9900; border-radius:99px; width:30%; margin-top:8px;"></div>
+      <div class="annotation">Full-width bar, fills left → right as questions answered</div>
+    </div>
+
+    <div class="zone blue" style="margin-bottom:8px;">
+      <div class="zone-title"><i class="ti ti-help-circle" aria-hidden="true" style="font-size:14px;margin-right:4px;"></i> Question card</div>
+      <div class="zone-desc" style="margin-bottom:8px;">Category pill <span class="tag blue">EC2</span> + question number chip</div>
+      <div style="height:32px; background:var(--color-background-primary); border:0.5px solid var(--color-border-secondary); border-radius:6px; display:flex;align-items:center;padding:0 10px; margin-bottom:6px;">
+        <span style="font-size:13px; color:var(--color-text-primary); font-weight:500;">Question text goes here...</span>
+      </div>
+      <div class="annotation">Large readable font, single card container with padding</div>
+    </div>
+
+    <div class="zone" style="margin-bottom:8px;">
+      <div class="zone-title"><i class="ti ti-list" aria-hidden="true" style="font-size:14px;margin-right:4px;"></i> Answer options (4 choices)</div>
+      <div style="display:flex; flex-direction:column; gap:6px; margin-top:6px;">
+        <div style="height:36px; background:var(--color-background-primary); border:0.5px solid var(--color-border-secondary); border-radius:8px; display:flex;align-items:center;gap:10px;padding:0 12px;">
+          <span style="font-size:11px;background:var(--color-background-secondary);padding:2px 7px;border-radius:4px;font-weight:500;color:var(--color-text-secondary);">A</span>
+          <span style="font-size:13px;color:var(--color-text-primary);">Option text</span>
+        </div>
+        <div style="height:36px; background:#EAF3DE; border:0.5px solid #639922; border-radius:8px; display:flex;align-items:center;gap:10px;padding:0 12px;">
+          <span style="font-size:11px;background:#639922;padding:2px 7px;border-radius:4px;font-weight:500;color:#fff;">B</span>
+          <span style="font-size:13px;color:#27500A;">Correct answer — green highlight</span>
+        </div>
+        <div style="height:36px; background:#FCEBEB; border:0.5px solid #E24B4A; border-radius:8px; display:flex;align-items:center;gap:10px;padding:0 12px;">
+          <span style="font-size:11px;background:#E24B4A;padding:2px 7px;border-radius:4px;font-weight:500;color:#fff;">C</span>
+          <span style="font-size:13px;color:#791F1F;">Wrong selection — red highlight</span>
+        </div>
+        <div style="height:36px; background:var(--color-background-primary); border:0.5px solid var(--color-border-secondary); border-radius:8px; display:flex;align-items:center;gap:10px;padding:0 12px; opacity:0.5;">
+          <span style="font-size:11px;background:var(--color-background-secondary);padding:2px 7px;border-radius:4px;font-weight:500;color:var(--color-text-secondary);">D</span>
+          <span style="font-size:13px;color:var(--color-text-primary);">Other option — neutral</span>
+        </div>
+      </div>
+      <div class="annotation">Disabled after selection; highlight correct + selected wrong simultaneously</div>
+    </div>
+
+    <div class="zone green" style="margin-bottom:8px;">
+      <div class="zone-title"><i class="ti ti-info-circle" aria-hidden="true" style="font-size:14px;margin-right:4px;"></i> Explanation panel <span class="tag gray">appears after answer</span></div>
+      <div style="height:40px; background:var(--color-background-secondary); border-left:3px solid #FF9900; border-radius:0 6px 6px 0; padding:8px 12px; display:flex; align-items:center; margin-top:6px;">
+        <span style="font-size:12px; color:var(--color-text-secondary);">Brief explanation text slides in below the options...</span>
+      </div>
+    </div>
+
+    <div class="zone" style="margin-bottom:0;">
+      <div class="zone-title"><i class="ti ti-arrow-right" aria-hidden="true" style="font-size:14px;margin-right:4px;"></i> Navigation row</div>
+      <div style="display:flex; justify-content:space-between; margin-top:6px;">
+        <div style="height:34px;border:0.5px solid var(--color-border-secondary);border-radius:8px;padding:0 16px;display:flex;align-items:center;gap:6px;font-size:13px;color:var(--color-text-secondary);">
+          <i class="ti ti-arrow-left" aria-hidden="true" style="font-size:14px;"></i> Back
+        </div>
+        <div style="height:34px;background:#FF9900;border-radius:8px;padding:0 16px;display:flex;align-items:center;gap:6px;font-size:13px;color:#111;font-weight:500;">
+          Next <i class="ti ti-arrow-right" aria-hidden="true" style="font-size:14px;"></i>
+        </div>
+      </div>
+      <div class="annotation">Next button disabled until option is selected</div>
+    </div>
+  </div>
+
+  <div class="screen-label">Screen 2 — Results screen</div>
+  <div class="page-wrap" style="margin-bottom:18px;">
+    <div class="zone highlight" style="margin-bottom:8px;">
+      <div class="zone-title"><i class="ti ti-trophy" aria-hidden="true" style="font-size:14px;margin-right:4px;"></i> Score ring + headline</div>
+      <div style="display:flex; gap:16px; align-items:center; margin-top:6px;">
+        <div style="width:60px;height:60px;border-radius:50%;border:6px solid #FF9900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <span style="font-size:13px;font-weight:500;color:var(--color-text-primary);">8/10</span>
+        </div>
+        <div>
+          <div style="font-size:24px;font-weight:500;color:var(--color-text-primary);">80%</div>
+          <div style="font-size:13px;color:var(--color-text-secondary);">Dynamic message based on score</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row row-4" style="margin-bottom:8px;">
+      <div class="zone green" style="padding:10px; text-align:center;">
+        <div class="zone-title" style="font-size:11px;">Correct</div>
+        <div style="font-size:20px;font-weight:500;color:#27500A;">8</div>
+      </div>
+      <div class="zone red" style="padding:10px; text-align:center;">
+        <div class="zone-title" style="font-size:11px;">Wrong</div>
+        <div style="font-size:20px;font-weight:500;color:#791F1F;">2</div>
+      </div>
+      <div class="zone" style="padding:10px; text-align:center; border-color:var(--color-border-secondary);">
+        <div class="zone-title" style="font-size:11px;">Total</div>
+        <div style="font-size:20px;font-weight:500;color:var(--color-text-primary);">10</div>
+      </div>
+      <div class="zone highlight" style="padding:10px; text-align:center;">
+        <div class="zone-title" style="font-size:11px;">Score</div>
+        <div style="font-size:20px;font-weight:500;color:#633806;">80%</div>
+      </div>
+    </div>
+
+    <div class="zone" style="margin-bottom:8px;">
+      <div class="zone-title"><i class="ti ti-grid-dots" aria-hidden="true" style="font-size:14px;margin-right:4px;"></i> Answer trail dots — 10 dots row</div>
+      <div style="display:flex;gap:6px;margin-top:8px;">
+        <div style="height:10px;flex:1;border-radius:99px;background:#639922;"></div>
+        <div style="height:10px;flex:1;border-radius:99px;background:#639922;"></div>
+        <div style="height:10px;flex:1;border-radius:99px;background:#E24B4A;"></div>
+        <div style="height:10px;flex:1;border-radius:99px;background:#639922;"></div>
+        <div style="height:10px;flex:1;border-radius:99px;background:#639922;"></div>
+        <div style="height:10px;flex:1;border-radius:99px;background:#E24B4A;"></div>
+        <div style="height:10px;flex:1;border-radius:99px;background:#639922;"></div>
+        <div style="height:10px;flex:1;border-radius:99px;background:#639922;"></div>
+        <div style="height:10px;flex:1;border-radius:99px;background:#639922;"></div>
+        <div style="height:10px;flex:1;border-radius:99px;background:#639922;"></div>
+      </div>
+      <div class="annotation">Green = correct, red = wrong — quick visual of performance</div>
+    </div>
+
+    <div class="row row-2">
+      <div style="height:36px;border:0.5px solid var(--color-border-secondary);border-radius:8px;display:flex;align-items:center;justify-content:center;gap:6px;font-size:13px;color:var(--color-text-primary);">
+        <i class="ti ti-refresh" aria-hidden="true" style="font-size:14px;"></i> Try again
+      </div>
+      <div style="height:36px;background:#FF9900;border-radius:8px;display:flex;align-items:center;justify-content:center;gap:6px;font-size:13px;color:#111;font-weight:500;">
+        <i class="ti ti-share" aria-hidden="true" style="font-size:14px;"></i> Share score
+      </div>
+    </div>
+  </div>
+
+  <div class="screen-label">Component states reference</div>
+  <div class="page-wrap">
+    <div class="row row-2" style="margin-bottom:0;">
+      <div class="zone" style="padding:10px;">
+        <div class="zone-title" style="margin-bottom:6px;">Option button states</div>
+        <div style="display:flex;flex-direction:column;gap:5px;">
+          <div style="height:28px;border:0.5px solid var(--color-border-secondary);border-radius:6px;display:flex;align-items:center;padding:0 10px;font-size:12px;color:var(--color-text-secondary);">Default (unanswered)</div>
+          <div style="height:28px;border:0.5px solid var(--color-border-primary);background:var(--color-background-secondary);border-radius:6px;display:flex;align-items:center;padding:0 10px;font-size:12px;color:var(--color-text-primary);">Hover</div>
+          <div style="height:28px;border:0.5px solid #639922;background:#EAF3DE;border-radius:6px;display:flex;align-items:center;padding:0 10px;font-size:12px;color:#27500A;">Correct</div>
+          <div style="height:28px;border:0.5px solid #E24B4A;background:#FCEBEB;border-radius:6px;display:flex;align-items:center;padding:0 10px;font-size:12px;color:#791F1F;">Wrong</div>
+          <div style="height:28px;border:0.5px solid var(--color-border-tertiary);border-radius:6px;display:flex;align-items:center;padding:0 10px;font-size:12px;color:var(--color-text-tertiary);opacity:.5;">Disabled</div>
+        </div>
+      </div>
+      <div class="zone" style="padding:10px;">
+        <div class="zone-title" style="margin-bottom:6px;">Color tokens used</div>
+        <div style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--color-text-secondary);">
+          <div style="display:flex;align-items:center;gap:8px;"><div style="width:12px;height:12px;border-radius:3px;background:#FF9900;flex-shrink:0;"></div>Brand accent — progress, CTA buttons</div>
+          <div style="display:flex;align-items:center;gap:8px;"><div style="width:12px;height:12px;border-radius:3px;background:#639922;flex-shrink:0;"></div>Green — correct answer state</div>
+          <div style="display:flex;align-items:center;gap:8px;"><div style="width:12px;height:12px;border-radius:3px;background:#E24B4A;flex-shrink:0;"></div>Red — wrong answer state</div>
+          <div style="display:flex;align-items:center;gap:8px;"><div style="width:12px;height:12px;border-radius:3px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-secondary);flex-shrink:0;"></div>Surface gray — cards, inputs</div>
+          <div style="display:flex;align-items:center;gap:8px;"><div style="width:12px;height:12px;border-radius:3px;background:var(--color-border-tertiary);flex-shrink:0;"></div>Border — all dividers</div>
+        </div>
+        <div class="divider"></div>
+        <div class="zone-title" style="margin-bottom:5px;">Typography scale</div>
+        <div style="font-size:11px;color:var(--color-text-tertiary);line-height:2;">
+          17px / 500 — question text<br>
+          15px / 400 — option labels<br>
+          14px / 400 — explanation text<br>
+          13px / 500 — nav labels<br>
+          12px / 500 — letter badges, meta<br>
+          11px / 500 — section labels
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

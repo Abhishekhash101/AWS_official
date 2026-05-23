@@ -16,6 +16,7 @@ import BlogLambda from './pages/BlogLambda';
 import BlogPredictiveAnalytics from './pages/BlogPredictiveAnalytics';
 import BlogGoogleMaps from './pages/BlogGoogleMaps';
 import LoginModal from './components/LoginModal';
+import AwsQuiz from './pages/AwsQuiz';
 
 function HomePage() {
   return (
@@ -65,6 +66,7 @@ export default function App() {
           <Route path="/blog/aws-lambda" element={<BlogLambda />} />
           <Route path="/blog/predictive-analytics" element={<BlogPredictiveAnalytics />} />
           <Route path="/blog/google-maps-traffic" element={<BlogGoogleMaps />} />
+          <Route path="/quiz" element={<AwsQuiz />} />
         </Routes>
       </div>
     </>

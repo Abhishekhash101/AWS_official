@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import awsIcon from '../assets/aws_icon.jpeg';
 
 const navLinks = [
@@ -11,6 +12,7 @@ const navLinks = [
 ];
 
 export default function Navbar() {
+  const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
   const [displayedText, setDisplayedText] = useState('');
@@ -113,6 +115,15 @@ export default function Navbar() {
           }}
         />
       </div>
+
+      {/* Desktop Quiz CTA */}
+      <button
+        onClick={() => navigate('/quiz')}
+        className="hidden md:inline-flex border border-[#FF9900]/40 text-[#FF9900] font-headline-md text-label-md px-4 py-2 hover:bg-[#FF9900]/10 transition-colors items-center gap-2 uppercase tracking-widest"
+      >
+        QUIZ
+        <span className="material-symbols-outlined text-sm">quiz</span>
+      </button>
 
       {/* Desktop CTA */}
       <a
