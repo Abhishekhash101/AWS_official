@@ -1,0 +1,243 @@
+import { useNavigate } from 'react-router-dom';
+import { useState, useRef } from 'react';
+import awsIcon from '../assets/aws_icon.jpeg';
+import { QUIZZES, CASE_STUDIES } from '../data/quizData';
+
+const DIFFICULTY_COLOR = {
+  Beginner:     { bg: 'rgba(99,153,34,0.15)',   border: '#639922',  text: '#a8e063' },
+  Intermediate: { bg: 'rgba(255,153,0,0.15)',   border: '#FF9900',  text: '#FF9900' },
+  Advanced:     { bg: 'rgba(168,85,247,0.15)',  border: '#a855f7',  text: '#c084fc' },
+};
+
+export default function QuizHub() {
+  const navigate = useNavigate();
+  const containerRef = useRef(null);
+  const [gridState, setGridState] = useState({ x: 0, y: 0, size: 1, isVisible: false });
+  const [hoveredQuiz, setHoveredQuiz] = useState(null);
+  const [hoveredCase, setHoveredCase] = useState(null);
+
+  const handleMouseMove = (e) => {
+    if (window.innerWidth < 768) return;
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const snappedX = Math.floor((e.clientX - rect.left) / 80) * 80;
+    const snappedY = Math.floor((e.clientY - rect.top) / 80) * 80;
+    if (!gridState.isVisible || snappedX !== gridState.x || snappedY !== gridState.y) {
+      const sizes = [1, 2, 4];
+      setGridState({ x: snappedX, y: snappedY, size: sizes[Math.floor(Math.random() * sizes.length)], isVisible: true });
+    }
+  };
+
+  return (
+    <div
+      className="min-h-screen bg-[#0A0C10] text-[#f1dfd1] relative overflow-x-hidden"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={() => setGridState(s => ({ ...s, isVisible: false }))}
+    >
+      {/* Grid background */}
+      <div
+        ref={containerRef}
+        className="fixed inset-0 z-0 pointer-events-none"
+        style={{
+          backgroundImage:
+            'linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px)',
+          backgroundSize: '80px 80px',
+        }}
+      >
+        <div
+          className="absolute hidden md:block pointer-events-none mix-blend-screen"
+          style={{
+            backgroundColor: '#FF9900',
+            left: `${gridState.x}px`,
+            top: `${gridState.y}px`,
+            width: `${80 * gridState.size}px`,
+            height: `${80 * gridState.size}px`,
+            opacity: gridState.isVisible ? 0.14 : 0,
+            transition: 'opacity 150ms ease-out',
+          }}
+        />
+      </div>
+
+      {/* Navbar */}
+      <nav className="relative z-10 flex items-center justify-between px-6 py-4 border-b border-white/5 bg-[#0A0C10]/80 backdrop-blur-xl sticky top-0">
+        <div className="flex items-center gap-3">
+          <img src={awsIcon} alt="AWS" className="w-7 h-7 rounded-full object-cover" />
+          <span className="font-mono text-sm text-[#dbc2ad] tracking-widest uppercase">AWS Knowledge Hub</span>
+        </div>
+        <button
+          onClick={() => navigate('/')}
+          className="font-mono text-xs text-[#dbc2ad] border border-white/10 px-4 py-2 hover:border-[#FF9900]/50 hover:text-[#FF9900] transition-all uppercase tracking-widest"
+        >
+          ← Home
+        </button>
+      </nav>
+
+      <div className="relative z-10 max-w-4xl mx-auto px-6 py-12">
+
+        {/* Hero */}
+        <div className="mb-14">
+          <div className="inline-flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-1 font-mono text-xs text-[#dbc2ad] uppercase tracking-widest mb-6">
+            <span className="w-2 h-2 rounded-full bg-[#FF9900] animate-pulse" />
+            Cloud Assessment Center
+          </div>
+          <h1 className="font-mono text-4xl md:text-5xl font-bold text-white tracking-widest leading-tight mb-4">
+            PICK YOUR<br /><span className="text-[#FF9900]">CHALLENGE</span>
+          </h1>
+          <p className="text-[#dbc2ad] text-sm leading-relaxed border-l-2 border-[#FF9900] pl-4 max-w-xl">
+            Choose from topic-based quizzes or real-world case studies. Each test gives instant feedback and explanations to accelerate your AWS learning.
+          </p>
+        </div>
+
+        {/* ── Section: Regular Quizzes ── */}
+        <div className="mb-14">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="font-mono text-[10px] text-[#dbc2ad] uppercase tracking-[0.15em]">Topic Quizzes</div>
+            <div className="flex-1 h-px bg-white/8" />
+            <div className="font-mono text-[10px] text-[#FF9900] uppercase tracking-widest">{QUIZZES.length} Available</div>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-3">
+            {QUIZZES.map((quiz) => {
+              const diff = DIFFICULTY_COLOR[quiz.category];
+              const isHovered = hoveredQuiz === quiz.id;
+              return (
+                <div
+                  key={quiz.id}
+                  onMouseEnter={() => setHoveredQuiz(quiz.id)}
+                  onMouseLeave={() => setHoveredQuiz(null)}
+                  className="relative flex flex-col border bg-white/2 cursor-pointer group transition-all duration-300"
+                  style={{
+                    borderColor: isHovered ? quiz.color : 'rgba(255,255,255,0.1)',
+                    boxShadow: isHovered ? `0 0 20px ${quiz.color}22` : 'none',
+                  }}
+                  onClick={() => navigate(`/quiz/${quiz.id}`)}
+                >
+                  {/* Top accent bar */}
+                  <div className="h-0.5 w-full transition-all duration-300" style={{ background: isHovered ? quiz.color : 'transparent' }} />
+
+                  <div className="p-5 flex flex-col flex-1">
+                    {/* Badge row */}
+                    <div className="flex items-center justify-between mb-4">
+                      <span
+                        className="font-mono text-[10px] uppercase tracking-widest px-2 py-0.5"
+                        style={{ background: diff.bg, color: diff.text, border: `1px solid ${diff.border}` }}
+                      >
+                        {quiz.category}
+                      </span>
+                      <span className="font-mono text-[10px] text-[#dbc2ad]">⏱ {quiz.duration}</span>
+                    </div>
+
+                    <h3 className="font-mono text-base font-bold text-white mb-1 leading-snug">{quiz.title}</h3>
+                    <p className="font-mono text-[11px] text-[#dbc2ad] leading-relaxed mb-4 flex-1">{quiz.subtitle}</p>
+
+                    {/* Topic pills */}
+                    <div className="flex flex-wrap gap-1.5 mb-5">
+                      {quiz.topics.map(t => (
+                        <span key={t} className="font-mono text-[9px] text-[#dbc2ad] border border-white/10 px-1.5 py-0.5 uppercase tracking-wider">
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* CTA */}
+                    <button
+                      className="w-full font-mono text-xs py-2.5 uppercase tracking-widest flex items-center justify-center gap-2 transition-all duration-200"
+                      style={{
+                        background: isHovered ? quiz.color : 'rgba(255,255,255,0.05)',
+                        color: isHovered ? '#111' : '#dbc2ad',
+                        fontWeight: isHovered ? 700 : 400,
+                      }}
+                    >
+                      Start Quiz
+                      <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* ── Section: Case Studies ── */}
+        <div>
+          <div className="flex items-center gap-4 mb-2">
+            <div className="font-mono text-[10px] text-[#dbc2ad] uppercase tracking-[0.15em]">Case Studies</div>
+            <div className="flex-1 h-px bg-white/8" />
+            <div className="font-mono text-[10px] text-[#FF9900] uppercase tracking-widest">{CASE_STUDIES.length} Scenarios</div>
+          </div>
+          <p className="font-mono text-[11px] text-[#dbc2ad] mb-6 leading-relaxed">
+            Real-world architecture scenarios — read the business context, then answer scenario-specific questions.
+          </p>
+
+          <div className="flex flex-col gap-4">
+            {CASE_STUDIES.map((cs, i) => {
+              const isHovered = hoveredCase === cs.id;
+              return (
+                <div
+                  key={cs.id}
+                  onMouseEnter={() => setHoveredCase(cs.id)}
+                  onMouseLeave={() => setHoveredCase(null)}
+                  className="border bg-white/2 cursor-pointer transition-all duration-300"
+                  style={{
+                    borderColor: isHovered ? '#FF9900' : 'rgba(255,255,255,0.1)',
+                    boxShadow: isHovered ? '0 0 20px rgba(255,153,0,0.12)' : 'none',
+                  }}
+                  onClick={() => navigate(`/case-study/${cs.id}`)}
+                >
+                  <div className="p-5 flex flex-col md:flex-row md:items-center gap-4">
+                    {/* Number */}
+                    <div
+                      className="font-mono text-3xl font-bold flex-shrink-0 w-10 text-center transition-colors duration-300"
+                      style={{ color: isHovered ? '#FF9900' : 'rgba(255,255,255,0.12)' }}
+                    >
+                      {String(i + 1).padStart(2, '0')}
+                    </div>
+
+                    {/* Content */}
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+                        <h3 className="font-mono text-sm font-bold text-white">{cs.title}</h3>
+                        {cs.tags.map(t => (
+                          <span key={t} className="font-mono text-[9px] text-[#FF9900] border border-[#FF9900]/30 px-1.5 py-0.5 uppercase tracking-wider">
+                            {t}
+                          </span>
+                        ))}
+                      </div>
+                      <p className="font-mono text-[11px] text-[#dbc2ad] leading-relaxed">{cs.subtitle}</p>
+                    </div>
+
+                    {/* Meta + CTA */}
+                    <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                      <div className="font-mono text-[10px] text-[#dbc2ad]">
+                        {cs.questions} questions · {cs.duration}
+                      </div>
+                      <button
+                        className="font-mono text-[11px] px-4 py-1.5 uppercase tracking-widest flex items-center gap-1.5 transition-all duration-200"
+                        style={{
+                          background: isHovered ? '#FF9900' : 'transparent',
+                          color: isHovered ? '#111' : '#FF9900',
+                          border: `1px solid ${isHovered ? '#FF9900' : 'rgba(255,153,0,0.4)'}`,
+                          fontWeight: isHovered ? 700 : 400,
+                        }}
+                      >
+                        Read Scenario
+                        <span className="material-symbols-outlined text-sm">article</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Footer note */}
+        <div className="mt-14 border-t border-white/5 pt-6 text-center">
+          <p className="font-mono text-[10px] text-[#dbc2ad]/50 uppercase tracking-widest">
+            AWS Student Builder Group @ VIT · All quizzes include instant feedback & explanations
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
