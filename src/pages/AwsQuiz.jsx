@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import awsIcon from '../assets/aws_icon.jpeg';
 import { QUESTION_BANKS, QUIZZES } from '../data/quizData';
-import { isLoggedIn, submitScore } from '../utils/auth';
+import { isLoggedIn, submitScore, fetchMyScores } from '../utils/auth';
 
 function shuffleArray(arr) {
   const a = [...arr];
@@ -33,14 +33,20 @@ export default function AwsQuiz() {
   const containerRef = useRef(null);
   const [gridState, setGridState] = useState({ x: 0, y: 0, size: 1, isVisible: false });
   const [scoreSaved, setScoreSaved] = useState(false);
+  const [pastAttempt, setPastAttempt] = useState(null);
 
   // Auth gate — redirect to home + open login if not logged in
   useEffect(() => {
     if (!isLoggedIn()) {
       window.dispatchEvent(new Event('open-login-modal'));
       navigate('/');
+    } else {
+      fetchMyScores().then(scores => {
+        const attempt = scores.find(s => s.quiz_id === quizId);
+        if (attempt) setPastAttempt(attempt);
+      });
     }
-  }, [navigate]);
+  }, [navigate, quizId]);
 
   function triggerMove() {
     clearTimeout(movingTimer.current);
@@ -263,11 +269,19 @@ export default function AwsQuiz() {
               ))}
             </div>
 
-            <button onClick={startQuiz}
-              className="w-full bg-[#FF9900] text-[#111] font-mono text-sm font-bold px-8 py-4 hover:bg-[#ffc082] transition-colors uppercase tracking-widest flex items-center justify-center gap-2">
-              INITIATE QUIZ
-              <span className="material-symbols-outlined text-base">terminal</span>
-            </button>
+            {!pastAttempt ? (
+              <button onClick={startQuiz}
+                className="w-full bg-[#FF9900] text-[#111] font-mono text-sm font-bold px-8 py-4 hover:bg-[#ffc082] transition-colors uppercase tracking-widest flex items-center justify-center gap-2">
+                INITIATE QUIZ
+                <span className="material-symbols-outlined text-base">terminal</span>
+              </button>
+            ) : (
+              <button onClick={() => { setScore(pastAttempt.score); setScreen(SCREEN.RESULTS); }}
+                className="w-full bg-white/10 text-white border border-white/20 font-mono text-sm font-bold px-8 py-4 hover:bg-white/20 transition-colors uppercase tracking-widest flex items-center justify-center gap-2">
+                SHOW RESULTS (ALREADY ATTEMPTED)
+                <span className="material-symbols-outlined text-base">visibility</span>
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -318,8 +332,8 @@ export default function AwsQuiz() {
             <div className="grid grid-cols-4 gap-3 mb-4">
               {[
                 { label: 'Correct', val: score, color: '#a8e063', bg: 'rgba(99,153,34,0.12)', border: '#639922' },
-                { label: 'Wrong', val: 10 - score, color: '#f87171', bg: 'rgba(226,75,74,0.12)', border: '#E24B4A' },
-                { label: 'Total', val: 10, color: '#f1dfd1', bg: 'rgba(255,255,255,0.04)', border: 'rgba(255,255,255,0.12)' },
+                { label: 'Wrong', val: (pastAttempt ? pastAttempt.total : 10) - score, color: '#f87171', bg: 'rgba(226,75,74,0.12)', border: '#E24B4A' },
+                { label: 'Total', val: pastAttempt ? pastAttempt.total : 10, color: '#f1dfd1', bg: 'rgba(255,255,255,0.04)', border: 'rgba(255,255,255,0.12)' },
                 { label: 'Score', val: `${pct}%`, color: '#FF9900', bg: 'rgba(255,153,0,0.12)', border: 'rgba(255,153,0,0.4)' },
               ].map(s => (
                 <div key={s.label} className="p-3 text-center" style={{ border: `1px solid ${s.border}`, background: s.bg }}>
@@ -330,20 +344,22 @@ export default function AwsQuiz() {
             </div>
 
             {/* DB save indicator */}
-            <div className={`mb-4 px-4 py-2.5 font-mono text-[11px] flex items-center gap-2 transition-all ${scoreSaved ? 'border border-[#639922]/40 bg-[#639922]/10 text-[#a8e063]' : 'border border-white/8 bg-white/3 text-[#dbc2ad]'}`}>
-              <span className="material-symbols-outlined text-sm">{scoreSaved ? 'cloud_done' : 'cloud_sync'}</span>
-              {scoreSaved ? 'Score saved to database ✓' : 'Saving score...'}
+            <div className={`mb-4 px-4 py-2.5 font-mono text-[11px] flex items-center gap-2 transition-all ${(scoreSaved || pastAttempt) ? 'border border-[#639922]/40 bg-[#639922]/10 text-[#a8e063]' : 'border border-white/8 bg-white/3 text-[#dbc2ad]'}`}>
+              <span className="material-symbols-outlined text-sm">{(scoreSaved || pastAttempt) ? 'cloud_done' : 'cloud_sync'}</span>
+              {(scoreSaved || pastAttempt) ? 'Score saved to database ✓' : 'Saving score...'}
             </div>
 
-            <div className="border border-white/10 bg-white/3 p-4 mb-4">
-              <div className="font-mono text-[10px] text-[#dbc2ad] uppercase tracking-widest mb-3">Answer Trail</div>
-              <div className="flex gap-2">
-                {answers.map((correct, i) => (
-                  <div key={i} className="flex-1 h-2.5 rounded-full" style={{ background: correct ? '#639922' : '#E24B4A' }} title={`Q${i + 1}: ${correct ? 'Correct' : 'Wrong'}`} />
-                ))}
+            {answers.length > 0 && (
+              <div className="border border-white/10 bg-white/3 p-4 mb-4">
+                <div className="font-mono text-[10px] text-[#dbc2ad] uppercase tracking-widest mb-3">Answer Trail</div>
+                <div className="flex gap-2">
+                  {answers.map((correct, i) => (
+                    <div key={i} className="flex-1 h-2.5 rounded-full" style={{ background: correct ? '#639922' : '#E24B4A' }} title={`Q${i + 1}: ${correct ? 'Correct' : 'Wrong'}`} />
+                  ))}
+                </div>
+                <div className="font-mono text-[10px] text-[#dbc2ad] mt-2 italic">Green = correct · Red = wrong</div>
               </div>
-              <div className="font-mono text-[10px] text-[#dbc2ad] mt-2 italic">Green = correct · Red = wrong</div>
-            </div>
+            )}
 
             <div className="grid grid-cols-1 gap-3">
               <button onClick={() => navigate('/quiz')}

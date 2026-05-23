@@ -45,6 +45,18 @@ export async function submitScore({ quizId, quizTitle, quizType, score, total })
   }
 }
 
+/** Fetch my quiz scores */
+export async function fetchMyScores() {
+  const token = getToken();
+  if (!token) return [];
+  try {
+    const res = await fetch(`${API_URL}/api/quiz-scores/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.ok ? res.json() : [];
+  } catch { return []; }
+}
+
 /** Fetch admin token */
 export async function adminLogin(adminId, password) {
   try {

@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import awsIcon from '../assets/aws_icon.jpeg';
 import { CASE_STUDIES, CASE_STUDY_QUESTIONS } from '../data/quizData';
-import { isLoggedIn, submitScore } from '../utils/auth';
+import { isLoggedIn, submitScore, fetchMyScores } from '../utils/auth';
 
 export default function CaseStudyQuiz() {
   const { caseId } = useParams();
@@ -22,14 +22,20 @@ export default function CaseStudyQuiz() {
   const [isMoving, setIsMoving] = useState(false);
   const [scoreSaved, setScoreSaved] = useState(false);
   const [gridState, setGridState] = useState({ x: 0, y: 0, size: 1, isVisible: false });
+  const [pastAttempt, setPastAttempt] = useState(null);
 
   // Auth gate
   useEffect(() => {
     if (!isLoggedIn()) {
       window.dispatchEvent(new Event('open-login-modal'));
       navigate('/');
+    } else {
+      fetchMyScores().then(scores => {
+        const attempt = scores.find(s => s.quiz_id === caseId);
+        if (attempt) setPastAttempt(attempt);
+      });
     }
-  }, [navigate]);
+  }, [navigate, caseId]);
 
   if (!meta || !bank) {
     return (
@@ -175,12 +181,20 @@ export default function CaseStudyQuiz() {
               ))}
             </div>
 
-            <button
-              onClick={() => setPhase('quiz')}
-              className="w-full bg-[#FF9900] text-[#111] font-mono text-sm font-bold px-8 py-4 hover:bg-[#ffc082] transition-colors uppercase tracking-widest flex items-center justify-center gap-2">
-              Start Case Study
-              <span className="material-symbols-outlined text-base">quiz</span>
-            </button>
+            {!pastAttempt ? (
+              <button
+                onClick={() => setPhase('quiz')}
+                className="w-full bg-[#FF9900] text-[#111] font-mono text-sm font-bold px-8 py-4 hover:bg-[#ffc082] transition-colors uppercase tracking-widest flex items-center justify-center gap-2">
+                Start Case Study
+                <span className="material-symbols-outlined text-base">quiz</span>
+              </button>
+            ) : (
+              <button onClick={() => { setScore(pastAttempt.score); setPhase('results'); }}
+                className="w-full bg-white/10 text-white border border-white/20 font-mono text-sm font-bold px-8 py-4 hover:bg-white/20 transition-colors uppercase tracking-widest flex items-center justify-center gap-2">
+                SHOW RESULTS (ALREADY ATTEMPTED)
+                <span className="material-symbols-outlined text-base">visibility</span>
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -219,7 +233,7 @@ export default function CaseStudyQuiz() {
             <div className="grid grid-cols-3 gap-3 mb-4">
               {[
                 { label: 'Correct', val: score, color: '#a8e063', bg: 'rgba(99,153,34,0.12)', border: '#639922' },
-                { label: 'Wrong', val: questions.length - score, color: '#f87171', bg: 'rgba(226,75,74,0.12)', border: '#E24B4A' },
+                { label: 'Wrong', val: (pastAttempt ? pastAttempt.total : questions.length) - score, color: '#f87171', bg: 'rgba(226,75,74,0.12)', border: '#E24B4A' },
                 { label: 'Score', val: `${pct}%`, color: '#FF9900', bg: 'rgba(255,153,0,0.12)', border: 'rgba(255,153,0,0.4)' },
               ].map(s => (
                 <div key={s.label} className="p-3 text-center" style={{ border: `1px solid ${s.border}`, background: s.bg }}>
@@ -229,14 +243,16 @@ export default function CaseStudyQuiz() {
               ))}
             </div>
 
-            <div className="border border-white/10 bg-white/3 p-4 mb-4">
-              <div className="font-mono text-[10px] text-[#dbc2ad] uppercase tracking-widest mb-3">Answer Trail</div>
-              <div className="flex gap-2">
-                {answers.map((correct, i) => (
-                  <div key={i} className="flex-1 h-2.5 rounded-full" style={{ background: correct ? '#639922' : '#E24B4A' }} />
-                ))}
+            {answers.length > 0 && (
+              <div className="border border-white/10 bg-white/3 p-4 mb-4">
+                <div className="font-mono text-[10px] text-[#dbc2ad] uppercase tracking-widest mb-3">Answer Trail</div>
+                <div className="flex gap-2">
+                  {answers.map((correct, i) => (
+                    <div key={i} className="flex-1 h-2.5 rounded-full" style={{ background: correct ? '#639922' : '#E24B4A' }} />
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             <div className="grid grid-cols-1 gap-3">
               <button onClick={() => navigate('/quiz')}
