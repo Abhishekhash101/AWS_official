@@ -258,6 +258,7 @@ app.get('/api/quiz-status', async (req, res) => {
     `);
     const result = await pool.query("SELECT value FROM global_settings WHERE key = 'quiz_status'");
     const status = result.rows.length > 0 ? result.rows[0].value : 'inactive';
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
     res.status(200).json({ status });
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch status' });
