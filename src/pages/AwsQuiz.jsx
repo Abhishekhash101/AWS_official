@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import awsIcon from '../assets/aws_icon.jpeg';
 import { QUESTION_BANKS, QUIZZES } from '../data/quizData';
-import { isLoggedIn, submitScore, fetchMyScores } from '../utils/auth';
+import { isLoggedIn, submitScore, fetchMyScores, fetchQuizStatus } from '../utils/auth';
 
 function shuffleArray(arr) {
   const a = [...arr];
@@ -31,10 +31,11 @@ export default function AwsQuiz() {
   const [isMoving, setIsMoving] = useState(false);
   const movingTimer = useRef(null);
   const containerRef = useRef(null);
-  const [gridState, setGridState] = useState({ x: 0, y: 0, size: 1, isVisible: false });
   const [scoreSaved, setScoreSaved] = useState(false);
   const [pastAttempt, setPastAttempt] = useState(null);
   const [scoresLoading, setScoresLoading] = useState(true);
+  const [timeLeft, setTimeLeft] = useState(60);
+  const [globalStatus, setGlobalStatus] = useState('active');
 
   // Auth gate — redirect to home + open login if not logged in
   useEffect(() => {
@@ -42,13 +43,57 @@ export default function AwsQuiz() {
       window.dispatchEvent(new Event('open-login-modal'));
       navigate('/');
     } else {
-      fetchMyScores().then(scores => {
+      Promise.all([fetchMyScores(), fetchQuizStatus()]).then(([scores, status]) => {
         const attempt = scores.find(s => s.quiz_id === quizId);
         if (attempt) setPastAttempt(attempt);
+        setGlobalStatus(status);
         setScoresLoading(false);
       }).catch(() => setScoresLoading(false));
     }
   }, [navigate, quizId]);
+
+  // Poll quiz status every 5s
+  useEffect(() => {
+    if (screen === SCREEN.RESULTS) return; // No need to poll if finished
+    const interval = setInterval(async () => {
+      const status = await fetchQuizStatus();
+      setGlobalStatus(status);
+
+      if (screen === SCREEN.QUIZ && status === 'inactive') {
+        clearInterval(interval);
+        alert("Quiz is currently on hold by AWS. Your progress so far has been saved.");
+        submitScore({
+          quizId: quizMeta.id,
+          quizTitle: quizMeta.title,
+          quizType: 'quiz',
+          score: score,
+          total: questions.length,
+        }).then(() => setScreen(SCREEN.RESULTS));
+      }
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [screen, score, questions.length, quizMeta]);
+
+  useEffect(() => {
+    if (screen !== SCREEN.QUIZ || selected !== null) return;
+    const timer = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          handleTimeOut();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [screen, selected, currentIdx]);
+
+  function handleTimeOut() {
+    setSelected(-1);
+    setShowExplanation(true);
+    setAnswers(prev => [...prev, false]);
+  }
 
   function triggerMove() {
     clearTimeout(movingTimer.current);
@@ -74,6 +119,7 @@ export default function AwsQuiz() {
     setAnswers([]);
     setScore(0);
     setShowExplanation(false);
+    setTimeLeft(60);
     setScreen(SCREEN.QUIZ);
   }
 
@@ -93,15 +139,16 @@ export default function AwsQuiz() {
         quizId: quizMeta.id,
         quizTitle: quizMeta.title,
         quizType: 'quiz',
-        score: score + (selected !== null && selected === questions[currentIdx].correct ? 0 : 0), // already counted
+        score: score + (selected !== null && selected !== -1 && selected === questions[currentIdx].correct ? 0 : 0), // already counted
         total: questions.length,
       }).then(res => setScoreSaved(res.ok));
       setScreen(SCREEN.RESULTS);
     } else {
-      triggerMove();
       setCurrentIdx(i => i + 1);
       setSelected(null);
       setShowExplanation(false);
+      setTimeLeft(60);
+      triggerMove();
     }
   }
 
@@ -160,6 +207,9 @@ export default function AwsQuiz() {
       <div className="max-w-xl mx-auto">
         <div className="flex justify-between items-center mb-2">
           <span className="font-mono text-xs text-[#dbc2ad] uppercase tracking-widest">Q {currentIdx + 1} of {questions.length}</span>
+          <span className={`font-mono text-xs uppercase tracking-widest ${timeLeft <= 10 ? 'text-[#E24B4A] animate-pulse' : 'text-[#dbc2ad]'}`}>
+            ⏱ {timeLeft}s
+          </span>
           <span className="font-mono text-xs text-[#dbc2ad] uppercase tracking-widest">{Math.round(progress)}% complete</span>
         </div>
         <div className="relative w-full h-5 flex items-center">
@@ -260,15 +310,23 @@ export default function AwsQuiz() {
             {scoresLoading ? (
               <button disabled
                 className="w-full bg-white/5 text-[#dbc2ad]/50 border border-white/10 font-mono text-sm px-8 py-4 uppercase tracking-widest flex items-center justify-center gap-2 cursor-not-allowed">
-                <span className="material-symbols-outlined text-base animate-spin" style={{animationDuration:'1.2s'}}>autorenew</span>
+                <span className="material-symbols-outlined text-base animate-spin" style={{ animationDuration: '1.2s' }}>autorenew</span>
                 CHECKING STATUS...
               </button>
             ) : !pastAttempt ? (
-              <button onClick={startQuiz}
-                className="w-full bg-[#FF9900] text-[#111] font-mono text-sm font-bold px-8 py-4 hover:bg-[#ffc082] transition-colors uppercase tracking-widest flex items-center justify-center gap-2">
-                INITIATE QUIZ
-                <span className="material-symbols-outlined text-base">terminal</span>
-              </button>
+              globalStatus === 'inactive' ? (
+                <button disabled
+                  className="w-full bg-[#E24B4A]/10 text-[#E24B4A] border border-[#E24B4A]/30 font-mono text-sm font-bold px-8 py-4 uppercase tracking-widest flex items-center justify-center gap-2 cursor-not-allowed">
+                  QUIZ ON HOLD BY AWS — WAIT FOR START
+                  <span className="material-symbols-outlined text-base">pause_circle</span>
+                </button>
+              ) : (
+                <button onClick={startQuiz}
+                  className="w-full bg-[#FF9900] text-[#111] font-mono text-sm font-bold px-8 py-4 hover:bg-[#ffc082] transition-colors uppercase tracking-widest flex items-center justify-center gap-2">
+                  INITIATE QUIZ
+                  <span className="material-symbols-outlined text-base">terminal</span>
+                </button>
+              )
             ) : (
               <button onClick={() => { setScore(pastAttempt.score); setScreen(SCREEN.RESULTS); }}
                 className="w-full bg-white/10 text-white border border-white/20 font-mono text-sm font-bold px-8 py-4 hover:bg-white/20 transition-colors uppercase tracking-widest flex items-center justify-center gap-2">
@@ -315,7 +373,7 @@ export default function AwsQuiz() {
                     strokeLinecap="round" transform="rotate(-90 45 45)"
                     style={{ transition: 'stroke-dashoffset 1s ease-out' }} />
                 </svg>
-                <span className="absolute inset-0 flex items-center justify-center font-mono text-sm font-bold text-white">{score}/10</span>
+                <span className="absolute inset-0 flex items-center justify-center font-mono text-sm font-bold text-white">{score}/{questions.length}</span>
               </div>
               <div>
                 <div className="font-mono text-4xl font-bold text-white">{pct}%</div>
@@ -326,8 +384,8 @@ export default function AwsQuiz() {
             <div className="grid grid-cols-4 gap-3 mb-4">
               {[
                 { label: 'Correct', val: score, color: '#a8e063', bg: 'rgba(99,153,34,0.12)', border: '#639922' },
-                { label: 'Wrong', val: (pastAttempt ? pastAttempt.total : 10) - score, color: '#f87171', bg: 'rgba(226,75,74,0.12)', border: '#E24B4A' },
-                { label: 'Total', val: pastAttempt ? pastAttempt.total : 10, color: '#f1dfd1', bg: 'rgba(255,255,255,0.04)', border: 'rgba(255,255,255,0.12)' },
+                { label: 'Wrong', val: (pastAttempt ? pastAttempt.total : questions.length) - score, color: '#f87171', bg: 'rgba(226,75,74,0.12)', border: '#E24B4A' },
+                { label: 'Total', val: pastAttempt ? pastAttempt.total : questions.length, color: '#f1dfd1', bg: 'rgba(255,255,255,0.04)', border: 'rgba(255,255,255,0.12)' },
                 { label: 'Score', val: `${pct}%`, color: '#FF9900', bg: 'rgba(255,153,0,0.12)', border: 'rgba(255,153,0,0.4)' },
               ].map(s => (
                 <div key={s.label} className="p-3 text-center" style={{ border: `1px solid ${s.border}`, background: s.bg }}>
@@ -430,7 +488,10 @@ export default function AwsQuiz() {
           <div className="overflow-hidden transition-all duration-400"
             style={{ maxHeight: showExplanation ? '120px' : '0', opacity: showExplanation ? 1 : 0 }}>
             <div className="border-l-2 border-[#FF9900] bg-white/3 pl-4 py-3 pr-4 mb-3">
-              <div className="font-mono text-[10px] text-[#FF9900] uppercase tracking-widest mb-1">Explanation</div>
+              <div className="flex items-center gap-2 mb-1">
+                <div className="font-mono text-[10px] text-[#FF9900] uppercase tracking-widest">Explanation</div>
+                {selected === -1 && <span className="font-mono text-[10px] text-[#E24B4A] uppercase tracking-widest font-bold ml-2">(Time's Up!)</span>}
+              </div>
               <p className="font-mono text-xs text-[#dbc2ad] leading-relaxed">{q.explanation}</p>
             </div>
           </div>

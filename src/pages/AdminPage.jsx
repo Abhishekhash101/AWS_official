@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { adminLogin, fetchAdminScores, fetchAdminStats } from '../utils/auth';
+import { adminLogin, fetchAdminScores, fetchAdminStats, fetchQuizStatus, updateQuizStatus } from '../utils/auth';
 
 const QUIZ_TYPE_COLOR = {
   quiz:       { bg: 'rgba(255,153,0,0.15)',  border: 'rgba(255,153,0,0.5)',  text: '#FF9900' },
@@ -102,15 +102,31 @@ function Dashboard({ token, onLogout }) {
   const [filterType, setFilterType] = useState('all');
   const [sortBy, setSortBy] = useState('date'); // date | score | name
 
+  const [quizStatus, setQuizStatus] = useState('inactive');
+
+  const load = async () => {
+    setLoading(true);
+    const [s, st, status] = await Promise.all([
+      fetchAdminScores(token), 
+      fetchAdminStats(token),
+      fetchQuizStatus()
+    ]);
+    setScores(s);
+    setStats(st);
+    setQuizStatus(status);
+    setLoading(false);
+  };
+
   useEffect(() => {
-    async function load() {
-      const [s, st] = await Promise.all([fetchAdminScores(token), fetchAdminStats(token)]);
-      setScores(s);
-      setStats(st);
-      setLoading(false);
-    }
     load();
   }, [token]);
+
+  const handleStatusChange = async (action) => {
+    if (action === 'terminate' && !window.confirm('Are you sure you want to terminate? All active sessions will be closed.')) return;
+    const res = await updateQuizStatus(token, action);
+    if (res.ok) setQuizStatus(res.status);
+    else alert('Failed to change status: ' + res.error);
+  };
 
   const filtered = scores
     .filter(r => {
@@ -137,13 +153,48 @@ function Dashboard({ token, onLogout }) {
           <span className="font-mono text-xs bg-[#FF9900] text-[#111] px-2 py-0.5 font-bold uppercase tracking-widest">ADMIN</span>
           <span className="font-mono text-sm text-[#dbc2ad] uppercase tracking-widest">AWS Quiz Dashboard</span>
         </div>
-        <button onClick={onLogout}
-          className="font-mono text-xs text-[#dbc2ad] border border-white/10 px-4 py-2 hover:border-[#FF9900]/50 hover:text-[#FF9900] transition-all uppercase tracking-widest flex items-center gap-2">
-          <span className="material-symbols-outlined text-sm">logout</span> Logout
-        </button>
+        <div className="flex items-center gap-3">
+          <button onClick={load} title="Refresh Data"
+            className="font-mono text-xs text-[#dbc2ad] border border-white/10 px-3 py-2 hover:border-[#00a8e0]/50 hover:text-[#00a8e0] transition-all flex items-center justify-center">
+            <span className="material-symbols-outlined text-sm">refresh</span>
+          </button>
+          <button onClick={onLogout}
+            className="font-mono text-xs text-[#dbc2ad] border border-white/10 px-4 py-2 hover:border-[#FF9900]/50 hover:text-[#FF9900] transition-all uppercase tracking-widest flex items-center gap-2">
+            <span className="material-symbols-outlined text-sm">logout</span> Logout
+          </button>
+        </div>
       </nav>
 
       <div className="max-w-6xl mx-auto px-6 py-10">
+
+        {/* Global Quiz Controls */}
+        <div className="mb-8 border border-white/10 bg-white/3 p-5 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div>
+            <div className="font-mono text-xs text-[#dbc2ad] uppercase tracking-widest mb-1">Global Quiz Status</div>
+            <div className="flex items-center gap-2">
+              <span className={`w-2 h-2 rounded-full ${quizStatus === 'active' ? 'bg-[#a8e063] animate-pulse' : 'bg-[#E24B4A]'}`} />
+              <span className={`font-mono text-lg font-bold uppercase ${quizStatus === 'active' ? 'text-[#a8e063]' : 'text-[#E24B4A]'}`}>
+                {quizStatus === 'active' ? 'LIVE (Accepting)' : 'ON HOLD BY AWS (Blocked)'}
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 w-full md:w-auto">
+            <button 
+              onClick={() => handleStatusChange('initiate')}
+              disabled={quizStatus === 'active'}
+              className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-[#a8e063]/10 text-[#a8e063] border border-[#a8e063]/30 px-6 py-3 font-mono text-xs font-bold uppercase tracking-widest hover:bg-[#a8e063]/20 transition-all disabled:opacity-30 disabled:cursor-not-allowed">
+              <span className="material-symbols-outlined text-sm">play_arrow</span>
+              Initiate Quiz
+            </button>
+            <button 
+              onClick={() => handleStatusChange('terminate')}
+              disabled={quizStatus === 'inactive'}
+              className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-[#E24B4A]/10 text-[#E24B4A] border border-[#E24B4A]/30 px-6 py-3 font-mono text-xs font-bold uppercase tracking-widest hover:bg-[#E24B4A]/20 transition-all disabled:opacity-30 disabled:cursor-not-allowed">
+              <span className="material-symbols-outlined text-sm">stop</span>
+              Terminate Quiz
+            </button>
+          </div>
+        </div>
 
         {/* Stats row */}
         {stats && (

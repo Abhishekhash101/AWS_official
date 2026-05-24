@@ -247,6 +247,49 @@ app.get('/api/admin/stats', adminMiddleware, async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch stats' });
   }
 });
+// ── Global Quiz Status ───────────────────────────────────────
+app.get('/api/quiz-status', async (req, res) => {
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS global_settings (
+        key VARCHAR(64) PRIMARY KEY,
+        value VARCHAR(255) NOT NULL
+      );
+    `);
+    const result = await pool.query("SELECT value FROM global_settings WHERE key = 'quiz_status'");
+    const status = result.rows.length > 0 ? result.rows[0].value : 'inactive';
+    res.status(200).json({ status });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch status' });
+  }
+});
+
+app.post('/api/admin/quiz-control', adminMiddleware, async (req, res) => {
+  try {
+    const { action } = req.body;
+    if (!['initiate', 'terminate'].includes(action)) {
+      return res.status(400).json({ error: 'Invalid action' });
+    }
+    const status = action === 'initiate' ? 'active' : 'inactive';
+    
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS global_settings (
+        key VARCHAR(64) PRIMARY KEY,
+        value VARCHAR(255) NOT NULL
+      );
+    `);
+
+    await pool.query(`
+      INSERT INTO global_settings (key, value) VALUES ('quiz_status', $1)
+      ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value
+    `, [status]);
+
+    res.json({ message: `Quiz ${status} successfully`, status });
+  } catch (error) {
+    console.error('Quiz control error:', error);
+    res.status(500).json({ error: 'Failed to update quiz status' });
+  }
+});
 
 // ── Health check ─────────────────────────────────────────────
 app.get('/api/health', async (req, res) => {

@@ -143,3 +143,25 @@ export async function updatePassword(oldPassword, newPassword) {
   } catch { return { ok: false, error: 'Network error' }; }
 }
 
+/** Get Global Quiz Status */
+export async function fetchQuizStatus() {
+  try {
+    const res = await fetch(`${API_URL}/api/quiz-status`);
+    const data = await res.json();
+    return res.ok ? data.status : 'inactive';
+  } catch { return 'inactive'; }
+}
+
+/** Set Global Quiz Status (Admin) */
+export async function updateQuizStatus(adminToken, action) {
+  try {
+    const res = await fetch(`${API_URL}/api/admin/quiz-control`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+      body: JSON.stringify({ action })
+    });
+    const data = await res.json();
+    return res.ok ? { ok: true, status: data.status } : { ok: false, error: data.error };
+  } catch { return { ok: false, error: 'Network error' }; }
+}
+

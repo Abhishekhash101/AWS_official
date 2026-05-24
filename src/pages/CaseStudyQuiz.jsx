@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import awsIcon from '../assets/aws_icon.jpeg';
 import { CASE_STUDIES, CASE_STUDY_QUESTIONS } from '../data/quizData';
-import { isLoggedIn, submitScore, fetchMyScores } from '../utils/auth';
+import { isLoggedIn, submitScore, fetchMyScores, fetchQuizStatus } from '../utils/auth';
 
 export default function CaseStudyQuiz() {
   const { caseId } = useParams();
@@ -24,6 +24,8 @@ export default function CaseStudyQuiz() {
   const [gridState, setGridState] = useState({ x: 0, y: 0, size: 1, isVisible: false });
   const [pastAttempt, setPastAttempt] = useState(null);
   const [scoresLoading, setScoresLoading] = useState(true);
+  const [timeLeft, setTimeLeft] = useState(60);
+  const [globalStatus, setGlobalStatus] = useState('active');
 
   // Auth gate
   useEffect(() => {
@@ -31,13 +33,57 @@ export default function CaseStudyQuiz() {
       window.dispatchEvent(new Event('open-login-modal'));
       navigate('/');
     } else {
-      fetchMyScores().then(scores => {
+      Promise.all([fetchMyScores(), fetchQuizStatus()]).then(([scores, status]) => {
         const attempt = scores.find(s => s.quiz_id === caseId);
         if (attempt) setPastAttempt(attempt);
+        setGlobalStatus(status);
         setScoresLoading(false);
       }).catch(() => setScoresLoading(false));
     }
   }, [navigate, caseId]);
+
+  // Poll quiz status every 5s
+  useEffect(() => {
+    if (phase === 'results') return; // No need to poll if finished
+    const interval = setInterval(async () => {
+      const status = await fetchQuizStatus();
+      setGlobalStatus(status);
+
+      if (phase === 'quiz' && status === 'inactive') {
+        clearInterval(interval);
+        alert("Case study is currently on hold by AWS. Your progress so far has been saved.");
+        submitScore({
+          quizId: caseId,
+          quizTitle: meta.title,
+          quizType: 'case_study',
+          score: score,
+          total: bank.questions.length,
+        }).then(() => setPhase('results'));
+      }
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [phase, score, bank?.questions?.length, meta, caseId]);
+
+  useEffect(() => {
+    if (phase !== 'quiz' || selected !== null) return;
+    const timer = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          handleTimeOut();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [phase, selected, currentIdx]);
+
+  function handleTimeOut() {
+    setSelected(-1);
+    setShowExplanation(true);
+    setAnswers(prev => [...prev, false]);
+  }
 
   if (!meta || !bank) {
     return (
@@ -93,10 +139,10 @@ export default function CaseStudyQuiz() {
       }).then(res => setScoreSaved(res.ok));
       setPhase('results');
     } else {
-      triggerMove();
       setCurrentIdx(i => i + 1);
       setSelected(null);
       setShowExplanation(false);
+      setTimeLeft(60);
     }
   }
 
@@ -187,12 +233,20 @@ export default function CaseStudyQuiz() {
                 CHECKING STATUS...
               </button>
             ) : !pastAttempt ? (
-              <button
-                onClick={() => setPhase('quiz')}
-                className="w-full bg-[#FF9900] text-[#111] font-mono text-sm font-bold px-8 py-4 hover:bg-[#ffc082] transition-colors uppercase tracking-widest flex items-center justify-center gap-2">
-                Start Case Study
-                <span className="material-symbols-outlined text-base">quiz</span>
-              </button>
+              globalStatus === 'inactive' ? (
+                <button disabled
+                  className="w-full bg-[#E24B4A]/10 text-[#E24B4A] border border-[#E24B4A]/30 font-mono text-sm font-bold px-8 py-4 uppercase tracking-widest flex items-center justify-center gap-2 cursor-not-allowed">
+                  CASE STUDY ON HOLD BY AWS — WAIT FOR START
+                  <span className="material-symbols-outlined text-base">pause_circle</span>
+                </button>
+              ) : (
+                <button
+                  onClick={() => { setPhase('quiz'); setTimeLeft(60); }}
+                  className="w-full bg-[#FF9900] text-[#111] font-mono text-sm font-bold px-8 py-4 hover:bg-[#ffc082] transition-colors uppercase tracking-widest flex items-center justify-center gap-2">
+                  Start Case Study
+                  <span className="material-symbols-outlined text-base">quiz</span>
+                </button>
+              )
             ) : (
               <button onClick={() => { setScore(pastAttempt.score); setPhase('results'); }}
                 className="w-full bg-white/10 text-white border border-white/20 font-mono text-sm font-bold px-8 py-4 hover:bg-white/20 transition-colors uppercase tracking-widest flex items-center justify-center gap-2">
@@ -292,6 +346,9 @@ export default function CaseStudyQuiz() {
         <div className="max-w-2xl mx-auto">
           <div className="flex justify-between items-center mb-2">
             <span className="font-mono text-xs text-[#dbc2ad] uppercase tracking-widest">Q {currentIdx + 1} of {questions.length}</span>
+            <span className={`font-mono text-xs uppercase tracking-widest ${timeLeft <= 10 ? 'text-[#E24B4A] animate-pulse' : 'text-[#dbc2ad]'}`}>
+              ⏱ {timeLeft}s
+            </span>
             <span className="font-mono text-xs text-[#dbc2ad] uppercase tracking-widest">{Math.round(progress)}% complete</span>
           </div>
           <div className="relative w-full h-5 flex items-center">
@@ -366,7 +423,10 @@ export default function CaseStudyQuiz() {
 
           <div className="overflow-hidden transition-all duration-400" style={{ maxHeight: showExplanation ? '140px' : '0', opacity: showExplanation ? 1 : 0 }}>
             <div className="border-l-2 border-[#FF9900] bg-white/3 pl-4 py-3 pr-4 mb-3">
-              <div className="font-mono text-[10px] text-[#FF9900] uppercase tracking-widest mb-1">Explanation</div>
+              <div className="flex items-center gap-2 mb-1">
+                <div className="font-mono text-[10px] text-[#FF9900] uppercase tracking-widest">Explanation</div>
+                {selected === -1 && <span className="font-mono text-[10px] text-[#E24B4A] uppercase tracking-widest font-bold ml-2">(Time's Up!)</span>}
+              </div>
               <p className="font-mono text-xs text-[#dbc2ad] leading-relaxed">{q.explanation}</p>
             </div>
           </div>
