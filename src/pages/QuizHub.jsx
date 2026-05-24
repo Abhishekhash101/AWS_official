@@ -36,27 +36,13 @@ export default function QuizHub() {
     >
       {/* Grid background */}
       <div
-        ref={containerRef}
         className="fixed inset-0 z-0 pointer-events-none"
         style={{
           backgroundImage:
             'linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px)',
           backgroundSize: '80px 80px',
         }}
-      >
-        <div
-          className="absolute hidden md:block pointer-events-none mix-blend-screen"
-          style={{
-            backgroundColor: '#FF9900',
-            left: `${gridState.x}px`,
-            top: `${gridState.y}px`,
-            width: `${80 * gridState.size}px`,
-            height: `${80 * gridState.size}px`,
-            opacity: gridState.isVisible ? 0.14 : 0,
-            transition: 'opacity 150ms ease-out',
-          }}
-        />
-      </div>
+      />
 
       {/* Navbar */}
       <nav className="relative z-10 flex items-center justify-between px-6 py-4 border-b border-white/5 bg-[#0A0C10]/80 backdrop-blur-xl sticky top-0">

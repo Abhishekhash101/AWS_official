@@ -23,6 +23,7 @@ export default function CaseStudyQuiz() {
   const [scoreSaved, setScoreSaved] = useState(false);
   const [gridState, setGridState] = useState({ x: 0, y: 0, size: 1, isVisible: false });
   const [pastAttempt, setPastAttempt] = useState(null);
+  const [scoresLoading, setScoresLoading] = useState(true);
 
   // Auth gate
   useEffect(() => {
@@ -33,7 +34,8 @@ export default function CaseStudyQuiz() {
       fetchMyScores().then(scores => {
         const attempt = scores.find(s => s.quiz_id === caseId);
         if (attempt) setPastAttempt(attempt);
-      });
+        setScoresLoading(false);
+      }).catch(() => setScoresLoading(false));
     }
   }, [navigate, caseId]);
 
@@ -123,11 +125,8 @@ export default function CaseStudyQuiz() {
   }
 
   const GridBg = () => (
-    <div ref={containerRef} className="fixed inset-0 z-0 pointer-events-none"
-      style={{ backgroundImage: 'linear-gradient(to right,rgba(255,255,255,0.05) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,0.05) 1px,transparent 1px)', backgroundSize: '80px 80px' }}>
-      <div className="absolute hidden md:block pointer-events-none mix-blend-screen"
-        style={{ backgroundColor: '#FF9900', left: gridState.x, top: gridState.y, width: 80 * gridState.size, height: 80 * gridState.size, opacity: gridState.isVisible ? 0.14 : 0, transition: 'opacity 150ms ease-out' }} />
-    </div>
+    <div className="fixed inset-0 z-0 pointer-events-none"
+      style={{ backgroundImage: 'linear-gradient(to right,rgba(255,255,255,0.05) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,0.05) 1px,transparent 1px)', backgroundSize: '80px 80px' }} />
   );
 
   const Navbar = ({ subtitle }) => (
@@ -181,7 +180,13 @@ export default function CaseStudyQuiz() {
               ))}
             </div>
 
-            {!pastAttempt ? (
+            {scoresLoading ? (
+              <button disabled
+                className="w-full bg-white/5 text-[#dbc2ad]/50 border border-white/10 font-mono text-sm px-8 py-4 uppercase tracking-widest flex items-center justify-center gap-2 cursor-not-allowed">
+                <span className="material-symbols-outlined text-base animate-spin" style={{animationDuration:'1.2s'}}>autorenew</span>
+                CHECKING STATUS...
+              </button>
+            ) : !pastAttempt ? (
               <button
                 onClick={() => setPhase('quiz')}
                 className="w-full bg-[#FF9900] text-[#111] font-mono text-sm font-bold px-8 py-4 hover:bg-[#ffc082] transition-colors uppercase tracking-widest flex items-center justify-center gap-2">
