@@ -146,7 +146,7 @@ export async function updatePassword(oldPassword, newPassword) {
 /** Get Global Quiz Status */
 export async function fetchQuizStatus() {
   try {
-    const res = await fetch(`${API_URL}/api/quiz-status`);
+    const res = await fetch(`${API_URL}/api/quiz-status`, { cache: 'no-store' });
     const data = await res.json();
     return res.ok ? data.status : 'inactive';
   } catch { return 'inactive'; }
