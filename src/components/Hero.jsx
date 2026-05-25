@@ -13,7 +13,7 @@ export default function Hero() {
     if (user) {
       const text = `Welcome back ${user.first_name}`;
       setWelcomeMsg(text);
-      setDisplayedMsg(text); // Show immediately without typewriter on page load
+      setDisplayedMsg(''); // Start empty to trigger typewriter animation
     }
   }, []);
 

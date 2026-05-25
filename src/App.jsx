@@ -56,9 +56,18 @@ function HomePage() {
 }
 
 export default function App() {
-  const [isLoading, setIsLoading] = useState(true);
+  // Skip preloader if already shown this session
+  const [isLoading, setIsLoading] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    return !sessionStorage.getItem('preloader-shown');
+  });
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const isMobile = useIsMobile();
+
+  // Track whether all page resources (images, fonts, DOM) are ready
+  const [resourcesReady, setResourcesReady] = useState(false);
+  // Track whether the animation timeline has finished
+  const [animationDone, setAnimationDone] = useState(false);
 
   useEffect(() => {
     const handleOpenModal = () => setIsLoginModalOpen(true);
@@ -66,22 +75,84 @@ export default function App() {
     return () => window.removeEventListener('open-login-modal', handleOpenModal);
   }, []);
 
+  // Wait for all resources: window load + fonts
   useEffect(() => {
-    // Desktop loader uses a fixed 8s timer
-    // Mobile loader manages its own timing via onDone callback
-    if (!isMobile) {
-      const timer = setTimeout(() => {
-        setIsLoading(false);
-      }, 8000);
-      return () => clearTimeout(timer);
+    if (!isLoading) return;
+
+    let resolved = false;
+    const markReady = () => {
+      if (resolved) return;
+      resolved = true;
+      setResourcesReady(true);
+    };
+
+    // Wait for both: full page load (images, scripts) AND fonts
+    const onLoad = () => {
+      // Fonts may still be loading after window.load
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(markReady);
+      } else {
+        markReady();
+      }
+    };
+
+    if (document.readyState === 'complete') {
+      onLoad();
+    } else {
+      window.addEventListener('load', onLoad);
+      return () => window.removeEventListener('load', onLoad);
     }
-  }, [isMobile]);
+  }, [isLoading]);
+
+  // Desktop: 8s animation timer
+  useEffect(() => {
+    if (!isLoading || isMobile) return;
+    const timer = setTimeout(() => {
+      setAnimationDone(true);
+    }, 8000);
+    return () => clearTimeout(timer);
+  }, [isLoading, isMobile]);
+
+  // Dismiss preloader only when BOTH animation + resources are done
+  useEffect(() => {
+    if (!isLoading) return;
+    if (isMobile) return; // Mobile handles its own dismissal via onDone
+    if (animationDone && resourcesReady) {
+      sessionStorage.setItem('preloader-shown', '1');
+      setIsLoading(false);
+    }
+  }, [animationDone, resourcesReady, isLoading, isMobile]);
+
+  // Mobile dismissal: called by MobilePreloader's onDone, but gated on resources
+  const handleMobileDone = () => {
+    if (resourcesReady) {
+      sessionStorage.setItem('preloader-shown', '1');
+      setIsLoading(false);
+    } else {
+      // Resources not ready yet — wait for them, then dismiss
+      const check = setInterval(() => {
+        // resourcesReady is set via state, but we need a fresh check here
+        if (document.readyState === 'complete') {
+          const finish = () => {
+            clearInterval(check);
+            sessionStorage.setItem('preloader-shown', '1');
+            setIsLoading(false);
+          };
+          if (document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(finish);
+          } else {
+            finish();
+          }
+        }
+      }, 100);
+    }
+  };
 
   return (
     <>
       {isLoading && (
         isMobile
-          ? <MobilePreloader onDone={() => setIsLoading(false)} />
+          ? <MobilePreloader onDone={handleMobileDone} />
           : <AwsStudentBuilderLoader />
       )}
       <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
