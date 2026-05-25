@@ -66,8 +66,6 @@ export default function App() {
 
   // Track whether all page resources (images, fonts, DOM) are ready
   const [resourcesReady, setResourcesReady] = useState(false);
-  // Track whether the animation timeline has finished
-  const [animationDone, setAnimationDone] = useState(false);
 
   useEffect(() => {
     const handleOpenModal = () => setIsLoginModalOpen(true);
@@ -104,34 +102,16 @@ export default function App() {
     }
   }, [isLoading]);
 
-  // Desktop: 8s animation timer
-  useEffect(() => {
-    if (!isLoading || isMobile) return;
-    const timer = setTimeout(() => {
-      setAnimationDone(true);
-    }, 8000);
-    return () => clearTimeout(timer);
-  }, [isLoading, isMobile]);
+  // Desktop: no fixed timer — animation signals completion via onDone
 
-  // Dismiss preloader only when BOTH animation + resources are done
-  useEffect(() => {
-    if (!isLoading) return;
-    if (isMobile) return; // Mobile handles its own dismissal via onDone
-    if (animationDone && resourcesReady) {
-      sessionStorage.setItem('preloader-shown', '1');
-      setIsLoading(false);
-    }
-  }, [animationDone, resourcesReady, isLoading, isMobile]);
-
-  // Mobile dismissal: called by MobilePreloader's onDone, but gated on resources
-  const handleMobileDone = () => {
+  // Shared dismissal logic for both desktop and mobile
+  const handlePreloaderDone = () => {
     if (resourcesReady) {
       sessionStorage.setItem('preloader-shown', '1');
       setIsLoading(false);
     } else {
-      // Resources not ready yet — wait for them, then dismiss
+      // Animation finished but resources aren't ready — poll until they are
       const check = setInterval(() => {
-        // resourcesReady is set via state, but we need a fresh check here
         if (document.readyState === 'complete') {
           const finish = () => {
             clearInterval(check);
@@ -152,8 +132,8 @@ export default function App() {
     <>
       {isLoading && (
         isMobile
-          ? <MobilePreloader onDone={handleMobileDone} />
-          : <AwsStudentBuilderLoader />
+          ? <MobilePreloader onDone={handlePreloaderDone} />
+          : <AwsStudentBuilderLoader onDone={handlePreloaderDone} />
       )}
       <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
       <div className="bg-background text-on-surface bg-grid-pattern min-h-screen relative overflow-x-hidden selection:bg-primary-container selection:text-on-primary-container font-body-md">

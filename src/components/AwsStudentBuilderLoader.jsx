@@ -1,6 +1,27 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 
-export default function AwsStudentBuilderLoader() {
+/**
+ * Desktop Preloader — Pac-Man eats "AWS STUDENT BUILDER GROUP"
+ * Runs ONE time, then fires onDone() when the animation completes.
+ *
+ * Props:
+ *   onDone — callback fired after the Pac-Man finishes eating the text
+ */
+export default function AwsStudentBuilderLoader({ onDone }) {
+  const pacmanRef = useRef(null);
+
+  useEffect(() => {
+    const el = pacmanRef.current;
+    if (!el) return;
+
+    const handleEnd = () => {
+      if (typeof onDone === 'function') onDone();
+    };
+
+    el.addEventListener('animationend', handleEnd);
+    return () => el.removeEventListener('animationend', handleEnd);
+  }, [onDone]);
+
   const css = `
     .loader-container {
       position: fixed;
@@ -19,6 +40,11 @@ export default function AwsStudentBuilderLoader() {
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      transition: opacity 0.5s ease-out;
+    }
+    .loader-container.loader-fade-out {
+      opacity: 0;
+      pointer-events: none;
     }
 
     .bg-square {
@@ -39,11 +65,9 @@ export default function AwsStudentBuilderLoader() {
       display: inline-flex;
       align-items: center;
       z-index: 10;
-      /* Optional: Add padding if we want Pac-Man to start/end completely outside text
-         But we stick to the exact left:0 to left:100% over the text width */
     }
 
-    /* The Main Text Element */
+    /* The Main Text Element — runs ONCE */
     .text-container {
       font-family: 'Space Mono', monospace, sans-serif;
       font-size: 4rem;
@@ -51,7 +75,7 @@ export default function AwsStudentBuilderLoader() {
       color: #ffffff;
       text-transform: uppercase;
       white-space: nowrap;
-      animation: wipeText 4s infinite linear;
+      animation: wipeText 4s 1 linear forwards;
     }
 
     @keyframes wipeText {
@@ -59,15 +83,14 @@ export default function AwsStudentBuilderLoader() {
       100% { clip-path: inset(0 0 0 100%); }
     }
 
-    /* PAC-MAN */
+    /* PAC-MAN — runs ONCE */
     .pacman-wrapper {
       position: absolute;
       top: 50%;
-      /* Transform -50% horizontally centers the Pac-Man exactly on the 'left' percentage */
       transform: translate(-50%, -50%);
       width: 80px;
       height: 80px;
-      animation: movePacman 4s infinite linear;
+      animation: movePacman 4s 1 linear forwards;
       z-index: 20;
     }
 
@@ -178,7 +201,7 @@ export default function AwsStudentBuilderLoader() {
           AWS STUDENT BUILDER GROUP
         </div>
         
-        <div className="pacman-wrapper">
+        <div className="pacman-wrapper" ref={pacmanRef}>
           <div className="pacman"></div>
         </div>
       </div>
