@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>AWS Student Builder Group — Loading</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* ═══════════════════════════════════════════════════════════
+       RESET & MOBILE LOCK
+       ═══════════════════════════════════════════════════════════ */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      touch-action: none;
+      -webkit-user-select: none;
+      user-select: none;
+      background: #0A0C10;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       PRELOADER CONTAINER — full-bleed, safe-area aware
+       ═══════════════════════════════════════════════════════════ */
+    .preloader {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #0A0C10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      z-index: 99999;
+      padding:
+        env(safe-area-inset-top)
+        env(safe-area-inset-right)
+        env(safe-area-inset-bottom)
+        env(safe-area-inset-left);
+      transition: opacity 0.5s ease-out;
+    }
+    .preloader.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       ANIMATED GRID BACKGROUND — scrolling downward infinitely
+       Matches website's bg-grid-pattern (white 5% opacity lines)
+       but uses faint orange for preloader branding
+       ═══════════════════════════════════════════════════════════ */
+    .grid-bg {
+      position: absolute;
+      inset: -40px 0 0 0;
+      width: 100%;
+      height: calc(100% + 80px);
+      background-image:
+        linear-gradient(to right, rgba(255, 153, 0, 0.035) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 153, 0, 0.035) 1px, transparent 1px);
+      background-size: 40px 40px;
+      animation: gridScroll 6s linear infinite;
+    }
+    @keyframes gridScroll {
+      0%   { transform: translateY(-40px); }
+      100% { transform: translateY(0); }
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       CONCENTRIC GLOW RINGS — three pulsing rings
+       ═══════════════════════════════════════════════════════════ */
+    .glow-rings {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+    .glow-ring {
+      position: absolute;
+      border-radius: 50%;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      border: 1px solid rgba(255, 153, 0, 0.08);
+      animation: pulseRing 3.5s ease-in-out infinite;
+    }
+    .glow-ring--outer {
+      width: 340px; height: 340px;
+      border-color: rgba(255, 153, 0, 0.06);
+      animation-delay: 0s;
+    }
+    .glow-ring--mid {
+      width: 260px; height: 260px;
+      border-color: rgba(255, 153, 0, 0.08);
+      animation-delay: 0.6s;
+    }
+    .glow-ring--inner {
+      width: 180px; height: 180px;
+      border-color: rgba(255, 153, 0, 0.10);
+      animation-delay: 1.2s;
+    }
+    @keyframes pulseRing {
+      0%, 100% { transform: translate(-50%, -50%) scale(1);    opacity: 0.5; }
+      50%      { transform: translate(-50%, -50%) scale(1.06);  opacity: 1; }
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       CORNER BRACKET ACCENTS
+       ═══════════════════════════════════════════════════════════ */
+    .corner {
+      position: absolute;
+      width: 20px; height: 20px;
+      z-index: 5;
+      opacity: 0.25;
+    }
+    .corner--tl { top: 24px; left: 24px;     border-top: 1.5px solid #FF9900; border-left: 1.5px solid #FF9900; }
+    .corner--tr { top: 24px; right: 24px;    border-top: 1.5px solid #FF9900; border-right: 1.5px solid #FF9900; }
+    .corner--bl { bottom: 24px; left: 24px;  border-bottom: 1.5px solid #FF9900; border-left: 1.5px solid #FF9900; }
+    .corner--br { bottom: 24px; right: 24px; border-bottom: 1.5px solid #FF9900; border-right: 1.5px solid #FF9900; }
+
+    /* ═══════════════════════════════════════════════════════════
+       CONTENT — vertically centered text stack
+       ═══════════════════════════════════════════════════════════ */
+    .content {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    /* AWS bold text — 48px, weight 900 */
+    .aws-logo {
+      font-family: 'Space Mono', monospace;
+      font-size: 48px;
+      font-weight: 900;
+      color: #FF9900;
+      letter-spacing: -1px;
+      line-height: 1;
+      margin-bottom: 16px;
+      opacity: 0;
+      transform: scale(0.7) translateY(20px);
+      animation: logoReveal 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.3s forwards;
+    }
+    @keyframes logoReveal {
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    /* STUDENT BUILDER — 22px bold */
+    .student-builder {
+      font-family: 'Space Mono', monospace;
+      font-size: 22px;
+      font-weight: 700;
+      color: #FF9900;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      opacity: 0;
+      transform: translateY(16px);
+      animation: fadeSlideUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.6s forwards;
+    }
+
+    /* VIT · Vellore — 13px, white 55% */
+    .vit-line {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.55);
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      opacity: 0;
+      transform: translateY(16px);
+      animation: fadeSlideUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.75s forwards;
+    }
+
+    /* Community — 11px, orange 50% */
+    .community-line {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 400;
+      color: rgba(255, 153, 0, 0.5);
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      opacity: 0;
+      transform: translateY(16px);
+      animation: fadeSlideUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.85s forwards;
+    }
+
+    /* Tagline — 12px, white 30% */
+    .tagline {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.3);
+      letter-spacing: 1px;
+      margin-bottom: 48px;
+      opacity: 0;
+      transform: translateY(16px);
+      animation: fadeSlideUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.95s forwards;
+    }
+
+    @keyframes fadeSlideUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       PROGRESS SECTION
+       ═══════════════════════════════════════════════════════════ */
+    .progress-section {
+      width: 240px;
+      opacity: 0;
+      transform: translateY(16px);
+      animation: fadeSlideUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) 1.05s forwards;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .progress-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.35);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .progress-pct {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      color: #FF9900;
+      letter-spacing: 1px;
+      min-width: 32px;
+      text-align: right;
+    }
+
+    /* Track */
+    .progress-track {
+      width: 100%;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 2px;
+      overflow: visible;
+      position: relative;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #FF9900 0%, #FFB84D 80%, #ffe6b3 100%);
+      border-radius: 2px;
+      position: relative;
+      transition: width 0.05s linear;
+    }
+    /* Glowing dot at the tip */
+    .progress-fill::after {
+      content: '';
+      position: absolute;
+      right: -5px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 10px;
+      height: 10px;
+      background: radial-gradient(circle, rgba(255, 200, 80, 0.9) 0%, transparent 70%);
+      border-radius: 50%;
+      animation: dotGlow 0.4s ease-in-out infinite alternate;
+    }
+    @keyframes dotGlow {
+      from { opacity: 0.5; transform: translateY(-50%) scale(0.9); }
+      to   { opacity: 1;   transform: translateY(-50%) scale(1.2); }
+    }
+
+    /* Step messages */
+    .steps-container {
+      margin-top: 18px;
+      height: 20px;
+      position: relative;
+      text-align: center;
+      overflow: hidden;
+    }
+    .step-msg {
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      color: rgba(255, 153, 0, 0.55);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      position: absolute;
+      width: 100%;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+    .step-msg.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .step-msg.exit {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       FLOATING PARTICLES — rising from bottom
+       ═══════════════════════════════════════════════════════════ */
+    .particle {
+      position: absolute;
+      background: #FF9900;
+      border-radius: 50%;
+      opacity: 0;
+      z-index: 3;
+      animation: particleFloat linear infinite;
+    }
+    @keyframes particleFloat {
+      0%   { opacity: 0;   transform: translateY(0) scale(1); }
+      15%  { opacity: 0.45; }
+      75%  { opacity: 0.15; }
+      100% { opacity: 0;   transform: translateY(-200px) scale(0.3); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preloader" id="preloader">
+  <!-- Animated grid background -->
+  <div class="grid-bg"></div>
+
+  <!-- Concentric glow rings -->
+  <div class="glow-rings">
+    <div class="glow-ring glow-ring--outer"></div>
+    <div class="glow-ring glow-ring--mid"></div>
+    <div class="glow-ring glow-ring--inner"></div>
+  </div>
+
+  <!-- Corner bracket accents -->
+  <div class="corner corner--tl"></div>
+  <div class="corner corner--tr"></div>
+  <div class="corner corner--bl"></div>
+  <div class="corner corner--br"></div>
+
+  <!-- Floating particles (generated via JS for variety) -->
+  <div id="particles"></div>
+
+  <!-- Main content -->
+  <div class="content">
+    <div class="aws-logo">AWS</div>
+    <div class="student-builder">STUDENT BUILDER</div>
+    <div class="vit-line">VIT · Vellore</div>
+    <div class="community-line">Community</div>
+    <p class="tagline">Build · Deploy · Innovate</p>
+
+    <div class="progress-section">
+      <div class="progress-header">
+        <span class="progress-label">Initializing</span>
+        <span class="progress-pct" id="pctDisplay">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="steps-container" id="stepsContainer">
+        <div class="step-msg" data-step="0">Connecting to cloud...</div>
+        <div class="step-msg" data-step="1">Loading services...</div>
+        <div class="step-msg" data-step="2">Configuring stack...</div>
+        <div class="step-msg" data-step="3">Ready to build ✦</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ═══════════════════════════════════════════════════════════
+  // FLOATING PARTICLES — procedurally generated
+  // ═══════════════════════════════════════════════════════════
+  (function spawnParticles() {
+    const container = document.getElementById('particles');
+    const count = 12;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const size = 1.5 + Math.random() * 2;
+      p.style.width  = size + 'px';
+      p.style.height = size + 'px';
+      p.style.left   = (8 + Math.random() * 84) + '%';
+      p.style.bottom = (60 + Math.random() * 140) + 'px';
+      p.style.animationDuration = (5 + Math.random() * 4) + 's';
+      p.style.animationDelay    = (Math.random() * 4) + 's';
+      container.appendChild(p);
+    }
+  })();
+
+  // ═══════════════════════════════════════════════════════════
+  // PROGRESS BAR + PERCENTAGE COUNTER
+  // Uses eased keyframes synced to a 3.5s timeline
+  // ═══════════════════════════════════════════════════════════
+  const fillEl   = document.getElementById('progressFill');
+  const pctEl    = document.getElementById('pctDisplay');
+  const steps    = document.querySelectorAll('.step-msg');
+  const preloader = document.getElementById('preloader');
+
+  // Eased progress keyframes (time in ms from bar start, percentage)
+  const keyframes = [
+    { t: 0,    v: 0 },
+    { t: 300,  v: 8 },
+    { t: 800,  v: 28 },
+    { t: 1300, v: 45 },
+    { t: 1800, v: 62 },
+    { t: 2200, v: 74 },
+    { t: 2700, v: 85 },
+    { t: 3100, v: 93 },
+    { t: 3500, v: 100 }
+  ];
+
+  // Step message thresholds
+  const stepThresholds = [0, 25, 55, 90];
+  let currentStep = -1;
+
+  function setStep(idx) {
+    if (idx === currentStep) return;
+    // Exit old step
+    if (currentStep >= 0 && steps[currentStep]) {
+      steps[currentStep].classList.remove('active');
+      steps[currentStep].classList.add('exit');
+    }
+    currentStep = idx;
+    // Activate new step
+    if (steps[currentStep]) {
+      steps[currentStep].classList.remove('exit');
+      steps[currentStep].classList.add('active');
+    }
+  }
+
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
+  function getProgress(elapsed) {
+    if (elapsed <= 0) return 0;
+    if (elapsed >= keyframes[keyframes.length - 1].t) return 100;
+    for (let i = 1; i < keyframes.length; i++) {
+      const prev = keyframes[i - 1], curr = keyframes[i];
+      if (elapsed >= prev.t && elapsed <= curr.t) {
+        const t = (elapsed - prev.t) / (curr.t - prev.t);
+        // Ease-out cubic
+        const eased = 1 - Math.pow(1 - t, 3);
+        return lerp(prev.v, curr.v, eased);
+      }
+    }
+    return 100;
+  }
+
+  // Delay before progress starts (1.2s)
+  const BAR_START_DELAY = 1200;
+  let barStartTime = null;
+  let done = false;
+
+  function animateProgress(timestamp) {
+    if (!barStartTime) barStartTime = timestamp;
+    const elapsed = timestamp - barStartTime;
+
+    const pct = Math.min(100, getProgress(elapsed));
+    const rounded = Math.round(pct);
+
+    fillEl.style.width = pct + '%';
+    pctEl.textContent  = rounded + '%';
+
+    // Update step message
+    for (let i = stepThresholds.length - 1; i >= 0; i--) {
+      if (pct >= stepThresholds[i]) { setStep(i); break; }
+    }
+
+    if (pct < 100) {
+      requestAnimationFrame(animateProgress);
+    } else if (!done) {
+      done = true;
+      // Hold "Ready to build ✦" for 0.6s then fade out
+      setTimeout(() => {
+        preloader.classList.add('fade-out');
+        // After fade, remove from DOM and fire callback
+        setTimeout(() => {
+          preloader.style.display = 'none';
+          if (typeof onPreloaderDone === 'function') {
+            onPreloaderDone();
+          }
+        }, 500);
+      }, 600);
+    }
+  }
+
+  // Kick off progress after delay
+  setTimeout(() => {
+    requestAnimationFrame(animateProgress);
+  }, BAR_START_DELAY);
+
+  // ═══════════════════════════════════════════════════════════
+  // CALLBACK — app hooks into this
+  // ═══════════════════════════════════════════════════════════
+  function onPreloaderDone() {
+    console.log('[Preloader] Done — app can take over.');
+  }
+</script>
+
+</body>
+</html>

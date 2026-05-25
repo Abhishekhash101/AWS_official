@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import AwsStudentBuilderLoader from './components/AwsStudentBuilderLoader';
+import MobilePreloader from './components/MobilePreloader';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Marquee from './components/Marquee';
@@ -21,6 +22,19 @@ import QuizHub from './pages/QuizHub';
 import CaseStudyQuiz from './pages/CaseStudyQuiz';
 import AdminPage from './pages/AdminPage';
 import AccountPage from './pages/AccountPage';
+
+/**
+ * Detect mobile viewport (≤768px).
+ * Captures the initial value on mount so the loader type
+ * doesn't flip mid-animation if the user resizes.
+ */
+function useIsMobile() {
+  const [isMobile] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(max-width: 768px)').matches;
+  });
+  return isMobile;
+}
 
 function HomePage() {
   return (
@@ -44,6 +58,7 @@ function HomePage() {
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const handleOpenModal = () => setIsLoginModalOpen(true);
@@ -52,16 +67,23 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    // Show loader for 8 seconds to demonstrate the animation
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 8000);
-    return () => clearTimeout(timer);
-  }, []);
+    // Desktop loader uses a fixed 8s timer
+    // Mobile loader manages its own timing via onDone callback
+    if (!isMobile) {
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+      }, 8000);
+      return () => clearTimeout(timer);
+    }
+  }, [isMobile]);
 
   return (
     <>
-      {isLoading && <AwsStudentBuilderLoader />}
+      {isLoading && (
+        isMobile
+          ? <MobilePreloader onDone={() => setIsLoading(false)} />
+          : <AwsStudentBuilderLoader />
+      )}
       <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
       <div className="bg-background text-on-surface bg-grid-pattern min-h-screen relative overflow-x-hidden selection:bg-primary-container selection:text-on-primary-container font-body-md">
         <Routes>
