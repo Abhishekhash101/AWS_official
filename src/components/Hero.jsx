@@ -1,35 +1,60 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import InteractiveHeroGrid from './InteractiveHeroGrid';
+import { getUser } from '../utils/auth';
 
 export default function Hero() {
   const [welcomeMsg, setWelcomeMsg] = useState(null);
   const [displayedMsg, setDisplayedMsg] = useState('');
 
+  // Initialize welcome message from stored session on mount
+  useEffect(() => {
+    const user = getUser();
+    if (user) {
+      const text = `Welcome back ${user.first_name}`;
+      setWelcomeMsg(text);
+      setDisplayedMsg(text); // Show immediately without typewriter on page load
+    }
+  }, []);
+
+  // Listen for fresh login/register events (typewriter effect)
   useEffect(() => {
     const handler = (e) => {
       const { type, user } = e.detail;
       const text = type === 'login' ? `Welcome back ${user.first_name}` : `Welcome ${user.first_name}`;
       setWelcomeMsg(text);
-      setDisplayedMsg('');
+      setDisplayedMsg(''); // Reset to trigger typewriter
     };
     window.addEventListener('auth-success', handler);
     return () => window.removeEventListener('auth-success', handler);
   }, []);
 
+  // Clear welcome on logout
   useEffect(() => {
-    if (!welcomeMsg) return;
-    let i = 0;
+    const handler = () => {
+      const user = getUser();
+      if (!user) {
+        setWelcomeMsg(null);
+        setDisplayedMsg('');
+      }
+    };
+    window.addEventListener('auth-change', handler);
+    return () => window.removeEventListener('auth-change', handler);
+  }, []);
+
+  // Typewriter effect — only runs when displayedMsg is reset to ''
+  useEffect(() => {
+    if (!welcomeMsg || displayedMsg === welcomeMsg) return;
+    let i = displayedMsg.length;
     const interval = setInterval(() => {
       setDisplayedMsg(welcomeMsg.substring(0, i + 1));
       i++;
       if (i >= welcomeMsg.length) {
         clearInterval(interval);
-        setTimeout(() => setWelcomeMsg(null), 5000); // Hide after 5 seconds
       }
     }, 100);
     return () => clearInterval(interval);
-  }, [welcomeMsg]);
+  }, [welcomeMsg, displayedMsg === '']);
   const levitateTransition = (delay) => ({
     repeat: Infinity,
     duration: 5,

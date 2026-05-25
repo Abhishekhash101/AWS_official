@@ -35,12 +35,23 @@ const BUILDERS = [
   { id: 10, initials: 'AB', fullName: 'Abhishek Kumar', role: 'TECHNICAL HEAD', desc: 'Architects hands-on cloud workshops and technical infrastructure.', color: '#2E7D32', insta: 'https://www.instagram.com/abhishek_is_error/', linkedin: 'https://www.linkedin.com/in/abhishek-kumar-740171345/', image: abhishekImg, popupImage: abhishekPopupImg },
 ];
 
-const OUTER_R = 250;
-const INNER_R = 170;
+const OUTER_R_DESKTOP = 250;
+const INNER_R_DESKTOP = 170;
+const OUTER_R_MOBILE = 135;
+const INNER_R_MOBILE = 90;
+const MOBILE_BP = 640;
 const OUTER_IDX = [0, 1, 2, 3, 4];
 const INNER_IDX = [5, 6, 7, 8, 9];
 const OUTER_SPEED = 0.0004;
 const INNER_SPEED = -0.0006;
+
+function getRadii() {
+  const isMobile = window.innerWidth <= MOBILE_BP;
+  return {
+    outer: isMobile ? OUTER_R_MOBILE : OUTER_R_DESKTOP,
+    inner: isMobile ? INNER_R_MOBILE : INNER_R_DESKTOP,
+  };
+}
 
 export default function TheBuilders() {
   const [selectedBuilder, setSelectedBuilder] = useState(null);
@@ -67,10 +78,11 @@ export default function TheBuilders() {
         }
       }
 
-      // Update positions
+      // Update positions with responsive radii
+      const { outer, inner } = getRadii();
       const angles = anglesRef.current;
       for (let i = 0; i < BUILDERS.length; i++) {
-        const r = OUTER_IDX.includes(i) ? OUTER_R : INNER_R;
+        const r = OUTER_IDX.includes(i) ? outer : inner;
         const x = Math.cos(angles[i]) * r;
         const y = Math.sin(angles[i]) * r;
         const el = anchorEls.current[i];
@@ -385,6 +397,81 @@ export default function TheBuilders() {
         .tb-popup-social-btn .social-icon { font-size: 16px; }
         .tb-popup-social-btn.insta .social-icon { color: #e1306c; }
         .tb-popup-social-btn.linkedin .social-icon { color: #0a66c2; }
+
+        /* ═══════════════════════════════════════════
+           MOBILE RESPONSIVE — ≤640px
+           ═══════════════════════════════════════════ */
+        @media (max-width: 640px) {
+          .tb-section {
+            padding: 64px 16px;
+          }
+          .tb-title {
+            font-size: 32px;
+          }
+          .tb-orbit-scene {
+            min-height: 380px;
+          }
+          .tb-orbit-container {
+            width: 320px;
+            height: 320px;
+          }
+          .tb-ring-outer {
+            width: 280px;
+            height: 280px;
+          }
+          .tb-ring-inner {
+            width: 185px;
+            height: 185px;
+          }
+          .tb-center {
+            width: 75px;
+            height: 75px;
+            box-shadow: 0 0 0 4px rgba(255,153,0,0.15), 0 0 0 8px rgba(255,153,0,0.07);
+          }
+          .tb-avatar {
+            width: 44px;
+            height: 44px;
+            border-width: 2px;
+          }
+          .tb-name-tag {
+            font-size: 8px;
+            bottom: -18px;
+          }
+
+          /* Popup — vertical stack on mobile */
+          .tb-popup {
+            width: 90vw;
+            max-width: 340px;
+            height: auto;
+            max-height: 85vh;
+            flex-direction: column;
+            border-radius: 16px;
+          }
+          .tb-popup-img-panel {
+            width: 100%;
+            min-width: unset;
+            height: 200px;
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+            border-bottom-left-radius: 0;
+          }
+          .tb-popup-img-panel img {
+            height: 130%;
+            width: auto;
+            max-width: none;
+          }
+          .tb-popup-content {
+            padding: 16px;
+            border-left: none;
+            border-top: 0.5px solid #1e1e1e;
+          }
+          .tb-popup-name {
+            font-size: 17px;
+          }
+          .tb-popup-socials {
+            margin-top: 12px;
+          }
+        }
       `}} />
 
       <div className="tb-header">
