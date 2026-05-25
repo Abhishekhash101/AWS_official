@@ -88,9 +88,9 @@ export default function Navbar() {
   return (
     <nav className="bg-background/80 backdrop-blur-xl border-b border-white/5 fixed top-0 left-0 w-full z-50 flex justify-between items-center px-container-padding py-4 max-w-full">
       {/* Logo */}
-      <div className="font-headline-md text-headline-md text-on-surface tracking-tighter uppercase flex items-center gap-2">
+      <div className="font-headline-md text-headline-md text-on-surface tracking-tighter uppercase flex items-center gap-2 min-w-0 overflow-hidden mr-2 flex-1">
         <img src={awsIcon} alt="AWS Club Logo" className="w-7 h-7 rounded-full object-cover flex-shrink-0" />
-        <span className="min-w-[28ch] block sm:inline-block">
+        <span className="block truncate md:min-w-[28ch]">
           {displayedText}
           <span className="animate-pulse">_</span>
         </span>
@@ -187,7 +187,7 @@ export default function Navbar() {
 
       {/* Mobile Menu Button */}
       <button
-        className="md:hidden text-on-surface"
+        className="md:hidden text-on-surface flex-shrink-0 p-1"
         onClick={() => setMobileOpen(!mobileOpen)}
         aria-label="Toggle navigation menu"
       >
