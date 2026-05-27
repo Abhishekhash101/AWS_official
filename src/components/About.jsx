@@ -3,9 +3,9 @@ import hqSvg from '../assets/aws_club_hq.svg';
 import { useInView, motion, useMotionValue, useTransform, animate } from 'framer-motion';
 
 const stats = [
-  { value: 50, suffix: '+', label: 'Members' },
-  { value: 10, suffix: '+', label: 'Events' },
-  { value: 3, suffix: '+', label: 'Projects' },
+  { value: 10, suffix: '+', label: 'Members' },
+  { value: 4, suffix: '+', label: 'Events' },
+  { value: 0, suffix: '+', label: 'Projects' },
 ];
 
 function AnimatedCounter({ targetValue, inView }) {
