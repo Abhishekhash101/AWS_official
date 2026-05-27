@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import awsIcon from '../assets/aws_icon.jpeg';
 import { QUESTION_BANKS, QUIZZES } from '../data/quizData';
-import { isLoggedIn, submitScore, fetchMyScores, fetchQuizStatus, fetchRoundStatus } from '../utils/auth';
+import { isLoggedIn, getUser, submitScore, fetchMyScores, fetchQuizStatus, fetchRoundStatus } from '../utils/auth';
 import useScreenshotProtection from '../utils/useScreenshotProtection';
 
 function shuffleArray(arr) {
@@ -44,7 +44,9 @@ export default function AwsQuiz() {
 
   // Screenshot protection — active during quiz and results screens
   const isProtectionActive = screen === SCREEN.QUIZ || screen === SCREEN.RESULTS;
-  const { isBlurred } = useScreenshotProtection(isProtectionActive);
+  const user = getUser();
+  const watermarkLabel = user ? `${user.firstName || ''} ${user.lastName || ''} • ${user.email || ''}`.trim() : '';
+  const { isBlurred } = useScreenshotProtection(isProtectionActive, watermarkLabel);
 
   // Auth gate — redirect to home + open login if not logged in
   useEffect(() => {

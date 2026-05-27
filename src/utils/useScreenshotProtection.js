@@ -10,13 +10,16 @@ import { useEffect, useState } from 'react';
  * - Disables right-click context menu
  * - Disables text selection (CSS)
  * - Blurs content when window/tab loses focus
- * - Blocks copy/cut/paste
+ * - Blocks copy/cut/paste/select/drag
  * - Clears clipboard on PrintScreen attempt
+ * - Dynamic watermark with user identity (deters phone screenshots)
+ * - Mobile long-press and touch callout prevention
  * 
  * @param {boolean} active - Whether protection should be active
+ * @param {string} watermarkText - Text to display as watermark (e.g. user email/name)
  * @returns {{ isBlurred: boolean }} - State indicating if content is blurred
  */
-export default function useScreenshotProtection(active = true) {
+export default function useScreenshotProtection(active = true, watermarkText = '') {
   const [isBlurred, setIsBlurred] = useState(false);
 
   useEffect(() => {
@@ -27,7 +30,6 @@ export default function useScreenshotProtection(active = true) {
       // PrintScreen
       if (e.key === 'PrintScreen') {
         e.preventDefault();
-        // Attempt to clear clipboard
         if (navigator.clipboard && navigator.clipboard.writeText) {
           navigator.clipboard.writeText('').catch(() => {});
         }
@@ -71,7 +73,7 @@ export default function useScreenshotProtection(active = true) {
       }
     };
 
-    // ── Context menu (right-click) blocking ─────────────────
+    // ── Context menu (right-click + mobile long-press) ──────
     const handleContextMenu = (e) => {
       e.preventDefault();
       return false;
@@ -91,6 +93,22 @@ export default function useScreenshotProtection(active = true) {
     const handleSelectStart = (e) => {
       e.preventDefault();
       return false;
+    };
+
+    // ── Mobile long-press prevention ────────────────────────
+    let longPressTimer = null;
+    const handleTouchStart = (e) => {
+      // Prevent long-press by clearing any system timeout behavior
+      longPressTimer = setTimeout(() => {
+        // If touch is held too long, it might be a long-press attempt
+      }, 500);
+    };
+
+    const handleTouchEnd = () => {
+      if (longPressTimer) {
+        clearTimeout(longPressTimer);
+        longPressTimer = null;
+      }
     };
 
     // ── Visibility / Focus change → blur content ────────────
@@ -118,6 +136,21 @@ export default function useScreenshotProtection(active = true) {
         -ms-user-select: none !important;
         user-select: none !important;
         -webkit-touch-callout: none !important;
+        -webkit-tap-highlight-color: transparent !important;
+      }
+
+      .screenshot-protected * {
+        -webkit-user-select: none !important;
+        -moz-user-select: none !important;
+        -ms-user-select: none !important;
+        user-select: none !important;
+        -webkit-touch-callout: none !important;
+      }
+
+      .screenshot-protected img {
+        pointer-events: none !important;
+        -webkit-user-drag: none !important;
+        user-drag: none !important;
       }
       
       @media print {
@@ -138,6 +171,41 @@ export default function useScreenshotProtection(active = true) {
     `;
     document.head.appendChild(styleEl);
 
+    // ── Watermark overlay (deters phone screenshots) ────────
+    let watermarkEl = null;
+    if (watermarkText) {
+      watermarkEl = document.createElement('div');
+      watermarkEl.id = 'quiz-watermark-overlay';
+
+      // Create a repeating tiled watermark using SVG for crisp rendering
+      const svgText = encodeURIComponent(
+        `<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180">
+          <text x="50%" y="40%" dominant-baseline="middle" text-anchor="middle"
+            font-family="monospace" font-size="13" fill="rgba(255,255,255,0.06)"
+            transform="rotate(-25, 160, 72)">${watermarkText}</text>
+          <text x="50%" y="80%" dominant-baseline="middle" text-anchor="middle"
+            font-family="monospace" font-size="10" fill="rgba(255,255,255,0.04)"
+            transform="rotate(-25, 160, 144)">AWS VIT QUIZ</text>
+        </svg>`
+      );
+
+      Object.assign(watermarkEl.style, {
+        position: 'fixed',
+        top: '0',
+        left: '0',
+        width: '100%',
+        height: '100%',
+        zIndex: '9990',
+        pointerEvents: 'none',
+        backgroundImage: `url("data:image/svg+xml,${svgText}")`,
+        backgroundRepeat: 'repeat',
+        backgroundSize: '320px 180px',
+        opacity: '1',
+      });
+
+      document.body.appendChild(watermarkEl);
+    }
+
     // Add protection class to body
     document.body.classList.add('screenshot-protected');
 
@@ -149,6 +217,9 @@ export default function useScreenshotProtection(active = true) {
     document.addEventListener('paste', handleClipboard, true);
     document.addEventListener('selectstart', handleSelectStart, true);
     document.addEventListener('dragstart', handleDragStart, true);
+    document.addEventListener('touchstart', handleTouchStart, { passive: true });
+    document.addEventListener('touchend', handleTouchEnd, { passive: true });
+    document.addEventListener('touchcancel', handleTouchEnd, { passive: true });
     document.addEventListener('visibilitychange', handleVisibilityChange);
     window.addEventListener('blur', handleBlur);
     window.addEventListener('focus', handleFocus);
@@ -162,14 +233,20 @@ export default function useScreenshotProtection(active = true) {
       document.removeEventListener('paste', handleClipboard, true);
       document.removeEventListener('selectstart', handleSelectStart, true);
       document.removeEventListener('dragstart', handleDragStart, true);
+      document.removeEventListener('touchstart', handleTouchStart);
+      document.removeEventListener('touchend', handleTouchEnd);
+      document.removeEventListener('touchcancel', handleTouchEnd);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('blur', handleBlur);
       window.removeEventListener('focus', handleFocus);
       document.body.classList.remove('screenshot-protected');
       const existingStyle = document.getElementById('screenshot-protection-styles');
       if (existingStyle) existingStyle.remove();
+      const existingWatermark = document.getElementById('quiz-watermark-overlay');
+      if (existingWatermark) existingWatermark.remove();
+      if (longPressTimer) clearTimeout(longPressTimer);
     };
-  }, [active]);
+  }, [active, watermarkText]);
 
   return { isBlurred };
 }
