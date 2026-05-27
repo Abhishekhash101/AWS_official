@@ -139,7 +139,7 @@ export default function Navbar() {
       {/* Desktop CTA / User Dropdown */}
       {!user ? (
         <a
-          className="hidden md:inline-flex bg-primary-container text-background font-headline-md text-label-md px-6 py-2 hover:bg-primary transition-colors items-center gap-2 uppercase tracking-widest animate-attention group cursor-pointer"
+          className="hidden md:inline-flex bg-primary-container text-background font-headline-md text-label-md px-6 py-2 hover:bg-primary transition-colors items-center gap-2 uppercase tracking-widest animate-attention group cursor-pointer ml-6"
           href="#join"
           onClick={(e) => { e.preventDefault(); window.dispatchEvent(new Event('open-login-modal')); }}
         >
