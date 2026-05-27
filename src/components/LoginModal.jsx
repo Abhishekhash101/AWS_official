@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { saveSession } from '../utils/auth';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
@@ -36,8 +37,7 @@ export default function LoginModal({ isOpen, onClose }) {
         return;
       }
       
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
+      saveSession(data.token, data.user);
       setMsg({ text: '✓ Sign in successful! Redirecting...', type: 'success' });
       window.dispatchEvent(new CustomEvent('auth-success', { detail: { type: 'login', user: data.user } }));
       window.dispatchEvent(new Event('auth-change'));
@@ -76,8 +76,7 @@ export default function LoginModal({ isOpen, onClose }) {
         return;
       }
       
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
+      saveSession(data.token, data.user);
       setMsg({ text: '✓ Account created! Welcome to the network.', type: 'success' });
       window.dispatchEvent(new CustomEvent('auth-success', { detail: { type: 'register', user: data.user } }));
       window.dispatchEvent(new Event('auth-change'));

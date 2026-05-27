@@ -2,11 +2,41 @@
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
+// Session duration: 24 hours in milliseconds
+const SESSION_DURATION_MS = 24 * 60 * 60 * 1000;
+
+/**
+ * Check if the stored session has expired.
+ * Returns true if expired or no timestamp exists.
+ */
+function isSessionExpired() {
+  const loginTime = localStorage.getItem('loginTimestamp');
+  if (!loginTime) return true;
+  return Date.now() - Number(loginTime) > SESSION_DURATION_MS;
+}
+
+/**
+ * Save session data (token + user + timestamp) after login/register.
+ */
+export function saveSession(token, user) {
+  localStorage.setItem('token', token);
+  localStorage.setItem('user', JSON.stringify(user));
+  localStorage.setItem('loginTimestamp', String(Date.now()));
+}
+
 export function getToken() {
+  if (isSessionExpired()) {
+    logout();
+    return null;
+  }
   return localStorage.getItem('token');
 }
 
 export function getUser() {
+  if (isSessionExpired()) {
+    logout();
+    return null;
+  }
   try {
     const raw = localStorage.getItem('user');
     return raw ? JSON.parse(raw) : null;
@@ -22,6 +52,20 @@ export function isLoggedIn() {
 export function logout() {
   localStorage.removeItem('token');
   localStorage.removeItem('user');
+  localStorage.removeItem('loginTimestamp');
+}
+
+/**
+ * Run on app mount: if session is expired, auto-logout and fire auth-change.
+ * Returns true if the session was expired and cleared.
+ */
+export function checkSessionValidity() {
+  if (isSessionExpired() && localStorage.getItem('token')) {
+    logout();
+    window.dispatchEvent(new Event('auth-change'));
+    return true; // session was expired
+  }
+  return false; // session still valid
 }
 
 /** Submit a quiz score. Returns { ok, error } */

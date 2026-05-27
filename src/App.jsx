@@ -22,6 +22,7 @@ import QuizHub from './pages/QuizHub';
 import CaseStudyQuiz from './pages/CaseStudyQuiz';
 import AdminPage from './pages/AdminPage';
 import AccountPage from './pages/AccountPage';
+import { checkSessionValidity } from './utils/auth';
 
 /**
  * Detect mobile viewport (≤768px).
@@ -63,6 +64,11 @@ export default function App() {
   });
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const isMobile = useIsMobile();
+
+  // Check session validity on app mount (24h expiry)
+  useEffect(() => {
+    checkSessionValidity();
+  }, []);
 
   // Track whether all page resources (images, fonts, DOM) are ready
   const [resourcesReady, setResourcesReady] = useState(false);
