@@ -20,7 +20,29 @@ export default function QuizHub() {
 
   useEffect(() => {
     if (isLoggedIn()) {
-      fetchRoundStatus().then(setRoundStatusMap);
+      Promise.all([fetchRoundStatus(), fetchMyScores()]).then(([serverRoundMap, myScores]) => {
+        const mergedMap = { ...serverRoundMap };
+        
+        // Fallback logic in case the deployed backend doesn't have round-status
+        const ensureGate = (id) => {
+           if (!mergedMap[id]) mergedMap[id] = { attempted: false, qualified: false };
+           
+           const attempt = myScores.find(s => s.quiz_id === id);
+           if (attempt) {
+             mergedMap[id].attempted = true;
+             // If backend returned nothing or is outdated, fallback to local 70% check
+             if (Object.keys(serverRoundMap).length === 0) {
+               mergedMap[id].qualified = attempt.pct >= 70;
+             }
+           }
+        };
+
+        ensureGate('fundamentals');
+        ensureGate('advanced');
+        ensureGate('security');
+        
+        setRoundStatusMap(mergedMap);
+      });
     }
   }, []);
 

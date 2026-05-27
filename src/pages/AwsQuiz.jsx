@@ -58,14 +58,30 @@ export default function AwsQuiz() {
         const attempt = scores.find(s => s.quiz_id === quizId);
         if (attempt) setPastAttempt(attempt);
         setGlobalStatus(status);
-        setRoundStatusMap(roundMap || {});
+        
+        const mergedMap = { ...roundMap };
+        const ensureGate = (id) => {
+           if (!mergedMap[id]) mergedMap[id] = { attempted: false, qualified: false };
+           const past = scores.find(s => s.quiz_id === id);
+           if (past) {
+             mergedMap[id].attempted = true;
+             if (Object.keys(roundMap || {}).length === 0) {
+               mergedMap[id].qualified = past.pct >= 70;
+             }
+           }
+        };
+        ensureGate('fundamentals');
+        ensureGate('advanced');
+        ensureGate('security');
+        
+        setRoundStatusMap(mergedMap);
         setScoresLoading(false);
         
         // Qualification Check
-        if (quizId === 'advanced' && !(roundMap?.fundamentals?.qualified)) {
+        if (quizId === 'advanced' && !(mergedMap.fundamentals.qualified)) {
           alert("You must qualify from Round 1 to unlock this round.");
           navigate('/quiz');
-        } else if (quizId === 'security' && !(roundMap?.advanced?.qualified)) {
+        } else if (quizId === 'security' && !(mergedMap.advanced.qualified)) {
           alert("You must qualify from Round 2 to unlock this round.");
           navigate('/quiz');
         }
