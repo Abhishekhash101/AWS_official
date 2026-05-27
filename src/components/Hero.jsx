@@ -134,9 +134,9 @@ export default function Hero() {
             </a>
             <a
               className="bg-transparent border border-white/20 text-on-surface font-headline-md text-label-md px-8 py-4 hover:border-white/50 transition-all flex items-center justify-center gap-2 uppercase tracking-widest"
-              href="#about"
+              href="https://github.com/AWS-Student-Builder-Group-VIT"
             >
-              EXPLORE ARCHITECTURE
+              GitHub
               <span className="material-symbols-outlined">architecture</span>
             </a>
           </div>
