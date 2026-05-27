@@ -7,32 +7,32 @@
 export const QUIZZES = [
   {
     id: 'fundamentals',
-    title: 'AWS Fundamentals',
-    subtitle: 'Core services every cloud engineer must know',
+    title: 'Cloud Combat 1.0 - Round 1',
+    subtitle: 'Pick the Right DB! One scenario → one correct AWS DB service. 1 point per correct answer. +1 bonus if answered in under 5 seconds.',
     category: 'Beginner',
-    questions: 10,
-    duration: '8 min',
-    topics: ['EC2', 'S3', 'IAM', 'VPC', 'Lambda'],
+    questions: 5,
+    duration: '6 min',
+    topics: ['RDS', 'DynamoDB', 'ElastiCache', 'Aurora', 'Redshift', 'DocumentDB'],
     color: '#FF9900',
   },
   {
     id: 'advanced',
-    title: 'AWS Advanced',
-    subtitle: 'Databases, messaging, monitoring & beyond',
+    title: 'Cloud Combat 1.0 - Round 2',
+    subtitle: 'Design the Right Stack! Each startup has multiple data needs. Pick the correct combination of 2–3 AWS DB services. 3 pts full / 1 pt partial.',
     category: 'Intermediate',
-    questions: 10,
-    duration: '10 min',
-    topics: ['RDS', 'DynamoDB', 'SQS', 'SNS', 'CloudWatch'],
+    questions: 5,
+    duration: '8 min',
+    topics: ['RDS', 'Aurora', 'DynamoDB', 'ElastiCache', 'Redshift', 'DocumentDB'],
     color: '#00a8e0',
   },
   {
     id: 'security',
-    title: 'AWS Security & Networking',
-    subtitle: 'IAM deep-dive, KMS, Shield, WAF & VPC design',
+    title: 'Cloud Combat 1.0 - Round 3',
+    subtitle: 'Defend Your Answer! A startup made a DB choice — challenge it. 5 pts for correct answer + solid justification.',
     category: 'Advanced',
-    questions: 10,
-    duration: '12 min',
-    topics: ['KMS', 'Shield', 'WAF', 'GuardDuty', 'PrivateLink'],
+    questions: 3,
+    duration: '7 min',
+    topics: ['DynamoDB', 'ElastiCache', 'Redshift', 'DocumentDB', 'Aurora', 'RDS'],
     color: '#a855f7',
   },
 ];
@@ -40,30 +40,30 @@ export const QUIZZES = [
 export const CASE_STUDIES = [
   {
     id: 'ecommerce',
-    title: 'E-Commerce Platform Migration',
-    subtitle: 'Migrate a monolith retail app to AWS cloud-native architecture',
-    scenario: `GlobalMart is a fast-growing online retailer currently running a monolithic application on a single on-premises server. During peak sales (Black Friday), the site crashes due to traffic spikes. Their database holds 50 TB of product data. They want to migrate to AWS with goals of: 99.99% uptime, auto-scaling, sub-100ms latency globally, and a managed database that handles failover automatically. They also process 10,000 orders/day through a legacy queue system that sometimes loses messages.`,
+    title: 'Food Delivery DB Architecture',
+    subtitle: 'Design the database stack for a food delivery startup with relational, caching, and flexible schema needs',
+    scenario: `A food delivery startup is scaling rapidly. They need: (1) user account storage with complex relational queries for profiles, order history, and payment info, (2) fast session caching with sub-millisecond reads for user sessions and recently viewed restaurants, (3) flexible restaurant menu storage where schema changes frequently as new restaurants onboard with different menu structures in JSON format. Design the right AWS database stack.`,
     questions: 3,
     duration: '10 min',
-    tags: ['Migration', 'Scalability', 'HA'],
+    tags: ['Relational', 'Caching', 'NoSQL'],
   },
   {
     id: 'serverless-pipeline',
-    title: 'Serverless Data Pipeline',
-    subtitle: 'Design a real-time IoT data ingestion and analytics system',
-    scenario: `SmartCity Inc. deploys 50,000 IoT sensors across a metropolitan area that emit telemetry data (temperature, air quality, traffic density) every 30 seconds — that's ~1.67 million events/minute. They need to: (1) ingest the stream reliably without data loss, (2) run real-time anomaly detection (temperature > 80°C triggers alerts), (3) store raw data cheaply for 2 years, (4) generate hourly dashboards without managing any servers. Their team has no DevOps experience.`,
+    title: 'E-Commerce Platform Stack',
+    subtitle: 'Build the data layer for an e-commerce platform handling catalogue, cart, and analytics',
+    scenario: `An e-commerce platform handles 50,000 daily orders. They need: (1) a product catalogue with complex queries including joins across categories, suppliers, and pricing tiers, (2) cart data storage requiring fast reads/writes per user session with single-digit ms latency, (3) historical sales analytics running heavy SQL queries on terabytes of transaction logs for business intelligence dashboards. Choose the right combination of AWS database services.`,
     questions: 3,
     duration: '10 min',
-    tags: ['Serverless', 'IoT', 'Analytics'],
+    tags: ['SQL', 'NoSQL', 'Analytics'],
   },
   {
     id: 'disaster-recovery',
-    title: 'Multi-Region Disaster Recovery',
-    subtitle: 'Design a DR strategy for a financial services application',
-    scenario: `FinCore Bank runs its core transaction processing system in us-east-1. Regulatory requirements mandate an RTO (Recovery Time Objective) of 1 hour and RPO (Recovery Point Objective) of 15 minutes. The system uses an Aurora PostgreSQL database (2 TB), a fleet of 20 EC2 instances behind an ALB, S3 buckets storing customer statements, and Lambda functions for transaction processing. A recent outage caused 4 hours of downtime and cost $2M in penalties. The CTO needs a cost-effective multi-region DR plan.`,
+    title: 'Real-Time Multiplayer Game Stack',
+    subtitle: 'Design the database architecture for a multiplayer game with leaderboards, sessions, and analytics',
+    scenario: `A real-time multiplayer game has 2 million concurrent players. They need: (1) a leaderboard system with fast sorted lookups serving millions of score queries per second, (2) player session caching with sub-millisecond response times for active game state, (3) game statistics history and analytics for tracking player behaviour, match outcomes, and revenue metrics at massive scale. Select the optimal AWS database combination.`,
     questions: 3,
     duration: '10 min',
-    tags: ['Disaster Recovery', 'Multi-Region', 'RTO/RPO'],
+    tags: ['Leaderboard', 'Caching', 'Analytics'],
   },
 ];
 
@@ -71,286 +71,140 @@ export const CASE_STUDIES = [
 
 export const QUESTION_BANKS = {
   fundamentals: [
+    {id: 1, category: 'Relational',
+      question: 'A food delivery app stores user profiles, order history, and payment info with complex queries. Which AWS database service should they use?',
+      options: ['DynamoDB', 'Amazon RDS', 'ElastiCache', 'Amazon Redshift'],
+      correct: 1,
+      explanation: 'Amazon RDS is the right choice for structured, relational data with complex queries. It supports SQL-based operations like JOINs across tables — ideal for user profiles, order history, and payment info.'
+    },
     {
-      id: 1, category: 'EC2',
-      question: 'Which EC2 pricing model lets you bid on spare capacity and is the most cost-effective for fault-tolerant workloads?',
-      options: ['On-Demand', 'Reserved', 'Spot', 'Dedicated Host'],
+      id: 2, category: 'NoSQL',
+      question: 'A gaming leaderboard needs to serve millions of score lookups per second with single-digit ms latency. Which AWS database should they use?',
+      options: ['Amazon RDS', 'Amazon Redshift', 'DynamoDB', 'DocumentDB'],
       correct: 2,
-      explanation: 'Spot Instances use spare EC2 capacity at up to 90% discount. They can be interrupted with a 2-minute warning, making them ideal for fault-tolerant workloads.'
+      explanation: 'DynamoDB is a key-value and document NoSQL database designed for single-digit millisecond performance at any scale. It\'s lightning fast for simple lookups like leaderboard scores.'
     },
     {
-      id: 2, category: 'S3',
-      question: 'What S3 feature automatically moves objects between storage classes based on access patterns to reduce costs?',
-      options: ['S3 Replication', 'S3 Intelligent-Tiering', 'S3 Lifecycle Policy', 'S3 Transfer Acceleration'],
-      correct: 1,
-      explanation: 'S3 Intelligent-Tiering automatically moves objects between frequent and infrequent access tiers based on access patterns, with no retrieval fees.'
-    },
-    {
-      id: 3, category: 'IAM',
-      question: 'Which IAM entity should be used to grant an EC2 instance permission to access other AWS services securely?',
-      options: ['IAM User with Access Keys', 'IAM Group', 'IAM Role', 'Root Account'],
+      id: 3, category: 'Caching',
+      question: 'An e-commerce site wants to cache repeated product search results so the database isn\'t hit every time. What should they use?',
+      options: ['Amazon Aurora', 'Amazon Redshift', 'ElastiCache', 'DocumentDB'],
       correct: 2,
-      explanation: 'IAM Roles are used to grant AWS services permissions to other AWS services. An Instance Profile wraps the role — no long-term credentials are stored on the instance.'
+      explanation: 'ElastiCache is an in-memory caching service (Redis/Memcached) that sits in front of your database. It serves repeated reads at sub-millisecond speed, reducing load on the primary database.'
     },
     {
-      id: 4, category: 'VPC',
-      question: 'What VPC component acts as a virtual firewall controlling inbound and outbound traffic at the subnet level?',
-      options: ['Security Group', 'Network ACL', 'Route Table', 'Internet Gateway'],
+      id: 4, category: 'Aurora',
+      question: 'A startup wants a MySQL-compatible database that auto-scales and is fully managed by AWS. Which service fits best?',
+      options: ['Amazon RDS for MySQL', 'Amazon Aurora', 'DynamoDB', 'Amazon Redshift'],
       correct: 1,
-      explanation: 'Network ACLs (NACLs) are stateless firewalls at the subnet level. They evaluate rules in order by number and apply to all traffic entering/leaving the subnet.'
+      explanation: 'Amazon Aurora is MySQL and PostgreSQL compatible, fully managed, auto-scales storage up to 128 TB, and offers up to 5x the throughput of standard MySQL — with a serverless option available.'
     },
     {
-      id: 5, category: 'Lambda',
-      question: 'What is the maximum execution timeout for a single AWS Lambda function invocation?',
-      options: ['5 minutes', '10 minutes', '15 minutes', '30 minutes'],
+      id: 5, category: 'Data Warehouse',
+      question: 'A data analytics team runs heavy SQL queries on terabytes of historical transaction logs. Which AWS service is purpose-built for this?',
+      options: ['Amazon RDS', 'DynamoDB', 'Amazon Redshift', 'ElastiCache'],
       correct: 2,
-      explanation: 'AWS Lambda has a maximum execution timeout of 15 minutes (900 seconds) per invocation. For longer processes, consider Step Functions or ECS.'
-    },
-    {
-      id: 6, category: 'CloudFront',
-      question: 'What is the name of the global network of servers that CloudFront uses to cache and deliver content?',
-      options: ['Availability Zones', 'Edge Locations', 'Regional Edge Caches', 'Local Zones'],
-      correct: 1,
-      explanation: 'CloudFront uses Edge Locations (400+) worldwide to cache content close to users. Regional Edge Caches sit between origin and Edge Locations for additional caching.'
-    },
-    {
-      id: 7, category: 'EC2',
-      question: 'Which EC2 feature allows you to automatically adjust the number of instances based on demand?',
-      options: ['Elastic Load Balancing', 'Auto Scaling Groups', 'EC2 Fleet', 'Placement Groups'],
-      correct: 1,
-      explanation: 'Auto Scaling Groups automatically launch or terminate EC2 instances based on defined scaling policies, ensuring you have the right capacity at the right time.'
-    },
-    {
-      id: 8, category: 'S3',
-      question: 'What S3 storage class is most cost-effective for data that is accessed less than once per quarter?',
-      options: ['S3 Standard-IA', 'S3 Glacier Instant Retrieval', 'S3 Glacier Deep Archive', 'S3 One Zone-IA'],
-      correct: 2,
-      explanation: 'S3 Glacier Deep Archive is the lowest-cost AWS storage class, designed for data accessed once or twice per year with a standard retrieval time of 12 hours.'
-    },
-    {
-      id: 9, category: 'IAM',
-      question: 'What is the principle of least privilege in AWS IAM?',
-      options: [
-        'Give all users admin access for efficiency',
-        'Grant only the permissions required to perform a specific task',
-        'Share credentials between services for simplicity',
-        'Use root account for all administrative tasks'
-      ],
-      correct: 1,
-      explanation: 'Least privilege means granting users and services only the permissions they need to perform their job — nothing more. This minimizes the blast radius of security incidents.'
-    },
-    {
-      id: 10, category: 'VPC',
-      question: 'Which AWS service allows instances in a private subnet to initiate outbound internet traffic without exposing them to inbound connections?',
-      options: ['Internet Gateway', 'NAT Gateway', 'VPC Peering', 'Transit Gateway'],
-      correct: 1,
-      explanation: 'A NAT Gateway allows instances in private subnets to connect to the internet for outbound traffic (e.g., software updates) while preventing inbound connections.'
+      explanation: 'Amazon Redshift is a fully managed data warehouse designed for OLAP (Online Analytical Processing). It can handle petabyte-scale analytical queries using columnar storage and massively parallel processing.'
     },
   ],
 
   advanced: [
     {
-      id: 1, category: 'RDS',
-      question: 'Which RDS feature provides automatic failover to a standby replica in a different Availability Zone?',
-      options: ['Read Replica', 'Multi-AZ Deployment', 'Aurora Global Database', 'RDS Proxy'],
-      correct: 1,
-      explanation: 'Multi-AZ deployments maintain a synchronous standby replica in a different AZ. RDS automatically fails over to the standby with minimal downtime during failure.'
-    },
-    {
-      id: 2, category: 'DynamoDB',
-      question: 'In DynamoDB, what combination uniquely identifies each item in a table with a composite primary key?',
-      options: ['Sort Key only', 'Partition Key only', 'Partition Key + Sort Key', 'Global Secondary Index'],
-      correct: 2,
-      explanation: 'A composite primary key uses a Partition Key (determines partition) and Sort Key (orders items within that partition). Both together must be unique across all items.'
-    },
-    {
-      id: 3, category: 'SQS',
-      question: 'Which SQS queue type guarantees messages are processed exactly once and delivered in strict order?',
-      options: ['Standard Queue', 'Dead Letter Queue', 'FIFO Queue', 'Delay Queue'],
-      correct: 2,
-      explanation: 'FIFO queues guarantee exactly-once processing and strict ordering. Standard queues offer max throughput with at-least-once delivery and best-effort ordering.'
-    },
-    {
-      id: 4, category: 'CloudWatch',
-      question: 'What CloudWatch feature allows you to automatically scale resources in response to metric thresholds?',
-      options: ['CloudWatch Logs', 'CloudWatch Alarms', 'CloudWatch Events', 'CloudWatch Dashboards'],
-      correct: 1,
-      explanation: 'CloudWatch Alarms monitor metrics and trigger actions like Auto Scaling policies, SNS notifications, or EC2 actions when thresholds are breached.'
-    },
-    {
-      id: 5, category: 'SNS',
-      question: 'What is the primary difference between Amazon SQS and Amazon SNS?',
+      id: 1, category: 'Stack Design',
+      question: 'A food delivery startup needs: user account storage (relational), fast session caching, and flexible restaurant menu storage (JSON schema). Which combination of AWS services is correct?',
       options: [
-        'SQS is for email, SNS is for SMS',
-        'SQS is pull-based (polling), SNS is push-based (pub/sub)',
-        'SQS supports ordering, SNS does not',
-        'SNS stores messages, SQS delivers them'
+        'DynamoDB + Redshift + Aurora',
+        'RDS + ElastiCache + DocumentDB',
+        'Aurora + DocumentDB + ElastiCache',
+        'ElastiCache + RDS + Redshift'
       ],
       correct: 1,
-      explanation: 'SQS is a pull-based message queue where consumers poll for messages. SNS is a push-based pub/sub system that fans out messages to multiple subscribers instantly.'
+      explanation: 'RDS handles relational user account data with SQL. ElastiCache provides sub-ms session caching. DocumentDB stores flexible JSON restaurant menus that change frequently. This is the ideal 3-service stack.'
     },
     {
-      id: 6, category: 'ElastiCache',
-      question: 'Which ElastiCache engine supports advanced data structures like sorted sets, hashes, and pub/sub messaging?',
-      options: ['Memcached', 'Redis', 'DynamoDB Accelerator', 'Aurora Cache'],
-      correct: 1,
-      explanation: 'Redis supports rich data structures (strings, hashes, lists, sets, sorted sets), persistence, replication, and pub/sub. Memcached is simpler, multi-threaded caching only.'
-    },
-    {
-      id: 7, category: 'DynamoDB',
-      question: 'What is DynamoDB\'s on-demand capacity mode best suited for?',
+      id: 2, category: 'Stack Design',
+      question: 'An e-commerce platform needs: product catalogue with complex queries, cart data with fast reads/writes per user, and historical sales analytics. Which stack is correct?',
       options: [
-        'Predictable, steady-state traffic patterns',
-        'Unpredictable traffic with unknown workload peaks',
-        'Read-heavy workloads needing caching',
-        'Large batch processing jobs'
+        'RDS + ElastiCache + DocumentDB',
+        'Aurora + DynamoDB + Redshift',
+        'DynamoDB + DocumentDB + ElastiCache',
+        'Redshift + ElastiCache + RDS'
       ],
       correct: 1,
-      explanation: 'On-demand mode automatically scales to handle any request rate. You pay per request, making it ideal for unpredictable or spiky traffic patterns.'
+      explanation: 'Aurora handles complex product catalogue queries (relational SQL). DynamoDB provides fast key-value reads/writes for cart data. Redshift is the data warehouse for heavy historical sales analytics.'
     },
     {
-      id: 8, category: 'RDS',
-      question: 'What does an RDS Read Replica provide that Multi-AZ does NOT?',
+      id: 3, category: 'Stack Design',
+      question: 'A social media app needs: user profiles and followers (relational), news feed caching (sub-ms), and activity logs at massive scale (NoSQL). Which combination works?',
       options: [
-        'Automatic failover',
-        'Synchronous replication',
-        'Read scalability for query offloading',
-        'Cross-AZ redundancy'
+        'Aurora + Redshift + DocumentDB',
+        'DynamoDB + ElastiCache + RDS',
+        'RDS + ElastiCache + DynamoDB',
+        'DocumentDB + Aurora + Redshift'
       ],
       correct: 2,
-      explanation: 'Read Replicas use asynchronous replication and allow you to offload read traffic from the primary DB, improving read performance. Multi-AZ is for HA/failover only.'
+      explanation: 'RDS stores relational user profiles and follower relationships. ElastiCache caches the news feed for sub-ms reads. DynamoDB handles massive-scale NoSQL activity logs with high write throughput.'
     },
     {
-      id: 9, category: 'CloudWatch',
-      question: 'What is the default retention period for CloudWatch Logs if no retention policy is set?',
-      options: ['7 days', '30 days', '90 days', 'Never expires'],
-      correct: 3,
-      explanation: 'By default, CloudWatch Logs are kept indefinitely (never expire). You must explicitly set a retention policy (1 day to 10 years) to control storage costs.'
+      id: 4, category: 'Stack Design',
+      question: 'A healthcare portal needs: patient records with ACID transactions, doctor notes in free-form JSON, and analytics on treatment outcomes. Which stack fits?',
+      options: [
+        'DynamoDB + ElastiCache + Aurora',
+        'RDS + DocumentDB + Redshift',
+        'Aurora + ElastiCache + DynamoDB',
+        'DocumentDB + Redshift + ElastiCache'
+      ],
+      correct: 1,
+      explanation: 'RDS provides ACID-compliant storage for patient records. DocumentDB stores free-form JSON doctor notes with flexible schema. Redshift runs analytical queries on treatment outcome data at scale.'
     },
     {
-      id: 10, category: 'SQS',
-      question: 'What is the maximum message retention period in Amazon SQS?',
-      options: ['1 day', '4 days', '14 days', '30 days'],
+      id: 5, category: 'Stack Design',
+      question: 'A real-time multiplayer game needs: leaderboard with fast sorted lookups, player session cache (sub-ms), and game stats history (analytics). Which combination is best?',
+      options: [
+        'RDS + DocumentDB + Aurora',
+        'Aurora + ElastiCache + RDS',
+        'DynamoDB + ElastiCache + Redshift',
+        'Redshift + DocumentDB + DynamoDB'
+      ],
       correct: 2,
-      explanation: 'SQS can retain messages for a maximum of 14 days (default is 4 days). Messages not consumed within the retention period are automatically deleted.'
+      explanation: 'DynamoDB handles leaderboard data with fast sorted lookups at any scale. ElastiCache (Redis) provides sub-ms player session caching. Redshift powers game stats analytics and historical reporting.'
     },
   ],
 
   security: [
-    {
-      id: 1, category: 'KMS',
-      question: 'What is the primary purpose of AWS Key Management Service (KMS)?',
+    {id: 1, category: 'Challenge',
+      question: 'A startup chose DynamoDB to store user orders. Orders have complex joins with products, discounts, and user history. DynamoDB is NoSQL — it doesn\'t support JOINs. What should they have used instead?',
       options: [
-        'Managing SSH keys for EC2 instances',
-        'Creating and controlling cryptographic keys for data encryption',
-        'Storing application secrets and API keys',
-        'Managing SSL/TLS certificates'
+        'ElastiCache — it\'s faster for complex queries',
+        'RDS or Aurora — relational data with JOINs needs SQL',
+        'Redshift — it handles joins at scale',
+        'DocumentDB — it supports flexible queries'
       ],
       correct: 1,
-      explanation: 'AWS KMS creates and manages cryptographic keys (CMKs) used to encrypt data across AWS services. It integrates with S3, EBS, RDS, Lambda, and more.'
+      explanation: 'DynamoDB is a NoSQL key-value store — it does NOT support SQL JOINs. Orders with complex relationships across products, discounts, and users require a relational database like RDS or Aurora that supports full SQL operations.'
     },
     {
-      id: 2, category: 'Shield',
-      question: 'What does AWS Shield Advanced provide over AWS Shield Standard?',
+      id: 2, category: 'Challenge',
+      question: 'You chose ElastiCache to store user profile data permanently for quick access. ElastiCache is in-memory — data is lost on restart. Is it the right PRIMARY store for profiles?',
       options: [
-        'Basic DDoS protection at no cost',
-        '24/7 DRT access, financial protection, and advanced attack detection',
-        'Web application firewall rules',
-        'Network ACL management'
+        'Yes — ElastiCache with Redis persistence is reliable enough',
+        'No — use RDS for storage, ElastiCache only as a caching layer on top',
+        'Yes — just enable Multi-AZ and it becomes durable',
+        'No — use DynamoDB instead of ElastiCache entirely'
       ],
       correct: 1,
-      explanation: 'Shield Advanced adds: 24/7 DDoS Response Team (DRT) access, cost protection against DDoS-related scaling charges, advanced attack visibility, and WAF integration.'
+      explanation: 'ElastiCache is designed as a CACHING layer, not a primary data store. In-memory data can be lost on restarts or failures. Use RDS (or another persistent DB) as the primary store, and ElastiCache on top for speed.'
     },
     {
-      id: 3, category: 'WAF',
-      question: 'At which layer of the OSI model does AWS WAF operate?',
-      options: ['Layer 3 (Network)', 'Layer 4 (Transport)', 'Layer 7 (Application)', 'Layer 2 (Data Link)'],
+      id: 3, category: 'Challenge',
+      question: 'A company uses Redshift to handle real-time user login session storage. Redshift is a data warehouse built for analytics, not OLTP. What\'s wrong with this choice?',
+      options: [
+        'Nothing — Redshift can handle sessions if you tune it right',
+        'Redshift is too expensive for session data',
+        'Wrong tool — use RDS or DynamoDB for transactional session data',
+        'Redshift needs S3 integration to work with sessions'
+      ],
       correct: 2,
-      explanation: 'AWS WAF operates at Layer 7 (Application layer), allowing you to inspect and filter HTTP/S requests based on rules like IP addresses, headers, body content, and SQL injection patterns.'
-    },
-    {
-      id: 4, category: 'GuardDuty',
-      question: 'What data sources does Amazon GuardDuty analyze to detect threats?',
-      options: [
-        'Only CloudTrail logs',
-        'VPC Flow Logs, DNS logs, and CloudTrail events',
-        'Only VPC Flow Logs',
-        'Application logs and OS-level events'
-      ],
-      correct: 1,
-      explanation: 'GuardDuty analyzes VPC Flow Logs (network traffic), DNS query logs, and CloudTrail management/data events to identify malicious activity using ML and threat intelligence.'
-    },
-    {
-      id: 5, category: 'IAM',
-      question: 'What is the purpose of an IAM Permission Boundary?',
-      options: [
-        'Sets the maximum permissions an IAM entity can ever have',
-        'Blocks all access from non-corporate IP addresses',
-        'Encrypts IAM policies at rest',
-        'Limits the number of IAM users in an account'
-      ],
-      correct: 0,
-      explanation: 'Permission Boundaries set the maximum permissions an IAM user or role can have. Even if their identity-based policies grant broader access, the boundary caps what they can actually do.'
-    },
-    {
-      id: 6, category: 'Secrets Manager',
-      question: 'What is the key advantage of AWS Secrets Manager over storing credentials in environment variables?',
-      options: [
-        'Secrets Manager is free to use',
-        'Automatic credential rotation without application code changes',
-        'Faster retrieval time',
-        'Supports only database credentials'
-      ],
-      correct: 1,
-      explanation: 'Secrets Manager can automatically rotate credentials (RDS passwords, API keys) on a schedule. The application always retrieves the latest secret, eliminating manual rotation risk.'
-    },
-    {
-      id: 7, category: 'PrivateLink',
-      question: 'What problem does AWS PrivateLink solve?',
-      options: [
-        'Speeds up data transfer between regions',
-        'Allows private connectivity to AWS services without traversing the public internet',
-        'Provides dedicated fiber connections to on-premises',
-        'Encrypts data in transit between EC2 instances'
-      ],
-      correct: 1,
-      explanation: 'PrivateLink creates private endpoints in your VPC for AWS services and third-party SaaS. Traffic stays on the AWS network and never traverses the public internet.'
-    },
-    {
-      id: 8, category: 'CloudTrail',
-      question: 'What is the difference between CloudTrail Management Events and Data Events?',
-      options: [
-        'Management Events are paid; Data Events are free',
-        'Management Events log API calls on resources; Data Events log operations performed on resources',
-        'Management Events are real-time; Data Events are delayed',
-        'There is no difference'
-      ],
-      correct: 1,
-      explanation: 'Management Events capture control plane operations (create/delete/modify resources). Data Events capture data plane operations (S3 object-level access, Lambda invocations) — enabled separately.'
-    },
-    {
-      id: 9, category: 'VPC',
-      question: 'What is the purpose of VPC Flow Logs?',
-      options: [
-        'Logging HTTP requests to your application',
-        'Capturing IP traffic metadata going to and from network interfaces in your VPC',
-        'Monitoring CPU and memory of EC2 instances',
-        'Tracking CloudFormation stack changes'
-      ],
-      correct: 1,
-      explanation: 'VPC Flow Logs capture IP traffic metadata (source/dest IP, port, protocol, action: ACCEPT/REJECT) at the VPC, subnet, or ENI level. Useful for security analysis and troubleshooting.'
-    },
-    {
-      id: 10, category: 'Security Hub',
-      question: 'What is AWS Security Hub\'s primary function?',
-      options: [
-        'A SIEM that stores all security logs',
-        'Centralized security posture management aggregating findings from multiple AWS security services',
-        'A firewall for all outbound VPC traffic',
-        'A DDoS mitigation service'
-      ],
-      correct: 1,
-      explanation: 'Security Hub aggregates, organizes, and prioritizes security findings from GuardDuty, Inspector, Macie, and partner solutions, giving a unified view of your security posture.'
+      explanation: 'Redshift is optimized for OLAP (analytical queries on large datasets), NOT for OLTP (real-time transactional workloads like login sessions). Use RDS or DynamoDB for fast, transactional session storage.'
     },
   ],
 };
@@ -359,127 +213,127 @@ export const QUESTION_BANKS = {
 
 export const CASE_STUDY_QUESTIONS = {
   ecommerce: {
-    scenario: `GlobalMart is a fast-growing online retailer running a monolithic app on a single on-premises server. During Black Friday, the site crashes from traffic spikes. Their database holds 50 TB of product data. Goals: 99.99% uptime, auto-scaling, sub-100ms global latency, managed DB with automatic failover, and a reliable order queue that never loses messages.`,
+    scenario: `A food delivery startup is scaling rapidly. They need: (1) user account storage with complex relational queries for profiles, order history, and payment info, (2) fast session caching with sub-millisecond reads for user sessions and recently viewed restaurants, (3) flexible restaurant menu storage where schema changes frequently as new restaurants onboard with different menu structures in JSON format.`,
     questions: [
       {
-        id: 1, category: 'Architecture',
-        question: 'To handle Black Friday traffic spikes automatically, which combination of AWS services should GlobalMart use for their web tier?',
+        id: 1, category: 'Relational',
+        question: 'For the food delivery startup\'s user accounts, order history, and payment data requiring complex SQL queries and JOINs, which AWS database service is the best fit?',
         options: [
-          'A single large EC2 instance with more RAM',
-          'Auto Scaling Group + Application Load Balancer + CloudFront',
-          'Elastic Beanstalk only — it auto-manages everything',
-          'Route 53 weighted routing between two fixed EC2 instances'
+          'DynamoDB — fast NoSQL for all user data',
+          'Amazon RDS — relational SQL database for structured data',
+          'DocumentDB — flexible schema for user profiles',
+          'Amazon Redshift — warehouse for order analytics'
         ],
         correct: 1,
-        explanation: 'ALB distributes traffic, Auto Scaling dynamically adds/removes EC2 instances based on load, and CloudFront caches static assets at edge locations — together they handle any traffic spike without pre-provisioning.'
+        explanation: 'Amazon RDS is ideal for structured, relational data with complex queries. User profiles, order history, and payment info have clear relationships that benefit from SQL JOINs, foreign keys, and ACID transactions.'
       },
       {
-        id: 2, category: 'Database',
-        question: 'For GlobalMart\'s 50 TB product database requiring automatic failover and sub-second reads, what is the best AWS solution?',
+        id: 2, category: 'Caching',
+        question: 'For sub-millisecond session caching and recently viewed restaurants, which service should complement the primary database?',
         options: [
-          'Amazon RDS MySQL with a Read Replica',
-          'Amazon Aurora with Multi-AZ and Read Replicas',
-          'Amazon DynamoDB with on-demand capacity',
-          'Amazon Redshift for all product queries'
+          'DynamoDB with DAX accelerator',
+          'Amazon ElastiCache (Redis)',
+          'Amazon Aurora with read replicas',
+          'CloudFront edge caching'
         ],
         correct: 1,
-        explanation: 'Aurora offers 5x MySQL throughput, automatically replicates 6 copies across 3 AZs, provides sub-10ms failover (vs. RDS 60-120s), and supports up to 15 read replicas — ideal for this high-availability requirement.'
+        explanation: 'ElastiCache with Redis provides sub-millisecond in-memory reads, perfect for session data and recently viewed items. It acts as a caching layer in front of the primary database, reducing load and improving response times.'
       },
       {
-        id: 3, category: 'Messaging',
-        question: 'To replace the legacy order queue that loses messages, ensuring each of GlobalMart\'s 10,000 daily orders is processed exactly once in the correct sequence, which service is best?',
+        id: 3, category: 'Document Store',
+        question: 'For flexible restaurant menu storage where each restaurant has a different JSON schema that changes frequently, which database is purpose-built for this?',
         options: [
-          'Amazon SQS Standard Queue',
-          'Amazon SNS topic with email subscription',
-          'Amazon SQS FIFO Queue',
-          'Amazon Kinesis Data Streams'
+          'Amazon RDS with JSON columns',
+          'DynamoDB with document model',
+          'Amazon DocumentDB (MongoDB-compatible)',
+          'Amazon S3 with Athena queries'
         ],
         correct: 2,
-        explanation: 'SQS FIFO guarantees exactly-once processing and strict ordering — critical for financial transactions. Standard SQS offers at-least-once delivery which could cause duplicate order processing.'
+        explanation: 'Amazon DocumentDB is a document database compatible with MongoDB, designed for flexible JSON schemas. Restaurant menus with varying structures and frequent schema changes are a perfect fit for a document store.'
       },
     ],
   },
 
   'serverless-pipeline': {
-    scenario: `SmartCity Inc. has 50,000 IoT sensors emitting ~1.67 million events/minute. Requirements: (1) ingest stream reliably without data loss, (2) real-time anomaly detection (temp > 80°C triggers alerts), (3) store raw data cheaply for 2 years, (4) hourly dashboards with zero server management. Team has no DevOps experience.`,
+    scenario: `An e-commerce platform handles 50,000 daily orders. They need: (1) a product catalogue with complex queries including joins across categories, suppliers, and pricing tiers, (2) cart data storage requiring fast reads/writes per user session with single-digit ms latency, (3) historical sales analytics running heavy SQL queries on terabytes of transaction logs for business intelligence dashboards.`,
     questions: [
       {
-        id: 1, category: 'Ingestion',
-        question: 'Which AWS service is best suited to reliably ingest 1.67 million IoT events per minute without data loss?',
+        id: 1, category: 'Relational',
+        question: 'For the product catalogue requiring complex SQL queries with joins across categories, suppliers, and pricing tiers, which AWS database should be used?',
         options: [
-          'Amazon SQS Standard Queue',
-          'Amazon Kinesis Data Streams',
-          'Amazon API Gateway with Lambda',
-          'Amazon MQ with ActiveMQ'
+          'DynamoDB — NoSQL for fast product lookups',
+          'Amazon Aurora — relational, auto-scaling, MySQL/PostgreSQL compatible',
+          'Amazon Redshift — data warehouse for product data',
+          'DocumentDB — flexible product schema'
         ],
         correct: 1,
-        explanation: 'Kinesis Data Streams is purpose-built for real-time streaming at massive scale. It retains data for up to 365 days, supports multiple consumers simultaneously, and handles millions of records per second reliably.'
+        explanation: 'Amazon Aurora is the best fit for a product catalogue with complex relational queries. It\'s MySQL/PostgreSQL compatible, auto-scales, offers 5x MySQL throughput, and handles JOINs across categories, suppliers, and pricing tiers efficiently.'
       },
       {
-        id: 2, category: 'Processing',
-        question: 'To detect temperature anomalies in real-time and trigger alerts without managing servers, what is the optimal architecture?',
+        id: 2, category: 'NoSQL',
+        question: 'For cart data requiring single-digit millisecond reads and writes per user session at scale, which database is optimal?',
         options: [
-          'EC2 instances running a Python script that polls the stream',
-          'Kinesis Data Analytics (Apache Flink) + Lambda + SNS',
-          'AWS Batch processing every 5 minutes',
-          'EMR Spark cluster with scheduled jobs'
-        ],
-        correct: 1,
-        explanation: 'Kinesis Data Analytics processes the stream in real-time with SQL/Flink queries. When anomalies are detected, it triggers Lambda (serverless, no management) which sends alerts via SNS — fully serverless, scales automatically.'
-      },
-      {
-        id: 3, category: 'Storage',
-        question: 'For storing 2 years of raw IoT data as cheaply as possible while enabling hourly dashboards, which combination is most cost-effective?',
-        options: [
-          'RDS PostgreSQL + Grafana on EC2',
-          'S3 Glacier Deep Archive + Redshift Spectrum for queries',
-          'S3 Intelligent-Tiering + Amazon Athena + QuickSight',
-          'DynamoDB + CloudWatch dashboards'
+          'Amazon RDS with connection pooling',
+          'ElastiCache for cart caching',
+          'DynamoDB with on-demand capacity',
+          'Aurora Serverless for flexible scaling'
         ],
         correct: 2,
-        explanation: 'S3 Intelligent-Tiering automatically moves cold data to cheaper tiers. Athena queries S3 directly with no infrastructure (pay per query). QuickSight creates dashboards — entirely serverless and cost-optimized for 2-year retention.'
+        explanation: 'DynamoDB provides consistent single-digit millisecond performance at any scale. Cart data is key-value in nature (user ID → cart items), and DynamoDB\'s on-demand mode handles traffic spikes during sales events automatically.'
+      },
+      {
+        id: 3, category: 'Analytics',
+        question: 'For historical sales analytics with heavy SQL queries on terabytes of transaction logs, which AWS service is purpose-built for this workload?',
+        options: [
+          'Amazon RDS with read replicas',
+          'DynamoDB with global secondary indexes',
+          'Amazon Redshift — columnar data warehouse',
+          'Amazon Athena with S3 data lake'
+        ],
+        correct: 2,
+        explanation: 'Amazon Redshift is a columnar data warehouse designed for OLAP analytics. It uses massively parallel processing (MPP) to run complex SQL queries on terabytes of historical data — exactly what BI dashboards need.'
       },
     ],
   },
 
   'disaster-recovery': {
-    scenario: `FinCore Bank: RTO = 1 hour, RPO = 15 minutes. Stack: Aurora PostgreSQL (2 TB), 20 EC2 instances behind ALB, S3 buckets, Lambda functions. Recent outage cost $2M in penalties. Needs cost-effective multi-region DR.`,
+    scenario: `A real-time multiplayer game has 2 million concurrent players. They need: (1) a leaderboard system with fast sorted lookups serving millions of score queries per second, (2) player session caching with sub-millisecond response times for active game state, (3) game statistics history and analytics for tracking player behaviour, match outcomes, and revenue metrics at massive scale.`,
     questions: [
       {
-        id: 1, category: 'Database DR',
-        question: 'To meet FinCore\'s 15-minute RPO for Aurora PostgreSQL across regions, which DR strategy should be used?',
+        id: 1, category: 'Leaderboard',
+        question: 'For the game\'s leaderboard requiring millions of sorted score lookups per second, which AWS database is the best choice?',
         options: [
-          'Aurora Multi-AZ (same region, different AZ)',
-          'Aurora Global Database with cross-region read replica',
-          'RDS automated backups restored to another region',
-          'DMS continuous replication to a second region'
+          'Amazon RDS with indexed score column',
+          'DynamoDB — high-throughput NoSQL with global secondary indexes',
+          'ElastiCache Redis — sorted sets for rankings',
+          'Amazon Redshift — analytical queries on scores'
         ],
         correct: 1,
-        explanation: 'Aurora Global Database replicates data to secondary regions with typical lag < 1 second (well within 15-min RPO). In case of failure, promote the secondary region in < 1 minute — far better than RDS backup restore (hours).'
+        explanation: 'DynamoDB handles millions of requests per second with single-digit ms latency. Using a Global Secondary Index (GSI) on the score attribute enables fast sorted lookups. Its auto-scaling handles the massive concurrent player base.'
       },
       {
-        id: 2, category: 'DR Strategy',
-        question: 'Given FinCore\'s 1-hour RTO and cost-effectiveness requirement, which DR strategy tier is most appropriate?',
+        id: 2, category: 'Session Cache',
+        question: 'For player session caching requiring sub-millisecond response times for active game state during gameplay, which service is optimal?',
         options: [
-          'Backup & Restore — cheapest but RTO of hours/days',
-          'Pilot Light — minimal resources running, scale up on disaster',
-          'Warm Standby — scaled-down version always running',
-          'Multi-Site Active-Active — highest cost, zero RTO'
+          'DynamoDB with DAX',
+          'Amazon ElastiCache (Redis) — in-memory sub-ms cache',
+          'Amazon Aurora with connection pooling',
+          'Amazon MemoryDB for Redis'
         ],
-        correct: 2,
-        explanation: 'Warm Standby keeps a scaled-down but fully functional copy running in the DR region. During failover, you scale it up — achievable in < 1 hour (meets RTO). More expensive than Pilot Light but much faster to recover.'
+        correct: 1,
+        explanation: 'ElastiCache with Redis delivers sub-millisecond in-memory reads and writes. It\'s ideal for active game state (player positions, health, inventory) that changes rapidly during gameplay and must be accessed instantly.'
       },
       {
-        id: 3, category: 'Failover',
-        question: 'How should Route 53 be configured to automatically redirect traffic to the DR region when us-east-1 fails?',
+        id: 3, category: 'Analytics',
+        question: 'For game statistics history, tracking player behaviour, match outcomes, and revenue metrics at massive scale, which service should be used?',
         options: [
-          'Weighted routing with 50/50 split between regions',
-          'Latency-based routing to always serve the faster region',
-          'Failover routing with health checks on the primary endpoint',
-          'Geolocation routing based on user\'s country'
+          'DynamoDB with on-demand mode',
+          'Amazon RDS with materialized views',
+          'Amazon Redshift — petabyte-scale analytics warehouse',
+          'Amazon Athena with S3'
         ],
         correct: 2,
-        explanation: 'Route 53 Failover routing continuously health-checks the primary endpoint. When health checks fail (us-east-1 is down), Route 53 automatically routes all traffic to the DR region — no manual intervention required.'
+        explanation: 'Amazon Redshift is designed for large-scale analytics and business intelligence. It can handle petabytes of game data, running complex SQL queries across player behaviour, match outcomes, and revenue metrics for actionable insights.'
       },
     ],
   },

@@ -1,7 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { useState, useRef } from 'react';
-import awsIcon from '../assets/aws_icon.jpeg';
 import { QUIZZES, CASE_STUDIES } from '../data/quizData';
+import { fetchRoundStatus, isLoggedIn } from '../utils/auth';
+import { useEffect } from 'react';
 
 const DIFFICULTY_COLOR = {
   Beginner:     { bg: 'rgba(99,153,34,0.15)',   border: '#639922',  text: '#a8e063' },
@@ -15,6 +16,13 @@ export default function QuizHub() {
   const [gridState, setGridState] = useState({ x: 0, y: 0, size: 1, isVisible: false });
   const [hoveredQuiz, setHoveredQuiz] = useState(null);
   const [hoveredCase, setHoveredCase] = useState(null);
+  const [roundStatusMap, setRoundStatusMap] = useState({});
+
+  useEffect(() => {
+    if (isLoggedIn()) {
+      fetchRoundStatus().then(setRoundStatusMap);
+    }
+  }, []);
 
   const handleMouseMove = (e) => {
     if (window.innerWidth < 768) return;
@@ -47,7 +55,6 @@ export default function QuizHub() {
       {/* Navbar */}
       <nav className="relative z-10 flex items-center justify-between px-6 py-4 border-b border-white/5 bg-[#0A0C10]/80 backdrop-blur-xl sticky top-0">
         <div className="flex items-center gap-3">
-          <img src={awsIcon} alt="AWS" className="w-7 h-7 rounded-full object-cover" />
           <span className="font-mono text-sm text-[#dbc2ad] tracking-widest uppercase">AWS Knowledge Hub</span>
         </div>
         <button
@@ -60,17 +67,16 @@ export default function QuizHub() {
 
       <div className="relative z-10 max-w-4xl mx-auto px-6 py-12">
 
-        {/* Hero */}
         <div className="mb-14">
           <div className="inline-flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-1 font-mono text-xs text-[#dbc2ad] uppercase tracking-widest mb-6">
             <span className="w-2 h-2 rounded-full bg-[#FF9900] animate-pulse" />
-            Cloud Assessment Center
+            Cloud Combat 1.0
           </div>
           <h1 className="font-mono text-4xl md:text-5xl font-bold text-white tracking-widest leading-tight mb-4">
-            PICK YOUR<br /><span className="text-[#FF9900]">CHALLENGE</span>
+            QUALIFICATION<br /><span className="text-[#FF9900]">ROUNDS</span>
           </h1>
           <p className="text-[#dbc2ad] text-sm leading-relaxed border-l-2 border-[#FF9900] pl-4 max-w-xl">
-            Choose from topic-based quizzes or real-world case studies. Each test gives instant feedback and explanations to accelerate your AWS learning.
+            You must score high enough to qualify for the next round. Scores are calculated using 70% accuracy and 30% time taken.
           </p>
         </div>
 
@@ -85,23 +91,45 @@ export default function QuizHub() {
           <div className="grid gap-4 md:grid-cols-3">
             {QUIZZES.map((quiz) => {
               const diff = DIFFICULTY_COLOR[quiz.category];
-              const isHovered = hoveredQuiz === quiz.id;
+              
+              let isLocked = false;
+              let lockMessage = '';
+              let statusText = '';
+              
+              if (quiz.id === 'advanced') {
+                isLocked = !(roundStatusMap?.fundamentals?.qualified);
+                lockMessage = 'Qualify from Round 1 to unlock';
+              } else if (quiz.id === 'security') {
+                isLocked = !(roundStatusMap?.advanced?.qualified);
+                lockMessage = 'Qualify from Round 2 to unlock';
+              }
+              
+              const isHovered = hoveredQuiz === quiz.id && !isLocked;
+              const hasAttempted = roundStatusMap[quiz.id]?.attempted;
+              const isQualified = roundStatusMap[quiz.id]?.qualified;
+              
+              if (hasAttempted) {
+                statusText = isQualified ? '✅ QUALIFIED' : '⏳ AWAITING RESULT';
+              }
+
               return (
                 <div
                   key={quiz.id}
                   onMouseEnter={() => setHoveredQuiz(quiz.id)}
                   onMouseLeave={() => setHoveredQuiz(null)}
-                  className="relative flex flex-col border bg-white/2 cursor-pointer group transition-all duration-300"
+                  className={`relative flex flex-col border bg-white/2 transition-all duration-300 ${isLocked ? 'opacity-50 cursor-not-allowed grayscale' : 'cursor-pointer group'}`}
                   style={{
                     borderColor: isHovered ? quiz.color : 'rgba(255,255,255,0.1)',
                     boxShadow: isHovered ? `0 0 20px ${quiz.color}22` : 'none',
                   }}
-                  onClick={() => navigate(`/quiz/${quiz.id}`)}
+                  onClick={() => {
+                    if (!isLocked) navigate(`/quiz/${quiz.id}`);
+                  }}
                 >
                   {/* Top accent bar */}
                   <div className="h-0.5 w-full transition-all duration-300" style={{ background: isHovered ? quiz.color : 'transparent' }} />
 
-                  <div className="p-5 flex flex-col flex-1">
+                  <div className="p-5 flex flex-col flex-1 relative">
                     {/* Badge row */}
                     <div className="flex items-center justify-between mb-4">
                       <span
@@ -116,26 +144,33 @@ export default function QuizHub() {
                     <h3 className="font-mono text-base font-bold text-white mb-1 leading-snug">{quiz.title}</h3>
                     <p className="font-mono text-[11px] text-[#dbc2ad] leading-relaxed mb-4 flex-1">{quiz.subtitle}</p>
 
-                    {/* Topic pills */}
-                    <div className="flex flex-wrap gap-1.5 mb-5">
-                      {quiz.topics.map(t => (
-                        <span key={t} className="font-mono text-[9px] text-[#dbc2ad] border border-white/10 px-1.5 py-0.5 uppercase tracking-wider">
-                          {t}
-                        </span>
-                      ))}
-                    </div>
+                    {statusText && (
+                      <div className="mb-4 text-[10px] font-mono font-bold" style={{ color: isQualified ? '#a8e063' : '#FF9900' }}>
+                        {statusText} {roundStatusMap[quiz.id]?.rank && `(Rank #${roundStatusMap[quiz.id].rank})`}
+                      </div>
+                    )}
 
                     {/* CTA */}
                     <button
+                      disabled={isLocked}
                       className="w-full font-mono text-xs py-2.5 uppercase tracking-widest flex items-center justify-center gap-2 transition-all duration-200"
                       style={{
                         background: isHovered ? quiz.color : 'rgba(255,255,255,0.05)',
-                        color: isHovered ? '#111' : '#dbc2ad',
+                        color: isHovered ? '#111' : (isLocked ? '#666' : '#dbc2ad'),
                         fontWeight: isHovered ? 700 : 400,
                       }}
                     >
-                      Start Quiz
-                      <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                      {isLocked ? (
+                        <>
+                          <span className="material-symbols-outlined text-sm">lock</span>
+                          {lockMessage}
+                        </>
+                      ) : (
+                        <>
+                          {hasAttempted ? 'View Results' : 'Start Round'}
+                          <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                        </>
+                      )}
                     </button>
                   </div>
                 </div>

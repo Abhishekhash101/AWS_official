@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import awsIcon from '../assets/aws_icon.jpeg';
 import { QUESTION_BANKS, QUIZZES } from '../data/quizData';
-import { isLoggedIn, submitScore, fetchMyScores, fetchQuizStatus } from '../utils/auth';
+import { isLoggedIn, submitScore, fetchMyScores, fetchQuizStatus, fetchRoundStatus } from '../utils/auth';
 
 function shuffleArray(arr) {
   const a = [...arr];
@@ -36,6 +36,10 @@ export default function AwsQuiz() {
   const [scoresLoading, setScoresLoading] = useState(true);
   const [timeLeft, setTimeLeft] = useState(60);
   const [globalStatus, setGlobalStatus] = useState('active');
+  const [roundStatusMap, setRoundStatusMap] = useState({});
+  const [startTime, setStartTime] = useState(null);
+  const [savedCompositeScore, setSavedCompositeScore] = useState(null);
+  const [savedTimeTaken, setSavedTimeTaken] = useState(null);
 
   // Auth gate — redirect to home + open login if not logged in
   useEffect(() => {
@@ -43,11 +47,21 @@ export default function AwsQuiz() {
       window.dispatchEvent(new Event('open-login-modal'));
       navigate('/');
     } else {
-      Promise.all([fetchMyScores(), fetchQuizStatus()]).then(([scores, status]) => {
+      Promise.all([fetchMyScores(), fetchQuizStatus(), fetchRoundStatus()]).then(([scores, status, roundMap]) => {
         const attempt = scores.find(s => s.quiz_id === quizId);
         if (attempt) setPastAttempt(attempt);
         setGlobalStatus(status);
+        setRoundStatusMap(roundMap || {});
         setScoresLoading(false);
+        
+        // Qualification Check
+        if (quizId === 'advanced' && !(roundMap?.fundamentals?.qualified)) {
+          alert("You must qualify from Round 1 to unlock this round.");
+          navigate('/quiz');
+        } else if (quizId === 'security' && !(roundMap?.advanced?.qualified)) {
+          alert("You must qualify from Round 2 to unlock this round.");
+          navigate('/quiz');
+        }
       }).catch(() => setScoresLoading(false));
     }
   }, [navigate, quizId]);
@@ -62,13 +76,25 @@ export default function AwsQuiz() {
       if (screen === SCREEN.QUIZ && status === 'inactive') {
         clearInterval(interval);
         alert("Quiz is currently on hold by AWS. Your progress so far has been saved.");
+        
+        const totalTime = startTime ? Math.floor((Date.now() - startTime) / 1000) : 0;
+        
         submitScore({
           quizId: quizMeta.id,
           quizTitle: quizMeta.title,
           quizType: 'quiz',
           score: score,
           total: questions.length,
-        }).then(() => setScreen(SCREEN.RESULTS));
+          timeTaken: totalTime,
+        }).then(res => {
+          if (res.ok) {
+            setSavedCompositeScore(res.data?.score?.composite_score);
+            setSavedTimeTaken(res.data?.score?.time_taken);
+            // Refresh round status to see if they qualified
+            fetchRoundStatus().then(setRoundStatusMap);
+          }
+          setScreen(SCREEN.RESULTS);
+        });
       }
     }, 5000);
     return () => clearInterval(interval);
@@ -120,6 +146,7 @@ export default function AwsQuiz() {
     setScore(0);
     setShowExplanation(false);
     setTimeLeft(60);
+    setStartTime(Date.now());
     setScreen(SCREEN.QUIZ);
   }
 
@@ -135,13 +162,26 @@ export default function AwsQuiz() {
   function handleNext() {
     if (currentIdx + 1 >= questions.length) {
       // Save score before showing results
+      const totalTime = startTime ? Math.floor((Date.now() - startTime) / 1000) : 0;
+      
+      const finalScore = score + (selected !== null && selected !== -1 && selected === questions[currentIdx].correct ? 0 : 0);
+      
       submitScore({
         quizId: quizMeta.id,
         quizTitle: quizMeta.title,
         quizType: 'quiz',
-        score: score + (selected !== null && selected !== -1 && selected === questions[currentIdx].correct ? 0 : 0), // already counted
+        score: finalScore,
         total: questions.length,
-      }).then(res => setScoreSaved(res.ok));
+        timeTaken: totalTime,
+      }).then(res => {
+        setScoreSaved(res.ok);
+        if (res.ok) {
+          setSavedCompositeScore(res.data?.score?.composite_score);
+          setSavedTimeTaken(res.data?.score?.time_taken);
+          // Fetch updated round status for qualifications
+          fetchRoundStatus().then(setRoundStatusMap);
+        }
+      });
       setScreen(SCREEN.RESULTS);
     } else {
       setCurrentIdx(i => i + 1);
@@ -163,8 +203,16 @@ export default function AwsQuiz() {
   }
 
   const q = questions[currentIdx];
-  const progress = questions.length ? (currentIdx / questions.length) * 100 : 0;
-  const pct = questions.length ? Math.round((score / questions.length) * 100) : 0;
+  const totalQuestions = pastAttempt && screen === SCREEN.RESULTS ? pastAttempt.total : questions.length;
+  const progress = totalQuestions ? (currentIdx / totalQuestions) * 100 : 0;
+  
+  let pct = 0;
+  if (pastAttempt && screen === SCREEN.RESULTS) {
+    pct = pastAttempt.pct || (totalQuestions ? Math.round((score / totalQuestions) * 100) : 0);
+  } else {
+    pct = totalQuestions ? Math.round((score / totalQuestions) * 100) : 0;
+  }
+  
   const scoreMsg = pct >= 90 ? '🏆 Cloud Architect!' : pct >= 70 ? '⚡ Well done!' : pct >= 50 ? '📘 Keep learning!' : '🔄 Try again!';
 
   function optionStyle(idx) {
@@ -373,27 +421,47 @@ export default function AwsQuiz() {
                     strokeLinecap="round" transform="rotate(-90 45 45)"
                     style={{ transition: 'stroke-dashoffset 1s ease-out' }} />
                 </svg>
-                <span className="absolute inset-0 flex items-center justify-center font-mono text-sm font-bold text-white">{score}/{questions.length}</span>
+                <span className="absolute inset-0 flex items-center justify-center font-mono text-sm font-bold text-white">{score}/{totalQuestions}</span>
               </div>
               <div>
-                <div className="font-mono text-4xl font-bold text-white">{pct}%</div>
-                <div className="font-mono text-sm text-[#dbc2ad] mt-1">{scoreMsg}</div>
+                <div className="font-mono text-4xl font-bold text-[#FF9900]">
+                  {pastAttempt && pastAttempt.composite_score !== undefined && pastAttempt.composite_score !== null 
+                    ? pastAttempt.composite_score 
+                    : (savedCompositeScore !== null && savedCompositeScore !== undefined ? savedCompositeScore : pct)}
+                  <span className="text-xl"> pts</span>
+                </div>
+                <div className="font-mono text-xs text-[#dbc2ad] mt-1">Composite Score</div>
               </div>
             </div>
 
             <div className="grid grid-cols-4 gap-3 mb-4">
               {[
-                { label: 'Correct', val: score, color: '#a8e063', bg: 'rgba(99,153,34,0.12)', border: '#639922' },
-                { label: 'Wrong', val: (pastAttempt ? pastAttempt.total : questions.length) - score, color: '#f87171', bg: 'rgba(226,75,74,0.12)', border: '#E24B4A' },
-                { label: 'Total', val: pastAttempt ? pastAttempt.total : questions.length, color: '#f1dfd1', bg: 'rgba(255,255,255,0.04)', border: 'rgba(255,255,255,0.12)' },
-                { label: 'Score', val: `${pct}%`, color: '#FF9900', bg: 'rgba(255,153,0,0.12)', border: 'rgba(255,153,0,0.4)' },
+                { label: 'Accuracy', val: `${pct}%`, color: '#a8e063', bg: 'rgba(99,153,34,0.12)', border: '#639922' },
+                { label: 'Time (s)', val: pastAttempt && pastAttempt.time_taken !== undefined && pastAttempt.time_taken !== null ? pastAttempt.time_taken : (savedTimeTaken !== null && savedTimeTaken !== undefined ? savedTimeTaken : 0), color: '#00a8e0', bg: 'rgba(0,168,224,0.12)', border: '#00a8e0' },
+                { label: 'Wrong', val: totalQuestions - score, color: '#f87171', bg: 'rgba(226,75,74,0.12)', border: '#E24B4A' },
+                { label: 'Total Qs', val: totalQuestions, color: '#f1dfd1', bg: 'rgba(255,255,255,0.04)', border: 'rgba(255,255,255,0.12)' },
               ].map(s => (
                 <div key={s.label} className="p-3 text-center" style={{ border: `1px solid ${s.border}`, background: s.bg }}>
-                  <div className="font-mono text-[10px] text-[#dbc2ad] uppercase tracking-widest mb-1">{s.label}</div>
-                  <div className="font-mono text-2xl font-bold" style={{ color: s.color }}>{s.val}</div>
+                  <div className="font-mono text-[10px] text-[#dbc2ad] uppercase tracking-widest mb-1 truncate">{s.label}</div>
+                  <div className="font-mono text-xl font-bold" style={{ color: s.color }}>{s.val}</div>
                 </div>
               ))}
             </div>
+
+            {/* Qualification Status */}
+            {(roundStatusMap && roundStatusMap[quizId]) && (
+              <div className={`mb-4 px-4 py-3 font-mono text-xs flex flex-col items-center justify-center gap-1 transition-all text-center ${roundStatusMap[quizId].qualified ? 'border border-[#639922]/40 bg-[#639922]/10 text-[#a8e063]' : 'border border-[#FF9900]/40 bg-[#FF9900]/10 text-[#FF9900]'}`}>
+                <div className="flex items-center gap-2 font-bold text-sm">
+                  <span className="material-symbols-outlined">{roundStatusMap[quizId].qualified ? 'military_tech' : 'hourglass_empty'}</span>
+                  {roundStatusMap[quizId].qualified ? 'Qualified for Next Round!' : 'Awaiting Final Qualification Cutoff'}
+                </div>
+                {roundStatusMap[quizId].rank && (
+                  <div className="text-[10px] text-white/70">
+                    Current Rank: #{roundStatusMap[quizId].rank} of {roundStatusMap[quizId].total} (Top {quizId === 'fundamentals' ? '70%' : '40%'} qualify)
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* DB save indicator */}
             <div className={`mb-4 px-4 py-2.5 font-mono text-[11px] flex items-center gap-2 transition-all ${(scoreSaved || pastAttempt) ? 'border border-[#639922]/40 bg-[#639922]/10 text-[#a8e063]' : 'border border-white/8 bg-white/3 text-[#dbc2ad]'}`}>

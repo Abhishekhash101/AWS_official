@@ -73,9 +73,16 @@ async function initDb() {
       score        INTEGER NOT NULL,
       total        INTEGER NOT NULL,
       pct          INTEGER NOT NULL,
+      time_taken   INTEGER DEFAULT 0,
+      composite_score NUMERIC(5,2) DEFAULT 0,
       attempted_at TIMESTAMPTZ DEFAULT NOW()
     );
   `);
+  // Handle existing DBs where columns might be missing
+  await pool.query(`
+    ALTER TABLE quiz_scores ADD COLUMN IF NOT EXISTS time_taken INTEGER DEFAULT 0;
+    ALTER TABLE quiz_scores ADD COLUMN IF NOT EXISTS composite_score NUMERIC(5,2) DEFAULT 0;
+  `).catch(() => console.log('ALTER columns for time/composite failed (probably already exists).'));
   console.log('quiz_scores table ready');
 }
 initDb().catch(console.error);
@@ -165,14 +172,29 @@ app.put('/api/user/password', authMiddleware, async (req, res) => {
 // ── Quiz Scores — Submit ──────────────────────────────────────
 app.post('/api/quiz-scores', authMiddleware, async (req, res) => {
   try {
-    const { quizId, quizTitle, quizType, score, total } = req.body;
+    const { quizId, quizTitle, quizType, score, total, timeTaken } = req.body;
     if (quizId === undefined || score === undefined || !total)
       return res.status(400).json({ error: 'Missing required fields' });
+      
     const pct = Math.round((score / total) * 100);
+    const maxTime = total * 60; // 60 seconds per question
+    
+    // Calculate composite score (70% accuracy, 30% time)
+    const accuracyComponent = (score / total) * 100 * 0.7;
+    let timeComponent = 0;
+    
+    const validTimeTaken = timeTaken !== undefined ? timeTaken : maxTime;
+    
+    if (validTimeTaken < maxTime) {
+      timeComponent = (1 - (validTimeTaken / maxTime)) * 100 * 0.3;
+    }
+    
+    const compositeScore = Math.min(100, Math.max(0, accuracyComponent + timeComponent)).toFixed(2);
+
     const result = await pool.query(
-      `INSERT INTO quiz_scores (user_id, quiz_id, quiz_title, quiz_type, score, total, pct)
-       VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *`,
-      [req.user.id, quizId, quizTitle, quizType || 'quiz', score, total, pct]
+      `INSERT INTO quiz_scores (user_id, quiz_id, quiz_title, quiz_type, score, total, pct, time_taken, composite_score)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *`,
+      [req.user.id, quizId, quizTitle, quizType || 'quiz', score, total, pct, validTimeTaken, compositeScore]
     );
     res.status(201).json({ message: 'Score saved', score: result.rows[0] });
   } catch (error) {
@@ -194,6 +216,84 @@ app.get('/api/quiz-scores/me', authMiddleware, async (req, res) => {
   }
 });
 
+// ── Quiz Scores — Qualification Status ─────────────────────────
+app.get('/api/quiz-scores/round-status', authMiddleware, async (req, res) => {
+  try {
+    // 1. Get user's own scores
+    const myScoresResult = await pool.query(
+      'SELECT quiz_id, MAX(composite_score) as best_score, MAX(pct) as best_pct FROM quiz_scores WHERE user_id = $1 GROUP BY quiz_id',
+      [req.user.id]
+    );
+    
+    // Convert to a map for easy lookup
+    const myScores = {};
+    myScoresResult.rows.forEach(r => {
+      myScores[r.quiz_id] = {
+        attempted: true,
+        bestScore: parseFloat(r.best_score || 0),
+        bestPct: parseInt(r.best_pct || 0)
+      };
+    });
+
+    // 2. Fetch all scores for each quiz to determine cutoffs
+    // Currently, only 'fundamentals' and 'advanced' act as gates.
+    // 'fundamentals' -> top 70%
+    // 'advanced' -> top 40%
+    const gates = [
+      { id: 'fundamentals', cutoffPct: 0.70 },
+      { id: 'advanced', cutoffPct: 0.40 }
+    ];
+
+    const statusMap = {
+      fundamentals: { attempted: !!myScores['fundamentals'], qualified: true }, // base state
+      advanced: { attempted: !!myScores['advanced'], qualified: false },
+      security: { attempted: !!myScores['security'], qualified: false }
+    };
+    
+    // We only need to compute qualification for a round if they attempted it.
+    for (const gate of gates) {
+      if (myScores[gate.id]) {
+        // Find how many total users attempted this quiz
+        const allScores = await pool.query(
+          'SELECT user_id, MAX(composite_score) as best_score FROM quiz_scores WHERE quiz_id = $1 GROUP BY user_id ORDER BY best_score DESC',
+          [gate.id]
+        );
+        
+        const totalParticipants = allScores.rows.length;
+        // e.g. 70% of 10 people = top 7
+        const cutoffRank = Math.max(1, Math.floor(totalParticipants * gate.cutoffPct));
+        
+        let userRank = -1;
+        for (let i = 0; i < allScores.rows.length; i++) {
+          if (allScores.rows[i].user_id === req.user.id) {
+            userRank = i + 1; // 1-indexed
+            break;
+          }
+        }
+        
+        const qualified = userRank > 0 && userRank <= cutoffRank;
+        
+        statusMap[gate.id].qualified = qualified;
+        statusMap[gate.id].rank = userRank;
+        statusMap[gate.id].total = totalParticipants;
+        statusMap[gate.id].cutoffRank = cutoffRank;
+      } else {
+        // If they haven't attempted the gate, they definitely aren't qualified.
+        statusMap[gate.id].qualified = false;
+      }
+    }
+    
+    // Add in case studies which are independent (always qualified to attempt)
+    // Actually, for simplicity we can just return the map.
+    
+    res.json(statusMap);
+
+  } catch (error) {
+    console.error('Round status error:', error);
+    res.status(500).json({ error: 'Failed to fetch round status' });
+  }
+});
+
 // ── Admin — Login ─────────────────────────────────────────────
 app.post('/api/admin/login', (req, res) => {
   const { adminId, password } = req.body;
@@ -208,7 +308,7 @@ app.get('/api/admin/scores', adminMiddleware, async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT qs.id, qs.quiz_id, qs.quiz_title, qs.quiz_type,
-             qs.score, qs.total, qs.pct, qs.attempted_at,
+             qs.score, qs.total, qs.pct, qs.time_taken, qs.composite_score, qs.attempted_at,
              u.first_name, u.last_name, u.email
       FROM quiz_scores qs
       JOIN users u ON qs.user_id = u.id

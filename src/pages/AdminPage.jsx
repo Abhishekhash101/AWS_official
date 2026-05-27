@@ -269,7 +269,7 @@ function Dashboard({ token, onLogout }) {
           <div className="border border-white/10 overflow-hidden">
             {/* Header */}
             <div className="grid grid-cols-[2fr_2fr_1fr_1fr_1fr_1.5fr] gap-0 bg-white/5 border-b border-white/10 px-4 py-3 hidden md:grid">
-              {['Student', 'Quiz', 'Type', 'Score', 'Result', 'Date'].map(h => (
+              {['Student', 'Quiz', 'Type', 'Score / Time', 'Composite', 'Date'].map(h => (
                 <span key={h} className="font-mono text-[10px] text-[#dbc2ad] uppercase tracking-widest">{h}</span>
               ))}
             </div>
@@ -290,8 +290,8 @@ function Dashboard({ token, onLogout }) {
                         {r.quiz_type === 'case_study' ? 'Case Study' : 'Quiz'}
                       </span>
                     </div>
-                    <div className="font-mono text-sm text-[#dbc2ad] flex items-center">{r.score}/{r.total}</div>
-                    <div className="flex items-center"><ScoreBadge pct={r.pct} /></div>
+                    <div className="font-mono text-sm text-[#dbc2ad] flex items-center">{r.score}/{r.total} ({r.time_taken || 0}s)</div>
+                    <div className="flex items-center"><ScoreBadge pct={parseFloat(r.composite_score || r.pct).toFixed(0)} /></div>
                     <div className="font-mono text-[10px] text-[#dbc2ad] flex items-center">{fmt(r.attempted_at)}</div>
                   </div>
                 );

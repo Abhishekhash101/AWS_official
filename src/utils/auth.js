@@ -25,7 +25,7 @@ export function logout() {
 }
 
 /** Submit a quiz score. Returns { ok, error } */
-export async function submitScore({ quizId, quizTitle, quizType, score, total }) {
+export async function submitScore({ quizId, quizTitle, quizType, score, total, timeTaken }) {
   const token = getToken();
   if (!token) return { ok: false, error: 'Not logged in' };
   try {
@@ -34,7 +34,7 @@ export async function submitScore({ quizId, quizTitle, quizType, score, total })
     const res = await fetch(`${API_URL}/api/quiz-scores`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ quizId, quizTitle, quizType, score, total }),
+      body: JSON.stringify({ quizId, quizTitle, quizType, score, total, timeTaken }),
       signal: ctrl.signal,
     });
     clearTimeout(timer);
@@ -50,11 +50,25 @@ export async function fetchMyScores() {
   const token = getToken();
   if (!token) return [];
   try {
-    const res = await fetch(`${API_URL}/api/quiz-scores/me`, {
+    const res = await fetch(`${API_URL}/api/quiz-scores/me?t=${Date.now()}`, {
       headers: { Authorization: `Bearer ${token}` },
+      cache: 'no-store'
     });
     return res.ok ? res.json() : [];
   } catch { return []; }
+}
+
+/** Fetch qualification round status */
+export async function fetchRoundStatus() {
+  const token = getToken();
+  if (!token) return {};
+  try {
+    const res = await fetch(`${API_URL}/api/quiz-scores/round-status?t=${Date.now()}`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: 'no-store'
+    });
+    return res.ok ? res.json() : {};
+  } catch { return {}; }
 }
 
 /** Fetch admin token */
