@@ -98,7 +98,9 @@ export async function fetchMyScores() {
       headers: { Authorization: `Bearer ${token}` },
       cache: 'no-store'
     });
-    return res.ok ? res.json() : [];
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data;
   } catch { return []; }
 }
 
@@ -111,7 +113,9 @@ export async function fetchRoundStatus() {
       headers: { Authorization: `Bearer ${token}` },
       cache: 'no-store'
     });
-    return res.ok ? res.json() : {};
+    if (!res.ok) return {};
+    const data = await res.json();
+    return data;
   } catch { return {}; }
 }
 
