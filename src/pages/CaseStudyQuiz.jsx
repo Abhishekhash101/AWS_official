@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import awsIcon from '../assets/aws_icon.jpeg';
 import { CASE_STUDIES, CASE_STUDY_QUESTIONS } from '../data/quizData';
 import { isLoggedIn, submitScore, fetchMyScores, fetchQuizStatus } from '../utils/auth';
+import useScreenshotProtection from '../utils/useScreenshotProtection';
 
 export default function CaseStudyQuiz() {
   const { caseId } = useParams();
@@ -29,6 +30,10 @@ export default function CaseStudyQuiz() {
   const [scoresLoading, setScoresLoading] = useState(true);
   const [timeLeft, setTimeLeft] = useState(60);
   const [globalStatus, setGlobalStatus] = useState('active');
+
+  // Screenshot protection — active during quiz and results phases
+  const isProtectionActive = phase === 'quiz' || phase === 'results' || phase === 'eliminated';
+  const { isBlurred } = useScreenshotProtection(isProtectionActive);
 
   // Auth gate
   useEffect(() => {
@@ -390,6 +395,24 @@ export default function CaseStudyQuiz() {
       onMouseMove={handleMouseMove} onMouseLeave={() => setGridState(s => ({ ...s, isVisible: false }))}>
       <GridBg />
       <Navbar subtitle={meta.title} />
+
+      {/* Screenshot protection blur overlay */}
+      {isBlurred && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 9999,
+          backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)',
+          background: 'rgba(10,12,16,0.85)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column',
+        }}>
+          <span className="material-symbols-outlined" style={{ fontSize: 56, color: '#FF9900', marginBottom: 16 }}>shield</span>
+          <p style={{ fontFamily: 'monospace', color: '#FF9900', fontSize: 18, fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase' }}>
+            Quiz Protected
+          </p>
+          <p style={{ fontFamily: 'monospace', color: '#dbc2ad', fontSize: 12, marginTop: 8, letterSpacing: '0.1em' }}>
+            Click here to continue your quiz
+          </p>
+        </div>
+      )}
 
       {/* Pac-Man Progress */}
       <div className="relative z-10 px-6 pt-5 pb-0 flex-shrink-0">

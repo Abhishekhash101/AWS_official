@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import awsIcon from '../assets/aws_icon.jpeg';
 import { QUESTION_BANKS, QUIZZES } from '../data/quizData';
 import { isLoggedIn, submitScore, fetchMyScores, fetchQuizStatus, fetchRoundStatus } from '../utils/auth';
+import useScreenshotProtection from '../utils/useScreenshotProtection';
 
 function shuffleArray(arr) {
   const a = [...arr];
@@ -40,6 +41,10 @@ export default function AwsQuiz() {
   const [startTime, setStartTime] = useState(null);
   const [savedCompositeScore, setSavedCompositeScore] = useState(null);
   const [savedTimeTaken, setSavedTimeTaken] = useState(null);
+
+  // Screenshot protection — active during quiz and results screens
+  const isProtectionActive = screen === SCREEN.QUIZ || screen === SCREEN.RESULTS;
+  const { isBlurred } = useScreenshotProtection(isProtectionActive);
 
   // Auth gate — redirect to home + open login if not logged in
   useEffect(() => {
@@ -501,6 +506,24 @@ export default function AwsQuiz() {
     <div className="min-h-screen bg-[#0A0C10] text-[#f1dfd1] flex flex-col relative overflow-hidden"
       onMouseMove={handleMouseMove} onMouseLeave={() => setGridState(s => ({ ...s, isVisible: false }))}>
       <GridLayer />
+
+      {/* Screenshot protection blur overlay */}
+      {isBlurred && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 9999,
+          backdropFilter: 'blur(30px)', WebkitBackdropFilter: 'blur(30px)',
+          background: 'rgba(10,12,16,0.85)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column',
+        }}>
+          <span className="material-symbols-outlined" style={{ fontSize: 56, color: '#FF9900', marginBottom: 16 }}>shield</span>
+          <p style={{ fontFamily: 'monospace', color: '#FF9900', fontSize: 18, fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase' }}>
+            Quiz Protected
+          </p>
+          <p style={{ fontFamily: 'monospace', color: '#dbc2ad', fontSize: 12, marginTop: 8, letterSpacing: '0.1em' }}>
+            Click here to continue your quiz
+          </p>
+        </div>
+      )}
 
       <nav className="relative z-10 flex items-center justify-between px-6 py-4 border-b border-white/5 bg-[#0A0C10]/80 backdrop-blur-xl flex-shrink-0">
         <div className="flex items-center gap-3">
