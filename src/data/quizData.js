@@ -39,32 +39,35 @@ export const QUIZZES = [
 
 export const CASE_STUDIES = [
   {
-    id: 'ecommerce',
-    title: 'Food Delivery DB Architecture',
-    subtitle: 'Design the database stack for a food delivery startup with relational, caching, and flexible schema needs',
-    scenario: `A food delivery startup is scaling rapidly. They need: (1) user account storage with complex relational queries for profiles, order history, and payment info, (2) fast session caching with sub-millisecond reads for user sessions and recently viewed restaurants, (3) flexible restaurant menu storage where schema changes frequently as new restaurants onboard with different menu structures in JSON format. Design the right AWS database stack.`,
-    questions: 3,
-    duration: '10 min',
-    tags: ['Relational', 'Caching', 'NoSQL'],
+    id: 'food-delivery',
+    title: 'CASE 1: Broken Food App',
+    subtitle: 'A startup just launched. Everything worked during testing, but on launch day, systems begin failing one by one. Fix the serverless architecture before the startup crashes.',
+    color: '#34d399',
+    questions: 4,
+    duration: '5m',
+    difficulty: 'Hard',
+    tags: ['Serverless', 'S3', 'Lambda', 'API Gateway']
   },
   {
-    id: 'serverless-pipeline',
-    title: 'E-Commerce Platform Stack',
-    subtitle: 'Build the data layer for an e-commerce platform handling catalogue, cart, and analytics',
-    scenario: `An e-commerce platform handles 50,000 daily orders. They need: (1) a product catalogue with complex queries including joins across categories, suppliers, and pricing tiers, (2) cart data storage requiring fast reads/writes per user session with single-digit ms latency, (3) historical sales analytics running heavy SQL queries on terabytes of transaction logs for business intelligence dashboards. Choose the right combination of AWS database services.`,
-    questions: 3,
-    duration: '10 min',
-    tags: ['SQL', 'NoSQL', 'Analytics'],
+    id: 'photo-app',
+    title: 'CASE 2: The Failed Photo App',
+    subtitle: 'A startup called SnapUp launched. Its serverless photo workflow is failing. Fix the architecture.',
+    color: '#f472b6',
+    questions: 4,
+    duration: '5m',
+    difficulty: 'Hard',
+    tags: ['S3', 'Lambda', 'SQS', 'Stateless']
   },
   {
-    id: 'disaster-recovery',
-    title: 'Real-Time Multiplayer Game Stack',
-    subtitle: 'Design the database architecture for a multiplayer game with leaderboards, sessions, and analytics',
-    scenario: `A real-time multiplayer game has 2 million concurrent players. They need: (1) a leaderboard system with fast sorted lookups serving millions of score queries per second, (2) player session caching with sub-millisecond response times for active game state, (3) game statistics history and analytics for tracking player behaviour, match outcomes, and revenue metrics at massive scale. Select the optimal AWS database combination.`,
-    questions: 3,
-    duration: '10 min',
-    tags: ['Leaderboard', 'Caching', 'Analytics'],
-  },
+    id: 'smart-campus',
+    title: 'CASE 3: Smart Campus Crisis',
+    subtitle: 'Our university launches a smart campus app. Attendance, notifications, assignments, event reminders. The serverless backend starts failing.',
+    color: '#60a5fa',
+    questions: 4,
+    duration: '5m',
+    difficulty: 'Hard',
+    tags: ['EventBridge', 'Lambda', 'SNS']
+  }
 ];
 
 // ── Question Banks ───────────────────────────────────────────
@@ -212,129 +215,163 @@ export const QUESTION_BANKS = {
 // ── Case Study Question Banks ────────────────────────────────
 
 export const CASE_STUDY_QUESTIONS = {
-  ecommerce: {
-    scenario: `A food delivery startup is scaling rapidly. They need: (1) user account storage with complex relational queries for profiles, order history, and payment info, (2) fast session caching with sub-millisecond reads for user sessions and recently viewed restaurants, (3) flexible restaurant menu storage where schema changes frequently as new restaurants onboard with different menu structures in JSON format.`,
+  'food-delivery': {
+    scenario: 'A startup, GoodFoods, just launched. Everything worked during testing, but on launch day, systems begin failing one by one. Escape the rooms by fixing the serverless architecture before the startup crashes.',
     questions: [
       {
-        id: 1, category: 'Relational',
-        question: 'For the food delivery startup\'s user accounts, order history, and payment data requiring complex SQL queries and JOINs, which AWS database service is the best fit?',
+        question: 'ROOM 1: Users upload restaurant menu images, but nothing happens after upload. No image compression. No processing. The Lambda function exists. What is the most likely issue?',
         options: [
-          'DynamoDB — fast NoSQL for all user data',
-          'Amazon RDS — relational SQL database for structured data',
-          'DocumentDB — flexible schema for user profiles',
-          'Amazon Redshift — warehouse for order analytics'
+          'Lambda memory too low',
+          'No S3 trigger configured',
+          'API Gateway timeout',
+          'Wrong database'
         ],
         correct: 1,
-        explanation: 'Amazon RDS is ideal for structured, relational data with complex queries. User profiles, order history, and payment info have clear relationships that benefit from SQL JOINs, foreign keys, and ACID transactions.'
+        explanation: 'If the Lambda exists but doesn\'t run, the trigger (event source mapping) connecting S3 to Lambda is missing.',
+        category: 'ROOM 1'
       },
       {
-        id: 2, category: 'Caching',
-        question: 'For sub-millisecond session caching and recently viewed restaurants, which service should complement the primary database?',
+        question: 'ROOM 2: Users submit food orders and Lambda processes payment validation. But it says - "Request timed out". Execution logs show: Function keeps getting terminated. What is the likely issue?',
         options: [
-          'DynamoDB with DAX accelerator',
-          'Amazon ElastiCache (Redis)',
-          'Amazon Aurora with read replicas',
-          'CloudFront edge caching'
+          'Lambda timeout exceeded',
+          'Wrong IAM role',
+          'Missing API Gateway',
+          'Wrong runtime language'
+        ],
+        correct: 0,
+        explanation: 'Lambda functions have a configurable timeout (default 3 seconds, up to 15 mins). If payment processing takes longer than the configured timeout, the function is terminated.',
+        category: 'ROOM 2'
+      },
+      {
+        question: 'ROOM 3: A food festival goes viral and 10,000+ users hit the app. Team panics, expecting servers to crash. Why is Lambda suitable here?',
+        options: [
+          'It provides unlimited database storage',
+          'It handles automatic scaling and event-driven burst handling',
+          'It guarantees zero latency for all requests',
+          'It uses physical hardware instead of virtualized resources'
         ],
         correct: 1,
-        explanation: 'ElastiCache with Redis provides sub-millisecond in-memory reads, perfect for session data and recently viewed items. It acts as a caching layer in front of the primary database, reducing load and improving response times.'
+        explanation: 'Lambda automatically scales by spawning concurrent executions to handle sudden bursts of event-driven traffic.',
+        category: 'ROOM 3'
       },
       {
-        id: 3, category: 'Document Store',
-        question: 'For flexible restaurant menu storage where each restaurant has a different JSON schema that changes frequently, which database is purpose-built for this?',
+        question: 'ROOM 4: Users report: First request is slow. Later requests are fast. What explains this?',
         options: [
-          'Amazon RDS with JSON columns',
-          'DynamoDB with document model',
-          'Amazon DocumentDB (MongoDB-compatible)',
-          'Amazon S3 with Athena queries'
+          'Database lag',
+          'Cold start latency',
+          'IAM delay',
+          'Broken trigger'
         ],
-        correct: 2,
-        explanation: 'Amazon DocumentDB is a document database compatible with MongoDB, designed for flexible JSON schemas. Restaurant menus with varying structures and frequent schema changes are a perfect fit for a document store.'
-      },
-    ],
+        correct: 1,
+        explanation: 'When a Lambda function has not been used recently, AWS needs to initialize a new execution environment. This initial delay is known as a cold start.',
+        category: 'ROOM 4'
+      }
+    ]
   },
-
-  'serverless-pipeline': {
-    scenario: `An e-commerce platform handles 50,000 daily orders. They need: (1) a product catalogue with complex queries including joins across categories, suppliers, and pricing tiers, (2) cart data storage requiring fast reads/writes per user session with single-digit ms latency, (3) historical sales analytics running heavy SQL queries on terabytes of transaction logs for business intelligence dashboards.`,
+  'photo-app': {
+    scenario: 'A startup called SnapUp launched. Its serverless photo workflow is failing. Escape the rooms by fixing the architecture.',
     questions: [
       {
-        id: 1, category: 'Relational',
-        question: 'For the product catalogue requiring complex SQL queries with joins across categories, suppliers, and pricing tiers, which AWS database should be used?',
+        question: 'ROOM 1: Users upload photos. Nothing happens. Which AWS service should trigger Lambda?',
         options: [
-          'DynamoDB — NoSQL for fast product lookups',
-          'Amazon Aurora — relational, auto-scaling, MySQL/PostgreSQL compatible',
-          'Amazon Redshift — data warehouse for product data',
-          'DocumentDB — flexible product schema'
+          'S3',
+          'EC2',
+          'CloudFront',
+          'IAM'
+        ],
+        correct: 0,
+        explanation: 'S3 Event Notifications can automatically trigger Lambda functions when new objects (like photos) are uploaded.',
+        category: 'ROOM 1'
+      },
+      {
+        question: 'ROOM 2: The team uses Lambda for 2-hour video rendering. Everything fails. Why?',
+        options: [
+          'Lambda does not support video processing',
+          'Lambda max execution time limitation',
+          'Lambda cannot access S3 for large files',
+          'S3 cannot trigger Lambda for video files'
         ],
         correct: 1,
-        explanation: 'Amazon Aurora is the best fit for a product catalogue with complex relational queries. It\'s MySQL/PostgreSQL compatible, auto-scales, offers 5x MySQL throughput, and handles JOINs across categories, suppliers, and pricing tiers efficiently.'
+        explanation: 'Lambda has a hard maximum execution time limit of 15 minutes. A 2-hour task will always be terminated prematurely.',
+        category: 'ROOM 2'
       },
       {
-        id: 2, category: 'NoSQL',
-        question: 'For cart data requiring single-digit millisecond reads and writes per user session at scale, which database is optimal?',
+        question: 'ROOM 3: Users expect Lambda to remember previous photo edits. But each execution behaves like a fresh start. Why?',
         options: [
-          'Amazon RDS with connection pooling',
-          'ElastiCache for cart caching',
-          'DynamoDB with on-demand capacity',
-          'Aurora Serverless for flexible scaling'
+          'Lambda requires a custom IAM role to save state',
+          'The Lambda memory setting is too low',
+          'Lambda is stateless',
+          'They used the wrong programming language'
         ],
         correct: 2,
-        explanation: 'DynamoDB provides consistent single-digit millisecond performance at any scale. Cart data is key-value in nature (user ID → cart items), and DynamoDB\'s on-demand mode handles traffic spikes during sales events automatically.'
+        explanation: 'Lambda functions are inherently stateless. Each invocation runs in a fresh or reused container, so state must be stored externally (e.g., in DynamoDB).',
+        category: 'ROOM 3'
       },
       {
-        id: 3, category: 'Analytics',
-        question: 'For historical sales analytics with heavy SQL queries on terabytes of transaction logs, which AWS service is purpose-built for this workload?',
+        question: 'ROOM 4: A Lambda function executes whenever a message is added to a queue for background processing. Which service most likely triggered it?',
         options: [
-          'Amazon RDS with read replicas',
-          'DynamoDB with global secondary indexes',
-          'Amazon Redshift — columnar data warehouse',
-          'Amazon Athena with S3 data lake'
+          'SQS',
+          'S3',
+          'RDS',
+          'CloudFormation'
         ],
-        correct: 2,
-        explanation: 'Amazon Redshift is a columnar data warehouse designed for OLAP analytics. It uses massively parallel processing (MPP) to run complex SQL queries on terabytes of historical data — exactly what BI dashboards need.'
-      },
-    ],
+        correct: 0,
+        explanation: 'Amazon SQS (Simple Queue Service) is used for message queuing and natively integrates as an event source for Lambda.',
+        category: 'ROOM 4'
+      }
+    ]
   },
-
-  'disaster-recovery': {
-    scenario: `A real-time multiplayer game has 2 million concurrent players. They need: (1) a leaderboard system with fast sorted lookups serving millions of score queries per second, (2) player session caching with sub-millisecond response times for active game state, (3) game statistics history and analytics for tracking player behaviour, match outcomes, and revenue metrics at massive scale.`,
+  'smart-campus': {
+    scenario: 'Our university launches a smart campus app. Attendance, notifications, assignments, event reminders. The serverless backend starts failing.',
     questions: [
       {
-        id: 1, category: 'Leaderboard',
-        question: 'For the game\'s leaderboard requiring millions of sorted score lookups per second, which AWS database is the best choice?',
+        question: 'ROOM 1: Daily reminder emails never send. Which trigger should invoke Lambda every day?',
         options: [
-          'Amazon RDS with indexed score column',
-          'DynamoDB — high-throughput NoSQL with global secondary indexes',
-          'ElastiCache Redis — sorted sets for rankings',
-          'Amazon Redshift — analytical queries on scores'
+          'API Gateway',
+          'EventBridge (CloudWatch Events)',
+          'EC2',
+          'DynamoDB'
         ],
         correct: 1,
-        explanation: 'DynamoDB handles millions of requests per second with single-digit ms latency. Using a Global Secondary Index (GSI) on the score attribute enables fast sorted lookups. Its auto-scaling handles the massive concurrent player base.'
+        explanation: 'Amazon EventBridge allows you to create schedule-based rules (like cron jobs) to trigger Lambda functions automatically.',
+        category: 'ROOM 1'
       },
       {
-        id: 2, category: 'Session Cache',
-        question: 'For player session caching requiring sub-millisecond response times for active game state during gameplay, which service is optimal?',
+        question: 'ROOM 2: Attendance reports crash. Reason: Memory exhausted. What happened?',
         options: [
-          'DynamoDB with DAX',
-          'Amazon ElastiCache (Redis) — in-memory sub-ms cache',
-          'Amazon Aurora with connection pooling',
-          'Amazon MemoryDB for Redis'
+          'Lambda memory allocation insufficient',
+          'EC2 instance ran out of RAM',
+          'DynamoDB exceeded write capacity',
+          'The database was too large to process'
         ],
-        correct: 1,
-        explanation: 'ElastiCache with Redis delivers sub-millisecond in-memory reads and writes. It\'s ideal for active game state (player positions, health, inventory) that changes rapidly during gameplay and must be accessed instantly.'
+        correct: 0,
+        explanation: 'Lambda allows you to configure the amount of memory allocated to your function. If your code requires more memory to process large reports, it will crash with an out of memory error.',
+        category: 'ROOM 2'
       },
       {
-        id: 3, category: 'Analytics',
-        question: 'For game statistics history, tracking player behaviour, match outcomes, and revenue metrics at massive scale, which service should be used?',
+        question: 'ROOM 3: Students submit assignments and need an instant confirmation email. Arrange the following in the correct order: Frontend, Lambda, SNS, S3.',
         options: [
-          'DynamoDB with on-demand mode',
-          'Amazon RDS with materialized views',
-          'Amazon Redshift — petabyte-scale analytics warehouse',
-          'Amazon Athena with S3'
+          'Frontend → SNS → Lambda',
+          'Frontend → S3 → SNS',
+          'Frontend → Lambda → SNS',
+          'Lambda → SNS → Frontend'
         ],
         correct: 2,
-        explanation: 'Amazon Redshift is designed for large-scale analytics and business intelligence. It can handle petabytes of game data, running complex SQL queries across player behaviour, match outcomes, and revenue metrics for actionable insights.'
+        explanation: 'The frontend hits a serverless API (via API Gateway to Lambda). The Lambda function processes the submission and publishes a message to SNS, which delivers the email.',
+        category: 'ROOM 3'
       },
-    ],
-  },
+      {
+        question: 'ROOM 4: Team deployed an always-running EC2 instance just for tiny event-driven notifications. Why is this inefficient?',
+        options: [
+          'EC2 cannot send notifications',
+          'Lambda is more cost-efficient for event-driven workloads',
+          'EC2 instances cannot connect to SNS',
+          'EC2 does not support event-driven code'
+        ],
+        correct: 1,
+        explanation: 'An always-on EC2 instance incurs charges 24/7 even when idle. Lambda is purely pay-per-execution, making it significantly cheaper for sparse, event-driven tasks.',
+        category: 'ROOM 4'
+      }
+    ]
+  }
 };

@@ -19,6 +19,9 @@ export default function CaseStudyQuiz() {
   const [answers, setAnswers] = useState([]);
   const [showExplanation, setShowExplanation] = useState(false);
   const [score, setScore] = useState(0);
+  const [wrongCount, setWrongCount] = useState(0);
+  const [isEnteringRoom, setIsEnteringRoom] = useState(false);
+  const [quizStartTime, setQuizStartTime] = useState(null);
   const [isMoving, setIsMoving] = useState(false);
   const [scoreSaved, setScoreSaved] = useState(false);
   const [gridState, setGridState] = useState({ x: 0, y: 0, size: 1, isVisible: false });
@@ -52,12 +55,14 @@ export default function CaseStudyQuiz() {
       if (phase === 'quiz' && status === 'inactive') {
         clearInterval(interval);
         alert("Case study is currently on hold by AWS. Your progress so far has been saved.");
+        const totalTimeTaken = quizStartTime ? Math.floor((Date.now() - quizStartTime) / 1000) : 0;
         submitScore({
           quizId: caseId,
           quizTitle: meta.title,
           quizType: 'case_study',
           score: score,
           total: bank.questions.length,
+          timeTaken: totalTimeTaken
         }).then(() => setPhase('results'));
       }
     }, 5000);
@@ -125,36 +130,52 @@ export default function CaseStudyQuiz() {
     setShowExplanation(true);
     const isCorrect = idx === q.correct;
     setAnswers(prev => [...prev, isCorrect]);
-    if (isCorrect) setScore(s => s + 1);
+    if (isCorrect) {
+      setScore(s => s + 1);
+    } else {
+      setWrongCount(w => w + 1);
+    }
   }
 
   function handleNext() {
-    if (currentIdx + 1 >= questions.length) {
+    if (wrongCount >= 2) {
+      const totalTimeTaken = quizStartTime ? Math.floor((Date.now() - quizStartTime) / 1000) : 0;
       submitScore({
         quizId: caseId,
         quizTitle: meta.title,
         quizType: 'case_study',
         score,
         total: questions.length,
+        timeTaken: totalTimeTaken
+      }).then(res => setScoreSaved(res.ok));
+      setPhase('eliminated');
+      return;
+    }
+
+    if (currentIdx + 1 >= questions.length) {
+      const totalTimeTaken = quizStartTime ? Math.floor((Date.now() - quizStartTime) / 1000) : 0;
+      submitScore({
+        quizId: caseId,
+        quizTitle: meta.title,
+        quizType: 'case_study',
+        score,
+        total: questions.length,
+        timeTaken: totalTimeTaken
       }).then(res => setScoreSaved(res.ok));
       setPhase('results');
     } else {
-      setCurrentIdx(i => i + 1);
-      setSelected(null);
-      setShowExplanation(false);
-      setTimeLeft(60);
+      setIsEnteringRoom(true);
+      setTimeout(() => {
+        setCurrentIdx(i => i + 1);
+        setSelected(null);
+        setShowExplanation(false);
+        setTimeLeft(60);
+        setIsEnteringRoom(false);
+      }, 1500);
     }
   }
 
-  function handleBack() {
-    if (currentIdx === 0) return;
-    triggerMove();
-    setAnswers(prev => prev.slice(0, -1));
-    if (answers[answers.length - 1]) setScore(s => s - 1);
-    setCurrentIdx(i => i - 1);
-    setSelected(null);
-    setShowExplanation(false);
-  }
+
 
   function optionStyle(idx) {
     if (selected === null) return { border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)' };
@@ -240,11 +261,11 @@ export default function CaseStudyQuiz() {
                   <span className="material-symbols-outlined text-base">pause_circle</span>
                 </button>
               ) : (
-                <button
-                  onClick={() => { setPhase('quiz'); setTimeLeft(60); }}
+                  <button
+                  onClick={() => { setPhase('quiz'); setTimeLeft(60); setQuizStartTime(Date.now()); }}
                   className="w-full bg-[#FF9900] text-[#111] font-mono text-sm font-bold px-8 py-4 hover:bg-[#ffc082] transition-colors uppercase tracking-widest flex items-center justify-center gap-2">
-                  Start Case Study
-                  <span className="material-symbols-outlined text-base">quiz</span>
+                  Start Escape Room
+                  <span className="material-symbols-outlined text-base">login</span>
                 </button>
               )
             ) : (
@@ -260,44 +281,82 @@ export default function CaseStudyQuiz() {
     );
   }
 
-  // ── RESULTS ───────────────────────────────────────────────
-  if (phase === 'results') {
+  // ── RESULTS & ELIMINATED ────────────────────────────────
+  if (phase === 'results' || phase === 'eliminated') {
+    const isEliminated = phase === 'eliminated';
+    const totalQuestions = pastAttempt && (phase === 'results' || phase === 'eliminated') ? pastAttempt.total : questions.length;
+    let displayPct = 0;
+    
+    if (pastAttempt && pastAttempt.composite_score !== undefined && pastAttempt.composite_score !== null) {
+      displayPct = pastAttempt.composite_score;
+    } else if (pastAttempt) {
+      displayPct = pastAttempt.pct || 0;
+    } else if (!isEliminated) {
+      const totalTimeTaken = quizStartTime ? Math.floor((Date.now() - quizStartTime) / 1000) : 0;
+      const maxTime = totalQuestions * 60;
+      const accuracyComponent = (score / totalQuestions) * 100 * 0.7;
+      let timeComponent = 0;
+      if (totalTimeTaken < maxTime) {
+        timeComponent = (1 - (totalTimeTaken / maxTime)) * 100 * 0.3;
+      }
+      displayPct = Math.min(100, Math.max(0, accuracyComponent + timeComponent)).toFixed(2);
+    }
+    
+    const accuracyPct = totalQuestions ? Math.round((score / totalQuestions) * 100) : 0;
+    const scoreMsg = isEliminated ? '💀 SYSTEM FAILURE - ELIMINATED' : displayPct >= 90 ? '🏆 Master Architect!' : displayPct >= 70 ? '⚡ Well done!' : '🔄 Review the scenario';
+    const themeColor = isEliminated ? '#E24B4A' : '#FF9900';
+    const timeToDisplay = pastAttempt && pastAttempt.time_taken !== undefined && pastAttempt.time_taken !== null 
+      ? pastAttempt.time_taken 
+      : (quizStartTime ? Math.floor((Date.now() - quizStartTime) / 1000) : 0);
+
     return (
       <div className="min-h-screen bg-[#0A0C10] text-[#f1dfd1] flex flex-col relative overflow-hidden"
         onMouseMove={handleMouseMove} onMouseLeave={() => setGridState(s => ({ ...s, isVisible: false }))}>
         <GridBg />
-        <Navbar subtitle="Results" />
+        <Navbar subtitle={isEliminated ? "Mission Failed" : "Escape Successful"} />
         <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 py-12">
           <div className="max-w-lg w-full">
+
+            {isEliminated && (
+              <div className="border border-[#E24B4A]/30 bg-[#E24B4A]/10 p-6 mb-6 text-center animate-pulse">
+                <span className="material-symbols-outlined text-4xl text-[#E24B4A] mb-2">warning</span>
+                <h2 className="font-mono text-xl font-bold text-[#E24B4A] tracking-widest uppercase">Too Many Errors</h2>
+                <p className="font-mono text-xs text-[#E24B4A]/80 mt-2">You made 2 incorrect decisions. The architecture has collapsed.</p>
+              </div>
+            )}
 
             <div className="border border-white/10 bg-white/3 p-6 mb-4 flex items-center gap-6">
               <div className="relative flex-shrink-0">
                 <svg width="90" height="90" viewBox="0 0 90 90">
                   <circle cx="45" cy="45" r="38" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="6" />
-                  <circle cx="45" cy="45" r="38" fill="none" stroke="#FF9900" strokeWidth="6"
+                  <circle cx="45" cy="45" r="38" fill="none" stroke={themeColor} strokeWidth="6"
                     strokeDasharray={`${2 * Math.PI * 38}`}
-                    strokeDashoffset={`${2 * Math.PI * 38 * (1 - pct / 100)}`}
+                    strokeDashoffset={`${2 * Math.PI * 38 * (1 - (isEliminated ? accuracyPct : displayPct) / 100)}`}
                     strokeLinecap="round" transform="rotate(-90 45 45)"
                     style={{ transition: 'stroke-dashoffset 1s ease-out' }} />
                 </svg>
-                <span className="absolute inset-0 flex items-center justify-center font-mono text-sm font-bold text-white">{score}/{questions.length}</span>
+                <span className="absolute inset-0 flex items-center justify-center font-mono text-sm font-bold text-white">{score}/{totalQuestions}</span>
               </div>
               <div>
-                <div className="font-mono text-4xl font-bold text-white">{pct}%</div>
-                <div className="font-mono text-sm text-[#dbc2ad] mt-1">{scoreMsg}</div>
+                <div className="font-mono text-4xl font-bold" style={{ color: themeColor }}>
+                  {isEliminated ? '0.00' : displayPct} <span className="text-xl">pts</span>
+                </div>
+                <div className="font-mono text-xs text-[#dbc2ad] mt-1">Composite Score</div>
+                <div className="font-mono text-sm mt-2" style={{ color: themeColor }}>{scoreMsg}</div>
                 <div className="font-mono text-[10px] text-[#dbc2ad]/60 mt-1 uppercase tracking-widest">{meta.title}</div>
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-3 mb-4">
+            <div className="grid grid-cols-4 gap-3 mb-4">
               {[
-                { label: 'Correct', val: score, color: '#a8e063', bg: 'rgba(99,153,34,0.12)', border: '#639922' },
-                { label: 'Wrong', val: (pastAttempt ? pastAttempt.total : questions.length) - score, color: '#f87171', bg: 'rgba(226,75,74,0.12)', border: '#E24B4A' },
-                { label: 'Score', val: `${pct}%`, color: '#FF9900', bg: 'rgba(255,153,0,0.12)', border: 'rgba(255,153,0,0.4)' },
+                { label: 'Accuracy', val: `${accuracyPct}%`, color: '#a8e063', bg: 'rgba(99,153,34,0.12)', border: '#639922' },
+                { label: 'Time (s)', val: timeToDisplay, color: '#00a8e0', bg: 'rgba(0,168,224,0.12)', border: '#00a8e0' },
+                { label: 'Wrong', val: totalQuestions - score, color: '#f87171', bg: 'rgba(226,75,74,0.12)', border: '#E24B4A' },
+                { label: 'Total Qs', val: totalQuestions, color: '#f1dfd1', bg: 'rgba(255,255,255,0.04)', border: 'rgba(255,255,255,0.12)' },
               ].map(s => (
                 <div key={s.label} className="p-3 text-center" style={{ border: `1px solid ${s.border}`, background: s.bg }}>
-                  <div className="font-mono text-[10px] text-[#dbc2ad] uppercase tracking-widest mb-1">{s.label}</div>
-                  <div className="font-mono text-2xl font-bold" style={{ color: s.color }}>{s.val}</div>
+                  <div className="font-mono text-[10px] text-[#dbc2ad] uppercase tracking-widest mb-1 truncate">{s.label}</div>
+                  <div className="font-mono text-xl font-bold" style={{ color: s.color }}>{s.val}</div>
                 </div>
               ))}
             </div>
@@ -307,7 +366,7 @@ export default function CaseStudyQuiz() {
                 <div className="font-mono text-[10px] text-[#dbc2ad] uppercase tracking-widest mb-3">Answer Trail</div>
                 <div className="flex gap-2">
                   {answers.map((correct, i) => (
-                    <div key={i} className="flex-1 h-2.5 rounded-full" style={{ background: correct ? '#639922' : '#E24B4A' }} />
+                    <div key={i} className="flex-1 h-2.5 rounded-sm" style={{ background: correct ? '#639922' : '#E24B4A' }} />
                   ))}
                 </div>
               </div>
@@ -432,18 +491,31 @@ export default function CaseStudyQuiz() {
           </div>
 
           <div className="flex items-center justify-between gap-3">
-            <button onClick={handleBack} disabled={currentIdx === 0}
-              className="flex items-center gap-2 border border-white/10 px-5 py-2.5 font-mono text-xs text-[#dbc2ad] hover:border-white/25 transition-all uppercase tracking-widest disabled:opacity-30 disabled:cursor-not-allowed">
-              <span className="material-symbols-outlined text-sm">arrow_back</span>Back
-            </button>
-            <button onClick={handleNext} disabled={selected === null}
+            <div className="flex gap-1.5 items-center">
+              <span className="font-mono text-[10px] text-[#dbc2ad] uppercase tracking-widest mr-2">Integrity:</span>
+              {[...Array(2)].map((_, i) => (
+                <div key={i} className={`w-3 h-3 rounded-full border ${i < wrongCount ? 'bg-[#E24B4A] border-[#E24B4A] animate-pulse' : 'bg-transparent border-white/20'}`} />
+              ))}
+            </div>
+            <button onClick={handleNext} disabled={selected === null || isEnteringRoom}
               className="flex items-center gap-2 bg-[#FF9900] text-[#111] px-5 py-2.5 font-mono text-xs font-bold hover:bg-[#ffc082] transition-colors uppercase tracking-widest disabled:opacity-30 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-[#dbc2ad]">
-              {currentIdx + 1 === questions.length ? 'See Results' : 'Next'}
-              <span className="material-symbols-outlined text-sm">arrow_forward</span>
+              {isEnteringRoom ? 'Unlocking...' : (wrongCount >= 2 ? 'Finish (Eliminated)' : (currentIdx + 1 === questions.length ? 'Escape Room' : 'Next Room'))}
+              <span className="material-symbols-outlined text-sm">{isEnteringRoom ? 'lock_open' : 'arrow_forward'}</span>
             </button>
           </div>
         </div>
       </div>
+
+      {/* Room Transition Overlay */}
+      {isEnteringRoom && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0A0C10] animate-[fadeIn_0.2s_ease-out]">
+          <div className="text-center">
+            <div className="material-symbols-outlined text-[#FF9900] text-6xl mb-4 animate-[spin_1.5s_linear_infinite]">settings</div>
+            <h2 className="font-mono text-2xl font-bold text-white tracking-widest uppercase mb-2 animate-[pulse_1s_ease-in-out_infinite]">Unlocking Room {currentIdx + 2}</h2>
+            <p className="font-mono text-xs text-[#dbc2ad] uppercase tracking-widest">Bypassing security protocols...</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
