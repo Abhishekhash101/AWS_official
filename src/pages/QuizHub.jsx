@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useState, useRef } from 'react';
 import { QUIZZES, CASE_STUDIES } from '../data/quizData';
-import { fetchRoundStatus, isLoggedIn } from '../utils/auth';
+import { fetchRoundStatus, isLoggedIn, fetchMyScores } from '../utils/auth';
 import { useEffect } from 'react';
 
 const DIFFICULTY_COLOR = {
