@@ -1,0 +1,293 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@400;500&display=swap');
+
+  .tl-wrap {
+    font-family: 'DM Sans', sans-serif;
+    padding: 2rem 1rem 3rem;
+    position: relative;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  .tl-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .tl-header .eyebrow {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+    margin-bottom: 6px;
+  }
+
+  .tl-header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    margin: 0;
+    color: var(--color-text-primary);
+    line-height: 1.2;
+  }
+
+  .tl-header h1 span { color: #1D9E75; }
+
+  .tl-container { position: relative; }
+
+  .tl-spine {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: repeating-linear-gradient(to bottom, #1D9E75 0px, #1D9E75 8px, transparent 8px, transparent 16px);
+    transform: translateX(-50%);
+    z-index: 0;
+  }
+
+  .tl-item {
+    display: flex;
+    align-items: flex-start;
+    position: relative;
+    margin-bottom: 2.5rem;
+  }
+
+  .tl-item.left .tl-content  { order:1; text-align:right; padding-right:40px; width:calc(50% - 28px); }
+  .tl-item.left .tl-node     { order:2; }
+  .tl-item.left .tl-empty    { order:3; width:calc(50% - 28px); }
+  .tl-item.right .tl-empty   { order:1; width:calc(50% - 28px); }
+  .tl-item.right .tl-node    { order:2; }
+  .tl-item.right .tl-content { order:3; text-align:left; padding-left:40px; width:calc(50% - 28px); }
+
+  .tl-node {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    border: 2.5px solid #1D9E75;
+    background: var(--color-background-primary);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; z-index: 2; position: relative;
+    transition: transform 0.2s;
+  }
+  .tl-node:hover { transform: scale(1.1); }
+  .tl-node i { font-size: 22px; color: #1D9E75; }
+
+  .tl-content { flex-shrink: 0; }
+  .tl-empty   { flex-shrink: 0; }
+
+  .tl-connector {
+    position: absolute; top: 28px; height: 2px;
+    background: repeating-linear-gradient(to right, #9FE1CB 0px, #9FE1CB 5px, transparent 5px, transparent 10px);
+    z-index: 1;
+  }
+  .tl-item.left .tl-connector  { right:28px;  width:calc(50% - 56px); }
+  .tl-item.right .tl-connector { left:28px; width:calc(50% - 56px); }
+
+  .day-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: #1D9E75; margin-bottom: 3px; display: block;
+  }
+
+  .day-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px; font-weight: 800;
+    color: var(--color-text-primary);
+    margin: 0 0 4px; line-height: 1.3;
+  }
+
+  .day-sub {
+    font-size: 11px; font-weight: 500; color: #1D9E75;
+    background: #E1F5EE; display: inline-block;
+    padding: 2px 8px; border-radius: 20px; margin-bottom: 8px;
+  }
+
+  /* bullet points */
+  .day-points {
+    list-style: none;
+    margin: 0; padding: 0;
+  }
+
+  .tl-item.left .day-points { text-align: right; }
+  .tl-item.right .day-points { text-align: left; }
+
+  .day-points li {
+    font-size: 12.5px;
+    color: var(--color-text-secondary);
+    line-height: 1.55;
+    padding: 2px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .tl-item.left .day-points li  { flex-direction: row-reverse; }
+  .tl-item.right .day-points li { flex-direction: row; }
+
+  .day-points li::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #1D9E75;
+    flex-shrink: 0;
+    margin-top: 5px;
+  }
+
+  /* quiz section inside day 1 */
+  .quiz-block {
+    margin-top: 8px;
+    border-top: 0.5px solid var(--color-border-tertiary);
+    padding-top: 6px;
+  }
+
+  .quiz-label {
+    font-size: 11px; font-weight: 700;
+    font-family: 'Syne', sans-serif;
+    color: #0F6E56;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    display: block;
+  }
+
+  .tl-item.left .quiz-label  { text-align: right; }
+  .tl-item.right .quiz-label { text-align: left; }
+
+  .quiz-rounds {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .tl-item.left .quiz-rounds  { align-items: flex-end; }
+  .tl-item.right .quiz-rounds { align-items: flex-start; }
+
+  .round-pill {
+    font-size: 11px;
+    color: #085041;
+    background: #E1F5EE;
+    border: 0.5px solid #9FE1CB;
+    border-radius: 20px;
+    padding: 2px 10px;
+    display: inline-block;
+  }
+
+  .footer-bar {
+    text-align: center;
+    padding-top: 1.5rem;
+    border-top: 0.5px solid var(--color-border-tertiary);
+    margin-top: 1rem;
+  }
+  .footer-bar p { font-size: 12px; color: var(--color-text-secondary); margin: 0; }
+  .footer-bar strong { color: #1D9E75; }
+</style>
+
+<div class="tl-wrap">
+  <h2 style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">AWS Week Event Timeline</h2>
+
+  <div class="tl-header">
+    <p class="eyebrow">4-Day Workshop Series</p>
+    <h1>AWS <span>Week</span> Event Timeline</h1>
+  </div>
+
+  <div class="tl-container">
+    <div class="tl-spine"></div>
+
+    <!-- DAY 1 LEFT -->
+    <div class="tl-item left">
+      <div class="tl-content">
+        <span class="day-label">Day 1</span>
+        <p class="day-title">Cloud Genesis 101</p>
+        <span class="day-sub">7:00 – 9:00 pm</span>
+        <ul class="day-points">
+          <li>Intro &amp; welcome</li>
+          <li>Computing evolution &amp; on-premise infra</li>
+          <li>What is cloud computing?</li>
+          <li>Deployment &amp; service models</li>
+          <li>Why AWS — history &amp; global infrastructure</li>
+        </ul>
+        <div class="quiz-block">
+          <span class="quiz-label">Cloud Combat 1.0</span>
+          <div class="quiz-rounds">
+            <span class="round-pill">Round 1 — Basic · 5 qns · 5 pts · Top 70% advance</span>
+            <span class="round-pill">Round 2 — Intermediate · 5 qns · 10 pts · Top 40% advance</span>
+            <span class="round-pill">Round 3 — Advanced · 3 qns · 15 pts · Live winner reveal</span>
+          </div>
+        </div>
+      </div>
+      <div class="tl-node"><i class="ti ti-cloud" aria-hidden="true"></i></div>
+      <div class="tl-empty"></div>
+      <div class="tl-connector"></div>
+    </div>
+
+    <!-- DAY 2 RIGHT -->
+    <div class="tl-item right">
+      <div class="tl-empty"></div>
+      <div class="tl-node"><i class="ti ti-server" aria-hidden="true"></i></div>
+      <div class="tl-content">
+        <span class="day-label">Day 2</span>
+        <p class="day-title">Cloud Forge 102</p>
+        <span class="day-sub">7:00 – 10:00 pm</span>
+        <ul class="day-points">
+          <li>AWS compute services overview</li>
+          <li>EC2 fundamentals &amp; use cases</li>
+          <li>AMI, key pairs, security groups &amp; IPs</li>
+          <li>Launch an EC2 instance (live demo)</li>
+          <li>EC2 vs Lambda — why go serverless</li>
+          <li>AWS core architecture &amp; event sources</li>
+          <li>Lambda limitations &amp; use cases</li>
+          <li>Cloud Combat 2.0 — AWS Escape Room</li>
+        </ul>
+      </div>
+      <div class="tl-connector"></div>
+    </div>
+
+    <!-- DAY 3 LEFT -->
+    <div class="tl-item left">
+      <div class="tl-content">
+        <span class="day-label">Day 3</span>
+        <p class="day-title">Data Nexus 103</p>
+        <span class="day-sub">7:00 – 9:00 pm</span>
+        <ul class="day-points">
+          <li>Database fundamentals &amp; why they matter</li>
+          <li>Structured vs unstructured data</li>
+          <li>AWS DB services — SQL &amp; NoSQL overview</li>
+          <li>RDS — managed relational DB, multi-AZ, replicas</li>
+          <li>DynamoDB — serverless NoSQL, key-value, scaling</li>
+          <li>RDS vs DynamoDB comparison</li>
+          <li>Cloud Combat 3.0 — Case Study Activity</li>
+        </ul>
+      </div>
+      <div class="tl-node"><i class="ti ti-database" aria-hidden="true"></i></div>
+      <div class="tl-empty"></div>
+      <div class="tl-connector"></div>
+    </div>
+
+    <!-- DAY 4 RIGHT -->
+    <div class="tl-item right">
+      <div class="tl-empty"></div>
+      <div class="tl-node"><i class="ti ti-speakerphone" aria-hidden="true"></i></div>
+      <div class="tl-content">
+        <span class="day-label">Day 4</span>
+        <p class="day-title">Guest Lecture</p>
+        <span class="day-sub">Special Session</span>
+        <ul class="day-points">
+          <li>Industry expert speaker session</li>
+          <li>Real-world AWS use cases &amp; insights</li>
+          <li>Career perspectives in cloud</li>
+          <li>Open Q&amp;A &amp; networking</li>
+        </ul>
+      </div>
+      <div class="tl-connector"></div>
+    </div>
+
+  </div>
+
+  <div class="footer-bar">
+    <p>4 days · 3 technical sessions · Cloud Combat series · <strong>aws week</strong></p>
+  </div>
+</div>
